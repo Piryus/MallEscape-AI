@@ -13,19 +13,34 @@ import io.sarl.core.Logging
 import io.sarl.core.MemberJoined
 import io.sarl.core.MemberLeft
 import io.sarl.core.Lifecycle
+import io.sarl.core.DefaultContextInteractions
 
 /** 
- * @author Emile
+ * @authors Emile & Andre
  * 
  */
-agent HelloAgent {
-	uses Logging, Lifecycle
+event Hello
+ 
+agent AdultAgent {
+	uses Logging, Lifecycle, DefaultContextInteractions
 
 	on Initialize {
 		// Event trigger before the agent begin to live or to be used.
 		// You should put all the initialization statements in this block of code.
-		info("The agent was started.")
+		
+		loggingName = "adult"
+		var kid = KidAgent.spawn
+		info("Hello World! I am an adult")
+		
+		
+		// emit
+		emit(new Hello, [elt | elt.UUID == kid]) //Adult says hello to kid
 		killMe();
+	}
+	
+	on Hello
+	{
+		info("Hello everyone !")
 	}
 
 	on Destroy {

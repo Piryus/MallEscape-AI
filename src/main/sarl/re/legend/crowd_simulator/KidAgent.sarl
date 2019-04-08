@@ -1,0 +1,32 @@
+package re.legend.crowd_simulator
+
+/** 
+ * 
+ */
+ 
+
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+
+import io.sarl.core.Lifecycle
+
+/** 
+ * @authors Emile & Andre
+ * 
+ */
+ 
+
+ agent KidAgent{
+ 	uses Logging, Lifecycle
+ 	
+ 	on Initialize {
+ 		loggingName = "KidAgent"
+ 		info("Welcome, I am KidAgent")
+ 	}
+ 	
+ 	on Hello {
+ 		info("I am KidAgent and I have received your Hello AdultAgent")
+ 		killMe()
+ 	}
+ }
+ 

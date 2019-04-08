@@ -1,0 +1,3 @@
+package re.legend.crowd_simulator
+//This agent is the map, use Observer Pattern and link with LibGDX
+//The map will make "people (other agents)" spawn

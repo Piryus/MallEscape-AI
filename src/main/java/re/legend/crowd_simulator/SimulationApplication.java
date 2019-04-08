@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 
+import io.sarl.bootstrap.SRE;
+
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor {
 	Texture grassTexture;
 	OrthographicCamera camera;
@@ -89,6 +91,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	@Override
 	public boolean keyDown(int arg0) {
+		try {
+			SRE.getBootstrap().startAgent(AdultAgent.class); //Start an agent
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
