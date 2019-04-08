@@ -22,20 +22,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	SpriteBatch batch;
 	Sprite[][] sprites = new Sprite[10][10];
 	Matrix4 matrix = new Matrix4();
-	final Plane xzPlane = new Plane(new Vector3(0, 1, 0), 0);
-	final Vector3 curr = new Vector3();
-	final Vector3 last = new Vector3(-1, -1, -1);
-	final Vector3 delta = new Vector3();
 
 	@Override
 	public void create() {
 		this.grassTexture = new Texture("grass.png");
-		this.camera = new OrthographicCamera(10, 10 * (Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth()));
+		this.camera = new OrthographicCamera(Gdx.graphics.getWidth()/50, Gdx.graphics.getHeight()/50);
 		this.camera.position.set(5, 5, 10);
-		this.camera.direction.set(-1, -1, -1);
-		this.camera.near = 1;
-		this.camera.far = 100;
-		this.matrix.setToRotation(new Vector3(1, 0, 0), 90);
 		
 		for (int z = 0; z < 10; z++) {
 			for (int x = 0; x < 10; x++) {
@@ -67,7 +59,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.camera.update();		
 				
 		this.batch.setProjectionMatrix(this.camera.combined);
-		this.batch.setTransformMatrix(this.matrix);
 		this.batch.begin();
 		for(int z = 0; z < 10; z++) {
 			for(int x = 0; x < 10; x++) {
@@ -134,22 +125,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	@Override 
 	public boolean touchDragged (int x, int y, int pointer) {
-		Ray pickRay = this.camera.getPickRay(x, y);
-		Intersector.intersectRayPlane(pickRay, this.xzPlane, this.curr);
-		
-		if(!(this.last.x == -1 && this.last.y == -1 && this.last.z == -1)) {
-			pickRay = this.camera.getPickRay(this.last.x, this.last.y);
-			Intersector.intersectRayPlane(pickRay, this.xzPlane, this.delta);			
-			this.delta.sub(this.curr);
-			this.camera.position.add(this.delta.x, this.delta.y, this.delta.z);
-		}
-		this.last.set(x, y, 0);
+		this.camera.translate(this.camera.position.x + x, this.camera.position.y);
 		return false;
 	}
 
 	@Override 
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		this.last.set(-1, -1, -1);
 		return false;
 	}
 }
