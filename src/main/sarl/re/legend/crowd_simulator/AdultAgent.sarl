@@ -20,33 +20,33 @@ import io.sarl.core.DefaultContextInteractions
  * 
  */
 event Hello
- 
+
 agent AdultAgent {
 	uses Logging, Lifecycle, DefaultContextInteractions
 
 	on Initialize {
-		// Event trigger before the agent begin to live or to be used.
-		// You should put all the initialization statements in this block of code.
-		
 		loggingName = "adult"
-		var kid = KidAgent.spawn
-		info("Hello World! I am an adult")
-		
 		
 		// emit
-		emit(new Hello, [elt | elt.UUID == kid]) //Adult says hello to kid
-		killMe();
+		//var kid = KidAgent;
+		//emit(new Hello, [elt|elt.UUID == kid]) // Adult says hello to kid
+	}
+
+	on WorldCreation {
+		info("Hello, I am an adult and I have spawned in this world")
 	}
 	
-	on Hello
-	{
-		info("Hello everyone !")
+	on Hello {
+		info("Hello kid !")
+		var kid = KidAgent;
+		emit(new Hello, [elt|elt.UUID == kid]) // Adult says hello to kid
+		killMe();
 	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The agent was stopped.")
+		info("The AdultAgent was stopped.")
 	}
 
 	on AgentSpawned {
