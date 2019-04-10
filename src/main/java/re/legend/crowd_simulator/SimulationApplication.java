@@ -8,11 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.math.Vector2;
 
 import io.sarl.bootstrap.SRE;
 
@@ -23,6 +20,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	Sprite[][] sprites = new Sprite[10][10];
 	Matrix4 matrix = new Matrix4();
 
+	// Cursor position on last click
+	Vector2 lastTouch = new Vector2();
+	
 	@Override
 	public void create() {
 		this.grassTexture = new Texture("grass.png");
@@ -112,20 +112,29 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	}
 
 	@Override
-	public boolean scrolled(int arg0) {
-		// TODO Auto-generated method stub
+	public boolean scrolled(int amount) {
+		// Camera zoom
+		if (amount == 1 && this.camera.zoom >= 1) {
+			this.camera.zoom++;
+		} else if (amount == -1 && this.camera.zoom > 1) {
+			this.camera.zoom--;
+		}
 		return false;
 	}
 
 	@Override
-	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
-		// TODO Auto-generated method stub
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		this.lastTouch.set(x, y);
 		return false;
 	}
 
 	@Override 
 	public boolean touchDragged (int x, int y, int pointer) {
-		this.camera.translate(this.camera.position.x + x, this.camera.position.y);
+		Vector2 currentPos = new Vector2(x, y);
+		// Compute vector between lastTouch and current position of the cursor
+		Vector2 delta = currentPos.cpy().sub(this.lastTouch);
+		// Translate the camera
+		this.camera.translate((float) - (delta.x * 0.005), (float) (delta.y * 0.005));
 		return false;
 	}
 
