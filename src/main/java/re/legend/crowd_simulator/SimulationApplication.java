@@ -8,43 +8,40 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
 import io.sarl.bootstrap.SRE;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor {
-	Texture grassTexture;
 	OrthographicCamera camera;
-	SpriteBatch batch;
-	Sprite[][] sprites = new Sprite[10][10];
 	Matrix4 matrix = new Matrix4();
 
+	private TiledMap map;
+	private TmxMapLoader loader;
+	private OrthogonalTiledMapRenderer renderer;
+	
 	// Cursor position on last click
 	Vector2 lastTouch = new Vector2();
 	
 	@Override
 	public void create() {
-		this.grassTexture = new Texture("grass.png");
-		this.camera = new OrthographicCamera(Gdx.graphics.getWidth()/50, Gdx.graphics.getHeight()/50);
-		this.camera.position.set(5, 5, 10);
+		// Loads map
+		loader = new TmxMapLoader();
+		map = loader.load("map/map.tmx");
+		renderer = new OrthogonalTiledMapRenderer(map);
 		
-		for (int z = 0; z < 10; z++) {
-			for (int x = 0; x < 10; x++) {
-				this.sprites[x][z] = new Sprite(this.grassTexture);
-				this.sprites[x][z].setPosition(x, z);
-				this.sprites[x][z].setSize(1, 1);
-			}
-		}
-
-		this.batch = new SpriteBatch();
+		this.camera = new OrthographicCamera(Gdx.graphics.getWidth()/5, Gdx.graphics.getHeight()/5);
+		this.camera.position.set(((int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth")) / 2, ((int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight")) / 2, 0);
 
 		Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
 	public void dispose() {
-		this.batch.dispose();
 	}
 
 	@Override
@@ -56,16 +53,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public void render() {
 		Gdx.gl.glClearColor((float)97/255, (float)133/255, (float)248/255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		this.camera.update();		
 				
-		this.batch.setProjectionMatrix(this.camera.combined);
-		this.batch.begin();
-		for(int z = 0; z < 10; z++) {
-			for(int x = 0; x < 10; x++) {
-				this.sprites[x][z].draw(this.batch);
-			}
-		}
-		this.batch.end();
+		// Renders map
+		this.renderer.setView(camera);
+		this.renderer.render();
 	}
 
 	@Override
