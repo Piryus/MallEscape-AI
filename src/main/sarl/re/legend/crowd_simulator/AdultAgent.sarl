@@ -28,8 +28,8 @@ agent AdultAgent {
 		loggingName = "adult"
 		
 		// emit
-		//var kid = KidAgent;
-		//emit(new Hello, [elt|elt.UUID == kid]) // Adult says hello to kid
+		var kid = KidAgent;
+		emit(new Hello, [elt|elt.UUID == kid]) // Adult says hello to kid
 	}
 
 	on WorldCreation {

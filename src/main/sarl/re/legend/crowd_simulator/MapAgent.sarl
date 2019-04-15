@@ -1,7 +1,8 @@
 package re.legend.crowd_simulator
 
-// This agent is the map, use Observer Pattern and link with LibGDX
-// The map will make "people (other agents)" spawn
+/* This agent is the map, use Observer Pattern and link with LibGDX
+ The map will spawn "agent spirit" for people, their body, and match them
+ */
 import io.sarl.core.AgentKilled
 import io.sarl.core.AgentSpawned
 import io.sarl.core.ContextJoined
@@ -31,6 +32,15 @@ agent MapAgent {
 		
 		var adult = AdultAgent.spawn()
 		var kid = KidAgent.spawn
+
+		/* IMPORTANT: Teacher gave us the winning trio
+		 * var body = new Body()
+		 * map.add(body) //add the body in the universe
+		 * 
+		 * var adult = AdultAgent.spawnInContextWithID(body.getUUID, defaultContext, body) 
+		 * //create spirit
+		 * //getUUID, the ID of the spirit and the agent have to match
+		 */
 		
 		emit(new WorldCreation, [elt|elt.UUID == adult])
 		emit(new WorldCreation, [elt|elt.UUID == kid])

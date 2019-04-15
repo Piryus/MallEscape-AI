@@ -76,7 +76,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public boolean keyDown(int arg0) {
 		try {
-			SRE.getBootstrap().startAgent(MapAgent.class); //Start an agent
+			SRE.getBootstrap().startAgent(MapAgent.class); //Call an agent
 			//SRE.getBootstrap().startAgent(AdultAgent.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
