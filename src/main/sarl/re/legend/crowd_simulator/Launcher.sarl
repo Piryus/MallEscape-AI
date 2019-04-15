@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
+import re.legend.crowd_simulator.agents.Environment
 
 /**
  * Launcher agent

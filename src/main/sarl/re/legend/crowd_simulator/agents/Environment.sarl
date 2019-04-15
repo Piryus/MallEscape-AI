@@ -1,4 +1,4 @@
-package re.legend.crowd_simulator
+package re.legend.crowd_simulator.agents
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
@@ -13,6 +13,7 @@ import io.sarl.core.MemberJoined
 import io.sarl.core.MemberLeft
 import io.sarl.core.Lifecycle
 import io.sarl.core.DefaultContextInteractions
+import re.legend.crowd_simulator.SimulationApplication
 
 event WorldCreation
 
