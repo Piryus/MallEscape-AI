@@ -1,0 +1,25 @@
+package re.legend.crowd_simulator
+
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import io.sarl.core.Initialize
+import io.sarl.core.Lifecycle
+import io.sarl.core.Logging
+
+/**
+ * Launcher agent
+ */
+agent Launcher {
+	uses Logging, Lifecycle
+
+	on Initialize {
+		var config = new LwjglApplicationConfiguration();
+		config.samples = 16;
+		config.title = "CrowdSimulator";
+		config.width = 1366;
+		config.height = 768;
+		
+		spawn(Environment, config);
+		
+		info("CrowdSimulator started.")
+	}
+}

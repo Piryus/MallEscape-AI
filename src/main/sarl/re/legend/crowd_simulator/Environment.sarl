@@ -1,8 +1,7 @@
 package re.legend.crowd_simulator
 
-/* This agent is the map, use Observer Pattern and link with LibGDX
- The map will spawn "agent spirit" for people, their body, and match them
- */
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import io.sarl.core.AgentKilled
 import io.sarl.core.AgentSpawned
 import io.sarl.core.ContextJoined
@@ -15,20 +14,26 @@ import io.sarl.core.MemberLeft
 import io.sarl.core.Lifecycle
 import io.sarl.core.DefaultContextInteractions
 
-/** 
- * @authors Emile & Andre
- * 
- */
 event WorldCreation
 
-agent MapAgent {
+/** 
+ * This agent is the environment, use Observer Pattern and link with LibGDX
+ * The environment will spawn "agent spirit" for people, their body, and match them
+ */
+agent Environment {
+	
 	uses Logging, Lifecycle, DefaultContextInteractions
+	
+	var application : LwjglApplication
 
 	on Initialize {
-		// Event trigger before the agent begin to live or to be used.
-		// You should put all the initialization statements in this block of code.
 		loggingName = "map"
-		info("Hello, I am the map and I am creating this world")
+		info("Hello, I am the environment and I am creating this world")
+		
+		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
+		
+		// Instantiates application
+		this.application = new LwjglApplication(new SimulationApplication(), config)
 		
 		var adult = AdultAgent.spawn()
 		var kid = KidAgent.spawn
