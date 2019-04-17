@@ -1,0 +1,40 @@
+package re.legend.crowd_simulator.agents
+
+import re.legend.crowd_simulator.bodies.AdultBody
+import re.legend.crowd_simulator.bodies.Map
+import java.util.List
+import re.legend.crowd_simulator.bodies.AgentBody
+import java.util.ArrayList
+
+/**
+ * Capacity to manage the map
+ */
+capacity MapManager {
+	/**
+	 * Create an adult body
+	 */
+	 def createAdult() : AdultBody
+	 
+	 /**
+	  * Return a list containing the bodies on the map
+	  */
+	 def getBodies() : List<AgentBody>
+}
+
+skill DefaultMapManager implements MapManager {
+	
+	var map : Map
+	
+	def install {
+		this.map = new Map()
+	}
+	
+	def createAdult : AdultBody {
+		this.map.createBody(typeof(AdultBody), null);
+	}
+
+	def getBodies() : List<AgentBody> {
+		new ArrayList<AgentBody>(this.map.getBodies)
+	}
+	
+}
