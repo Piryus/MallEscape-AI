@@ -9,8 +9,6 @@ import io.sarl.core.Lifecycle
 import io.sarl.core.DefaultContextInteractions
 import re.legend.crowd_simulator.graphics.SimulationApplication
 
-event WorldCreation
-
 /** 
  * This agent is the environment, use Observer Pattern and link with LibGDX
  * The environment will spawn "agent spirit" for people, their body, and match them
@@ -33,11 +31,12 @@ agent Environment {
 		var adultTest = createAdult
 		spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
 		
-		
 		// Instantiates application
 		this.application = new SimulationApplication()
-		new LwjglApplication(this.application, config)
-		this.application.update(getBodies)
+		new LwjglApplication(this.application, config);
+		
+		// TODO Implement a real game loop
+		emit(new GameLoopTest)
 		
 		//var adult = AdultAgent.spawn()
 		//var kid = KidAgent.spawn
@@ -57,9 +56,9 @@ agent Environment {
 		//killMe();
 	}
 
-	on WorldCreation
-	{
-		info("hello everyone")
+	on GameLoopTest {
+		this.application.update(getBodies);
+		emit(new GameLoopTest)
 	}
 
 	on Destroy {

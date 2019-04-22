@@ -23,10 +23,6 @@ import io.sarl.core.Destroy
  	on Initialize {
  		loggingName = "KidAgent"
  	}
-
-	on WorldCreation {
-		info("Hola, I am kid and I have spawned in this world")
-	}
  	
  	on Hello {
  		info("I am KidAgent and I have received your Hello AdultAgent")

@@ -31,10 +31,6 @@ agent AdultAgent {
 		var kid = KidAgent;
 		emit(new Hello, [elt|elt.UUID == kid]) // Adult says hello to kid
 	}
-
-	on WorldCreation {
-		info("Hello, I am an adult and I have spawned in this world")
-	}
 	
 	on Hello {
 		info("Hello kid !")

@@ -1,0 +1,4 @@
+package re.legend.crowd_simulator.agents
+
+// TODO Test purpose, game loop
+event GameLoopTest
