@@ -79,6 +79,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.renderer.setView(this.camera);
 		this.renderer.render();
 		
+		this.spriteBatch.setProjectionMatrix(camera.combined);
 		this.spriteBatch.begin();
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {

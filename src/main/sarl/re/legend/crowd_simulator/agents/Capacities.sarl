@@ -5,6 +5,7 @@ import re.legend.crowd_simulator.bodies.Map
 import java.util.List
 import re.legend.crowd_simulator.bodies.AgentBody
 import java.util.ArrayList
+import java.util.Random
 
 /**
  * Capacity to manage the map
@@ -19,6 +20,9 @@ capacity MapManager {
 	  * Return a list containing the bodies on the map
 	  */
 	 def getBodies() : List<AgentBody>
+	 
+	 // TODO Test purpose
+	 def randomMoveJohn()
 }
 
 skill DefaultMapManager implements MapManager {
@@ -35,6 +39,24 @@ skill DefaultMapManager implements MapManager {
 
 	def getBodies() : List<AgentBody> {
 		new ArrayList<AgentBody>(this.map.getBodies)
+	}
+	
+	def randomMoveJohn() {
+		var rand = new Random
+		var dir : int
+		if (rand.nextBoolean)
+			dir = 1
+		else
+			dir = -1
+		var dir2 : int
+		if (rand.nextBoolean)
+			dir2 = 1
+		else
+			dir2 = -1
+		for (b : this.map.getBodies) {
+			b.setPosition(b.getPosition.x + dir, b.getPosition.y + dir2)
+			
+		}
 	}
 	
 }

@@ -36,8 +36,8 @@ public class Map {
 	 */
 	public <T extends AgentBody> T createBody(Class<T> bodyType, UUID agentUUID) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		// Body position
-		float x = this.random.nextInt(200);
-		float y = this.random.nextInt(200);
+		float x = this.random.nextInt(2000);
+		float y = this.random.nextInt(2000);
 		
 		// Agent's ID
 		UUID id = agentUUID;
@@ -57,6 +57,10 @@ public class Map {
 	
 	public Collection<AgentBody> getBodies() {
 		return this.bodies.values();
+	}
+	
+	public void setBodyAt(AgentBody body, float x, float y) {
+		body.setPosition(x, y);
 	}
 	 
 }

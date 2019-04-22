@@ -32,7 +32,7 @@ public abstract class AgentBody {
 	 * @param x the position of the body on the x axis
 	 * @param y the position of the body on the y axis
 	 */
-	public void setPosition(int x, int y) {
+	public void setPosition(float x, float y) {
 		this.position.x = x;
 		this.position.y = y;
 	}

@@ -57,6 +57,7 @@ agent Environment {
 	}
 
 	on GameLoopTest {
+		randomMoveJohn
 		this.application.update(getBodies);
 		emit(new GameLoopTest)
 	}
