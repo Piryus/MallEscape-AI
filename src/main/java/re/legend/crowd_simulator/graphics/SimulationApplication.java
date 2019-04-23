@@ -144,11 +144,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	@Override 
 	public boolean touchDragged (int x, int y, int pointer) {
-		Vector2 currentPos = new Vector2(x, y);
-		// Compute vector between lastTouch and current position of the cursor
-		Vector2 delta = currentPos.cpy().sub(this.lastTouch);
-		// Translate the camera
-		this.camera.translate((float) - (delta.x * 0.005), (float) (delta.y * 0.005));
+		float deltaX = Gdx.input.getDeltaX();
+		float deltaY = Gdx.input.getDeltaY();
+		camera.translate(-deltaX, deltaY);
+		camera.update();
 		return false;
 	}
 
