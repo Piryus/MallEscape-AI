@@ -54,8 +54,11 @@ skill DefaultMapManager implements MapManager {
 		else
 			dir2 = -1
 		for (b : this.map.getBodies) {
+			if (b.getPosition.x + dir > 560 || b.getPosition.x + dir < 0)
+				dir = - dir
+			if (b.getPosition.y + dir2 > 560 || b.getPosition.y + dir2 < 0)
+				dir2 = -dir2
 			b.setPosition(b.getPosition.x + dir, b.getPosition.y + dir2)
-			
 		}
 	}
 	
