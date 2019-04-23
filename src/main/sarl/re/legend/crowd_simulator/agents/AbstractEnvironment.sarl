@@ -1,0 +1,16 @@
+package re.legend.crowd_simulator.agents
+
+import re.legend.crowd_simulator.time.TimeManager
+
+abstract class AbstractEnvironment implements  Environment {
+	
+	val timeManager : TimeManager
+	
+	/** Constructor (Add new params later)
+	 * @param timeManager to manage time
+	 */
+	new (timeManager : TimeManager)
+	{
+		this.timeManager = timeManager
+	}
+}

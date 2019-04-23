@@ -1,0 +1,73 @@
+package re.legend.crowd_simulator.agents
+
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+import io.sarl.core.Lifecycle
+import io.sarl.core.DefaultContextInteractions
+import re.legend.crowd_simulator.graphics.SimulationApplication
+
+/** 
+ * This agent is the environment, use Observer Pattern and link with LibGDX
+ * The environment will spawn "agent spirit" for people, their body, and match them
+ */
+agent EnvironmentAgent {
+	
+	uses Logging, Lifecycle, DefaultContextInteractions, MapManager
+	
+	var application : SimulationApplication
+	
+
+	on Initialize {
+		loggingName = "Environment"
+		info("Hello, I am the environment and I am creating this world")
+		
+		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
+
+		// TODO TEST ADULT CREATION
+		setSkill(new DefaultMapManager)
+		var adultTest = createAdult
+		spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
+		
+		// Instantiates application
+		this.application = new SimulationApplication()
+		new LwjglApplication(this.application, config);
+		
+		// TODO Implement a real game loop
+		emit(new GameLoopTest)
+		
+		
+		//var adult = AdultAgent.spawn()
+		//var kid = KidAgent.spawn
+
+		/* IMPORTANT: Teacher gave us the winning trio
+		 * var body = new Body()
+		 * map.add(body) //add the body in the universe
+		 * 
+		 * var adult = AdultAgent.spawnInContextWithID(body.getUUID, defaultContext, body) 
+		 * //create spirit
+		 * //getUUID, the ID of the spirit and the agent have to match
+		 */
+		
+		//emit(new WorldCreation, [elt|elt.UUID == adultTest.getUuid])
+		//emit(new WorldCreation, [elt|elt.UUID == kid])
+
+		//killMe();
+	}
+
+	on GameLoopTest {
+		randomMoveJohn
+		this.application.update(getBodies);
+		emit(new GameLoopTest)
+	}
+
+	on Destroy {
+		// Event trigger when the agent is destroyed from the system.
+		// You should put all the resource releasing statements in this block of code.
+		info("The World was destroyed.")
+	}
+
+}
+
