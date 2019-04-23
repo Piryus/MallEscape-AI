@@ -8,6 +8,7 @@ import io.sarl.core.Logging
 import io.sarl.core.Lifecycle
 import io.sarl.core.DefaultContextInteractions
 import re.legend.crowd_simulator.graphics.SimulationApplication
+import io.sarl.core.Schedules
 
 /** 
  * This agent is the environment, use Observer Pattern and link with LibGDX
@@ -15,7 +16,7 @@ import re.legend.crowd_simulator.graphics.SimulationApplication
  */
 agent Environment {
 	
-	uses Logging, Lifecycle, DefaultContextInteractions, MapManager
+	uses Logging, Lifecycle, DefaultContextInteractions, MapManager, Schedules
 	
 	var application : SimulationApplication
 	
@@ -36,7 +37,9 @@ agent Environment {
 		new LwjglApplication(this.application, config);
 		
 		// TODO Implement a real game loop
-		emit(new GameLoopTest)
+		val slow = task("slowdown_the_game")
+		slow.every(1000)[emit(new GameLoopTest)]
+		
 		
 		//var adult = AdultAgent.spawn()
 		//var kid = KidAgent.spawn

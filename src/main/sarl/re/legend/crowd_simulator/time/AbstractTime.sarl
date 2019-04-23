@@ -1,0 +1,66 @@
+package re.legend.crowd_simulator.time
+
+import java.util.concurrent.TimeUnit
+
+/** Abstract implementation of the time
+ * 
+ */
+abstract class AbstractTime implements Time {
+	static def secondsToUnits(t : float, unit : TimeUnit) : float {
+		switch (unit) {
+			case DAYS: {
+				t / 86400f
+			}
+			case HOURS: {
+				t / 3600f
+			}
+			case MINUTES: {
+				t / 60f
+			}
+			case MILLISECONDS: {
+				t * 1000f
+			}
+			case MICROSECONDS: {
+				t * 1000000f
+			}
+			case NANOSECONDS: {
+				t * 1000000000f
+			}
+			default: {
+				t
+			}
+		}
+	}
+
+	static def unitsToSeconds(t : float, unit : TimeUnit) : float {
+		switch (unit) {
+			case DAYS: {
+				t * 86400f
+			}
+			case HOURS: {
+				t * 3600f
+			}
+			case MINUTES: {
+				t * 60f
+			}
+			case MILLISECONDS: {
+				t / 1000f
+			}
+			case MICROSECONDS: {
+				t / 1000000f
+			}
+			case NANOSECONDS: {
+				t / 1000000000f
+			}
+			default: {
+				t
+			}
+		}
+	}
+
+
+	override compareTo(o : Time) : int {
+		var t = o?.currentTime
+		return currentTime <=> t
+	}
+}

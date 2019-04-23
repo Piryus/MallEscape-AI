@@ -1,0 +1,34 @@
+package re.legend.crowd_simulator.time
+import java.util.concurrent.TimeUnit
+
+/** Management of the time
+ * 
+ */
+public class StepTimeManager extends AbstractTimeManager {
+	var delay = 10f
+	var t : float
+	val step : float
+
+	new (stepDuration : float) {
+		this.step = stepDuration.unitsToSeconds(TimeUnit::MILLISECONDS)
+	}
+	
+	synchronized override getCurrentTime(unit : TimeUnit = null) : float {
+		this.t.secondsToUnits(unit ?: TimeUnit.SECONDS)
+	}
+
+
+
+	synchronized override increment {
+		this.t += this.step
+	}
+
+	synchronized override getSimulationDelay : float {
+		this.delay
+	}
+
+	synchronized override setSimulationDelay(delay : float) {
+		this.delay = Math::max(0f, delay)
+	}
+}
+

@@ -1,0 +1,28 @@
+package re.legend.crowd_simulator.time
+
+/** Time manager
+ * 
+ */
+ 
+ interface TimeManager extends Time {
+ 	/**
+ 	 * Increment the time
+ 	 */
+ 	 def increment
+
+	/** Replies the delay to apply at each simulation step.
+	 * 
+	 * This delay permits to control partially the speed of the simulation process.
+	 * 
+	 * @return the delay of waiting between two simulation steps.
+	 */
+	def getSimulationDelay : float
+
+	/** Set the delay to apply at each simulation step.
+	 * 
+	 * This delay permits to control partially the speed of the simulation process.
+	 * 
+	 * @param delay the delay of waiting between two simulation steps.
+	 */
+	def setSimulationDelay(delay : float)
+}

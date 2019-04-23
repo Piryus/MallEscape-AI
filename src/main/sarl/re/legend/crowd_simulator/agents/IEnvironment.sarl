@@ -1,0 +1,26 @@
+/** 
+ * 
+ */
+package re.legend.crowd_simulator.agents
+
+import io.sarl.core.AgentKilled
+import io.sarl.core.AgentSpawned
+import io.sarl.core.ContextJoined
+import io.sarl.core.ContextLeft
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+import io.sarl.core.MemberJoined
+import io.sarl.core.MemberLeft
+
+/** 
+ * 
+ */
+interface IEnvironment {
+
+		/** Replies the time manager of this environment.
+		 * 
+		 * @return the time manager of this environment.
+		 */
+	//def getTimeManager : TimeManager
+}
