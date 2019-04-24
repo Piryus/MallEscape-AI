@@ -37,24 +37,6 @@ agent EnvironmentAgent {
 		
 		// TODO Implement a real game loop
 		emit(new GameLoopTest)
-		
-		
-		//var adult = AdultAgent.spawn()
-		//var kid = KidAgent.spawn
-
-		/* IMPORTANT: Teacher gave us the winning trio
-		 * var body = new Body()
-		 * map.add(body) //add the body in the universe
-		 * 
-		 * var adult = AdultAgent.spawnInContextWithID(body.getUUID, defaultContext, body) 
-		 * //create spirit
-		 * //getUUID, the ID of the spirit and the agent have to match
-		 */
-		
-		//emit(new WorldCreation, [elt|elt.UUID == adultTest.getUuid])
-		//emit(new WorldCreation, [elt|elt.UUID == kid])
-
-		//killMe();
 	}
 
 	on GameLoopTest {
