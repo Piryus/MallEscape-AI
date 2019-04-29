@@ -1,7 +1,0 @@
-package re.legend.crowd_simulator.time
-
-/** Abstract management of the time
- * 
- */
-public abstract class AbstractTimeManager extends AbstractTime implements TimeManager {
-}
