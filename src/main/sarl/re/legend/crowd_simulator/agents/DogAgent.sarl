@@ -3,42 +3,45 @@ package re.legend.crowd_simulator.agents
 /** 
  * 
  */
- 
-
-import io.sarl.core.Initialize
-import io.sarl.core.Logging
-
-import io.sarl.core.Lifecycle
-import io.sarl.core.Destroy
-import io.sarl.core.AgentSpawned
 import io.sarl.core.AgentKilled
+import io.sarl.core.AgentSpawned
 import io.sarl.core.ContextJoined
 import io.sarl.core.ContextLeft
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
 import io.sarl.core.MemberJoined
 import io.sarl.core.MemberLeft
+import io.sarl.core.Lifecycle
+import io.sarl.core.DefaultContextInteractions
 
 /** 
  * @authors Emile & Andre
  * 
  */
- 
+event Hello
 
- agent KidAgent{
- 	uses Logging, Lifecycle
- 	
- 	on Initialize {
- 		loggingName = "KidAgent"
- 	}
- 	
- 	on Hello {
- 		info("I am KidAgent and I have received your Hello AdultAgent")
- 		killMe()
- 	}
+agent DogtAgent {
+	uses Logging, Lifecycle, DefaultContextInteractions
+
+	on Initialize {
+		loggingName = "dog"
+		
+		var kid = KidAgent;
+		emit(new Hello, [elt|elt.UUID == kid]) 	// Dog interact with the kid
+	}
+
+	on Hello {
+		info("Bark wouaf wouaf!")
+		var kid = KidAgent;
+		emit(new Hello, [elt|elt.UUID == kid]) // bark to the kid
+		killMe();
+	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The KidAgent was stopped.")
+		info("The DogAgent was stopped.")
 	}
 
 	on AgentSpawned {
@@ -69,5 +72,3 @@ import io.sarl.core.MemberLeft
 		// Sent to all members of the considered super-holon.
 	}
 }
- 	
- 

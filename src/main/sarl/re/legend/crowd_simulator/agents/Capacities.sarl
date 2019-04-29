@@ -6,6 +6,8 @@ import java.util.List
 import re.legend.crowd_simulator.bodies.AgentBody
 import java.util.ArrayList
 import java.util.Random
+import re.legend.crowd_simulator.bodies.KidBody
+import re.legend.crowd_simulator.bodies.DogBody
 
 /**
  * Capacity to manage the map
@@ -16,6 +18,15 @@ capacity MapManager {
 	 */
 	 def createAdult() : AdultBody
 	 
+	 /**
+	  * Create a kid body
+	  */
+	 def createKid() : KidBody
+	 
+	 /**
+	  * Create a dog body
+	  */
+	 def createDog : DogBody
 	 /**
 	  * Return a list containing the bodies on the map
 	  */
@@ -35,6 +46,14 @@ skill DefaultMapManager implements MapManager {
 	
 	def createAdult : AdultBody {
 		this.map.createBody(typeof(AdultBody), null);
+	}
+
+	def createKid : KidBody {
+		this.map.createBody(typeof(KidBody), null);
+	}
+
+	def createDog : DogBody {
+		this.map.createBody(typeof(DogBody), null);
 	}
 
 	def getBodies() : List<AgentBody> {
