@@ -1,4 +1,4 @@
-package re.legend.crowd_simulator.bodies;
+package re.legend.crowd_simulator.objects;
 
 public class Wall extends SimulationObject {
 

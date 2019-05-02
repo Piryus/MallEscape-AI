@@ -1,8 +1,9 @@
-package re.legend.crowd_simulator.bodies;
+package re.legend.crowd_simulator.objects;
 
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class SimulationObject {
+
+public abstract class SimulationObject implements Perceivable {
 	// Object's position
 	private Vector2 position;
 	

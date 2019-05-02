@@ -2,6 +2,9 @@ package re.legend.crowd_simulator.bodies;
 
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
+
+import re.legend.crowd_simulator.objects.SimulationObject;
+
 import java.util.UUID;
 
 

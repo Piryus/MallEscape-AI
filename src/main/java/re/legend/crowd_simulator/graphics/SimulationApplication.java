@@ -20,7 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.bodies.AdultBody;
 import re.legend.crowd_simulator.bodies.AgentBody;
-import re.legend.crowd_simulator.bodies.Wall;
+import re.legend.crowd_simulator.objects.Wall;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
 	OrthographicCamera camera;
@@ -58,8 +58,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.loader = new TmxMapLoader();
 		this.map = this.loader.load("map/map.tmx");
 		this.renderer = new OrthogonalTiledMapRenderer(map);
-		
-		System.out.println("lol");
 		
 		// Loads walls
 		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) renderer.getMap().getLayers().get("Walls");

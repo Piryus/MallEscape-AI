@@ -1,4 +1,4 @@
-package re.legend.crowd_simulator.bodies;
+package re.legend.crowd_simulator.map;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +10,10 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Quaternion;
+
+import re.legend.crowd_simulator.bodies.AgentBody;
+import re.legend.crowd_simulator.objects.Wall;
+
 
 public class Map {
 	
