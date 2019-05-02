@@ -7,11 +7,13 @@ public abstract class SimulationObject {
 	private Vector2 position;
 	
 	public SimulationObject(float x, float y) {
+		this.position = new Vector2();
 		this.position.x = x;
 		this.position.y = y;
 	}
 	
 	public SimulationObject(Vector2 position) {
+		this.position = new Vector2();
 		this.position = position;
 	}
 	
