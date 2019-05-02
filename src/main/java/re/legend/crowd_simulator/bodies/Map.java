@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import com.badlogic.gdx.math.Quaternion;
 
 public class Map {
 	
@@ -43,6 +44,7 @@ public class Map {
 		// Body position
 		float x = this.random.nextInt(200);
 		float y = this.random.nextInt(200);
+		Quaternion o = new Quaternion();
 		
 		// Agent's ID
 		UUID id = agentUUID;
@@ -51,8 +53,8 @@ public class Map {
 		}
 		
 		// Create body instance
-		Constructor cons = bodyType.getDeclaredConstructor(float.class, float.class, UUID.class);
-		Object body = cons.newInstance(x, y, id);
+		Constructor cons = bodyType.getDeclaredConstructor(float.class, float.class, Quaternion.class, UUID.class);
+		Object body = cons.newInstance(x, y, o, id);
 
 		// Put the body into the tree map
 		this.bodies.put(id, (AgentBody) body);
