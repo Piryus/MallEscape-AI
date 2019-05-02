@@ -22,7 +22,7 @@ agent Environment {
 
 	on Initialize {
 		loggingName = "Environment"
-		info("Hello, I am the environment and I am creating this world")
+		info("Environment initialized, creating the world...")
 		
 		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 
@@ -34,6 +34,10 @@ agent Environment {
 		// Instantiates application
 		this.application = new SimulationApplication()
 		new LwjglApplication(this.application, config);
+		// Wait 5 secs to let the application load the graphics
+		Thread::sleep(5000);
+		// Retrieves the walls from the tiled map and set them up into the map object
+		setupWalls(this.application.getWalls);
 		
 		// TODO Implement a real game loop
 		emit(new GameLoopTest)

@@ -11,13 +11,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.bodies.AdultBody;
 import re.legend.crowd_simulator.bodies.AgentBody;
+import re.legend.crowd_simulator.bodies.Wall;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
 	OrthographicCamera camera;
@@ -33,6 +36,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	// Agent bodies to render, updated by the update() method
 	List<AgentBody> bodies;
 	
+	// Walls list, not used in this class but retrieved 
+	List<Wall> walls;
+	
 	// TODO Remove below once bodies rendering is implemented
 	// John's texture
 	private Texture johnTex;
@@ -46,11 +52,25 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.lastTouch = new Vector2();
 		this.spriteBatch = new SpriteBatch();
 		this.johnTex = new Texture("john.png");
+		this.walls = new ArrayList<>();
 		
 		// Loads map
 		this.loader = new TmxMapLoader();
 		this.map = this.loader.load("map/map.tmx");
 		this.renderer = new OrthogonalTiledMapRenderer(map);
+		
+		System.out.println("lol");
+		
+		// Loads walls
+		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) renderer.getMap().getLayers().get("Walls");
+		Cell cell;
+		for (int x = 0; x < wallsLayer.getWidth(); x++) {
+			for (int y = 0; y < wallsLayer.getHeight(); y++) {
+				if ((cell = wallsLayer.getCell(x, y)) != null) {
+					walls.add(new Wall(x,y));
+				}
+			}
+		}
 		
 		this.camera = new OrthographicCamera(Gdx.graphics.getWidth()/5, Gdx.graphics.getHeight()/5);
 		this.camera.position.set(((int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth")) / 2, ((int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight")) / 2, 0);
@@ -159,5 +179,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void update(List<AgentBody> bodies) {
 		this.bodies = bodies;
+	}
+	
+	public List<Wall> getWalls() {
+		return this.walls;
 	}
 }

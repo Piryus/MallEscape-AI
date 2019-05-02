@@ -8,6 +8,7 @@ import java.util.ArrayList
 import java.util.Random
 import re.legend.crowd_simulator.bodies.KidBody
 import re.legend.crowd_simulator.bodies.DogBody
+import re.legend.crowd_simulator.bodies.Wall
 
 /**
  * Capacity to manage the map
@@ -27,10 +28,16 @@ capacity MapManager {
 	  * Create a dog body
 	  */
 	 def createDog : DogBody
+	 
 	 /**
 	  * Return a list containing the bodies on the map
 	  */
 	 def getBodies() : List<AgentBody>
+	 
+	 /**
+	  * Set up the walls in the map object
+	  */
+	 def setupWalls(walls : List<Wall>)
 	 
 	 // TODO Test purpose
 	 def randomMoveJohn()
@@ -79,6 +86,10 @@ skill DefaultMapManager implements MapManager {
 				dir2 = -dir2
 			b.setPosition(b.getPosition.x + dir, b.getPosition.y + dir2)
 		}
+	}
+	
+	def setupWalls(walls : List<Wall>) {
+		map.setWalls(walls);
 	}
 	
 }
