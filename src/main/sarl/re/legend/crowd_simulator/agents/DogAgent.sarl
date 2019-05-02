@@ -35,7 +35,6 @@ agent DogtAgent {
 		info("Bark wouaf wouaf!")
 		var kid = KidAgent;
 		emit(new Hello, [elt|elt.UUID == kid]) // bark to the kid
-		killMe();
 	}
 
 	on Destroy {
