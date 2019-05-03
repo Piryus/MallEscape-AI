@@ -3,8 +3,10 @@ package re.legend.crowd_simulator.bodies;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 
+import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.objects.SimulationObject;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -15,11 +17,20 @@ public abstract class AgentBody extends SimulationObject {
 	
 	//Course p290 for agent movements
 	//orientation
-	Quaternion orientation;
+	private Quaternion orientation;
 	
 	//Manage the linear and angular speed 
-	Vector2 linearVelocity;
-	Quaternion angularVelocity;
+	private Vector2 linearVelocity;
+	private Quaternion angularVelocity;
+	
+	// Body's perception frustum
+	private EntityFrustum frustum;
+	
+	// Other bodies perceived by this body
+	private List<AgentBody> perceivedBodies;
+	
+	// Objects perceived by this body
+	private List<SimulationObject> perceivedObjects;
 	
 	//var perception;
 	//var influences;
@@ -91,11 +102,27 @@ public abstract class AgentBody extends SimulationObject {
 		
 		return new Quaternion(null, this.orientation.x+angularVelocity.x);
 	}
+	
 	/**
 	 * Rotate with the angular velocity
 	 */
 	public Quaternion rotateWithVelocity(Quaternion angularVelocity)
 	{
 		return addQuaternion(this.orientation, angularVelocity);
+	}
+	
+	/**
+	 * @return the perception frustum of the body
+	 */
+	public EntityFrustum getFrustum() {
+		return this.frustum;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setPerceptions(List<AgentBody> bodies, List<SimulationObject> objects) {
+		this.perceivedBodies = bodies;
+		this.perceivedObjects = objects;
 	}
 }

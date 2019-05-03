@@ -1,14 +1,17 @@
 package re.legend.crowd_simulator.agents
 
-import re.legend.crowd_simulator.bodies.AdultBody
-import re.legend.crowd_simulator.map.Map
-import java.util.List
-import re.legend.crowd_simulator.bodies.AgentBody
 import java.util.ArrayList
+import java.util.List
 import java.util.Random
-import re.legend.crowd_simulator.bodies.KidBody
+import re.legend.crowd_simulator.bodies.AdultBody
+import re.legend.crowd_simulator.bodies.AgentBody
 import re.legend.crowd_simulator.bodies.DogBody
+import re.legend.crowd_simulator.bodies.KidBody
+import re.legend.crowd_simulator.frustum.EntityFrustum
+import re.legend.crowd_simulator.map.Map
 import re.legend.crowd_simulator.objects.Wall
+import re.legend.crowd_simulator.objects.SimulationObject
+import re.legend.crowd_simulator.frustum.AdultFrustum
 
 /**
  * Capacity to manage the map
@@ -41,6 +44,11 @@ capacity MapManager {
 	 
 	 // TODO Test purpose
 	 def randomMoveJohn()
+	 
+	 /**
+	  * Compute the perceptions of each body on the map
+	  */
+	 def computePerceptions	 
 }
 
 skill DefaultMapManager implements MapManager {
@@ -90,6 +98,34 @@ skill DefaultMapManager implements MapManager {
 	
 	def setupWalls(walls : List<Wall>) {
 		map.setWalls(walls);
+	}
+	
+	def computePerceptions {
+		var frustum : EntityFrustum
+		var bodies = new ArrayList<AgentBody>
+		var objects = new ArrayList<SimulationObject>
+		for (body : map.bodies) {
+			frustum = body.getFrustum
+			if (frustum == null)
+				frustum = new AdultFrustum(10)
+			for (b : map.bodies) {
+				if( b.getPosition.x >= (body.getPosition.x - frustum.getSideLength) &&
+					b.getPosition.x <= (body.getPosition.x + frustum.getSideLength) &&
+					b.getPosition.y >= (body.getPosition.y - frustum.getSideLength) &&
+					b.getPosition.y <= (body.getPosition.y + frustum.getSideLength)) {
+						bodies.add(b);
+					}
+			}
+			for (w : map.getWalls) {
+				if (w.getPosition.x >= (body.getPosition.x - frustum.getSideLength) &&
+					w.getPosition.x <= (body.getPosition.x + frustum.getSideLength) &&
+					w.getPosition.y >= (body.getPosition.y - frustum.getSideLength) &&
+					w.getPosition.y <= (body.getPosition.y + frustum.getSideLength)) {
+					objects.add(w);
+				}
+			}
+			body.setPerceptions(bodies, objects)
+		}
 	}
 	
 }

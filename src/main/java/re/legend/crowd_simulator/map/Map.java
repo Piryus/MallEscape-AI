@@ -12,6 +12,7 @@ import java.util.UUID;
 import com.badlogic.gdx.math.Quaternion;
 
 import re.legend.crowd_simulator.bodies.AgentBody;
+import re.legend.crowd_simulator.objects.SimulationObject;
 import re.legend.crowd_simulator.objects.Wall;
 
 
@@ -76,6 +77,19 @@ public class Map {
 	
 	public void setBodyAt(AgentBody body, float x, float y) {
 		body.setPosition(x, y);
+	}
+	
+	public SimulationObject getObjectAt(float x, float y) {
+		for (Wall wall : walls) {
+			if (wall.getPosition().x == x && wall.getPosition().y == y) {
+				return wall;
+			}
+		}
+		return null;
+	}
+	
+	public List<Wall> getWalls() {
+		return this.walls;
 	}
 	 
 }
