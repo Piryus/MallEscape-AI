@@ -3,12 +3,7 @@ package re.legend.crowd_simulator.influence;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import com.badlogic.gdx.math.Vector2;
-
-import io.sarl.jaak.environment.external.body.TurtleBody;
-import io.sarl.jaak.environment.external.perception.EnvironmentalObject;
 import re.legend.crowd_simulator.bodies.AgentBody;
-import re.legend.crowd_simulator.objects.SimulationObject;
 
 
 public class MotionInfluence extends Influence
