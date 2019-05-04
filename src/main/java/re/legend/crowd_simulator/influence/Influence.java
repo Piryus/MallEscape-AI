@@ -1,6 +1,6 @@
 package re.legend.crowd_simulator.influence;
 
-import re.legend.crowd_simulator.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.bodies.AgentBody;
 
 
 

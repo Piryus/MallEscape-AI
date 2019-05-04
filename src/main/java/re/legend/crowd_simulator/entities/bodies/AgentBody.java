@@ -1,16 +1,16 @@
-package re.legend.crowd_simulator.bodies;
+package re.legend.crowd_simulator.entities.bodies;
 
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 
+import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
-import re.legend.crowd_simulator.objects.SimulationObject;
 
 import java.util.List;
 import java.util.UUID;
 
 
-public abstract class AgentBody extends SimulationObject {
+public abstract class AgentBody extends SimulationEntity {
 	
 	// Body agent's ID
 	private UUID agentId;
@@ -30,7 +30,7 @@ public abstract class AgentBody extends SimulationObject {
 	private List<AgentBody> perceivedBodies;
 	
 	// Objects perceived by this body
-	private List<SimulationObject> perceivedObjects;
+	private List<SimulationEntity> perceivedObjects;
 	
 	//var perception;
 	//var influences;
@@ -121,7 +121,7 @@ public abstract class AgentBody extends SimulationObject {
 	/**
 	 * 
 	 */
-	public void setPerceptions(List<AgentBody> bodies, List<SimulationObject> objects) {
+	public void setPerceptions(List<AgentBody> bodies, List<SimulationEntity> objects) {
 		this.perceivedBodies = bodies;
 		this.perceivedObjects = objects;
 	}

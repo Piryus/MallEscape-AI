@@ -1,4 +1,4 @@
-package re.legend.crowd_simulator.bodies;
+package re.legend.crowd_simulator.entities.bodies;
 
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;

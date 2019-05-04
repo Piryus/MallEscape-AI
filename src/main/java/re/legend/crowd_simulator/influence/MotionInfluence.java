@@ -3,7 +3,7 @@ package re.legend.crowd_simulator.influence;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import re.legend.crowd_simulator.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.bodies.AgentBody;
 
 
 public class MotionInfluence extends Influence

@@ -18,9 +18,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
-import re.legend.crowd_simulator.bodies.AdultBody;
-import re.legend.crowd_simulator.bodies.AgentBody;
-import re.legend.crowd_simulator.objects.Wall;
+import re.legend.crowd_simulator.entities.bodies.AdultBody;
+import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.Wall;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
 	OrthographicCamera camera;
@@ -65,7 +65,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		for (int x = 0; x < wallsLayer.getWidth(); x++) {
 			for (int y = 0; y < wallsLayer.getHeight(); y++) {
 				if ((cell = wallsLayer.getCell(x, y)) != null) {
-					walls.add(new Wall(x,y));
+					walls.add(new Wall(x * Wall.SIZE, y * Wall.SIZE));
 				}
 			}
 		}

@@ -11,18 +11,21 @@ import java.util.UUID;
 
 import com.badlogic.gdx.math.Quaternion;
 
-import re.legend.crowd_simulator.bodies.AgentBody;
-import re.legend.crowd_simulator.objects.SimulationObject;
-import re.legend.crowd_simulator.objects.Wall;
+import re.legend.crowd_simulator.entities.SimulationEntity;
+import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.Wall;
 
 
 public class Map {
 	
-	Random random;
+	private Random random;
 	// TreeMap containing the bodies on the map
-	TreeMap<UUID, AgentBody> bodies;
+	private TreeMap<UUID, AgentBody> bodies;
 	// List of walls on the map
-	List<Wall> walls;
+	private List<Wall> walls;
+	
+	// Size of each cell of the map
+	public static final int CELL_SIZE = 16; 
 	
 	/**
 	 * Default constructor
@@ -79,7 +82,7 @@ public class Map {
 		body.setPosition(x, y);
 	}
 	
-	public SimulationObject getObjectAt(float x, float y) {
+	public SimulationEntity getObjectAt(float x, float y) {
 		for (Wall wall : walls) {
 			if (wall.getPosition().x == x && wall.getPosition().y == y) {
 				return wall;
