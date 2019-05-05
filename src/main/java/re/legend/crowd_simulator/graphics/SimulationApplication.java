@@ -44,6 +44,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private Texture johnTex;
 	private SpriteBatch spriteBatch;
 	
+	// Map size
+	private int mapWidth;
+	private int mapHeight;
+	
 	@Override
 	public void create() {
 		// Attributes instantiation
@@ -58,6 +62,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.loader = new TmxMapLoader();
 		this.map = this.loader.load("map/map.tmx");
 		this.renderer = new OrthogonalTiledMapRenderer(map);
+		this.mapWidth = (int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth");
+		this.mapHeight = (int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight");
 		
 		// Loads walls
 		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) renderer.getMap().getLayers().get("Walls");
@@ -71,7 +77,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		}
 		
 		this.camera = new OrthographicCamera(Gdx.graphics.getWidth()/5, Gdx.graphics.getHeight()/5);
-		this.camera.position.set(((int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth")) / 2, ((int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight")) / 2, 0);
+		this.camera.position.set(this.mapWidth / 2, this.mapHeight / 2, 0);
 
 		Gdx.input.setInputProcessor(this);
 	}
@@ -101,7 +107,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch.begin();
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				this.spriteBatch.draw(this.johnTex, body.getPosition().x, body.getPosition().y);
+				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
 			}
 		}
 		this.spriteBatch.end();
