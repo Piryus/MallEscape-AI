@@ -1,0 +1,16 @@
+package re.legend.crowd_simulator.behaviors
+
+
+behavior AdultBehavior {
+	
+	uses AdultCapacities
+	def shop(status : AdultState) {
+		if (status == AdultState:: SHOP)
+		{
+			//Write moveForward skill first
+		}
+	}
+}
+
+
+

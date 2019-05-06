@@ -1,0 +1,30 @@
+package re.legend.crowd_simulator.behaviors
+
+import com.badlogic.gdx.math.Vector2
+
+skill AdultSkill implements AdultCapacities{
+	
+	def shop(position : Vector2) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+
+	def moveForward() {
+	}
+	
+	def moveBackward(){
+		
+	}
+	
+	def turnRight(){
+		
+	}
+	
+	def turnLeft(){
+		
+	}
+}
+
+
+
+
+
