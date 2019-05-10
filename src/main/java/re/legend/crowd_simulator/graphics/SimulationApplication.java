@@ -23,21 +23,20 @@ import re.legend.crowd_simulator.entities.bodies.AgentBody;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
-	OrthographicCamera camera;
-	Matrix4 matrix;
+	private OrthographicCamera camera;
 
 	private TiledMap map;
 	private TmxMapLoader loader;
 	private OrthogonalTiledMapRenderer renderer;
 	
 	// Cursor position on last click
-	Vector2 lastTouch;
+	private Vector2 lastTouch;
 	
 	// Agent bodies to render, updated by the update() method
-	List<AgentBody> bodies;
+	private List<AgentBody> bodies;
 	
 	// Walls list, not used in this class but retrieved 
-	List<Wall> walls;
+	private List<Wall> walls;
 	
 	// TODO Remove below once bodies rendering is implemented
 	// John's texture
@@ -52,7 +51,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public void create() {
 		// Attributes instantiation
 		this.bodies = new ArrayList<>();
-		this.matrix = new Matrix4();
 		this.lastTouch = new Vector2();
 		this.spriteBatch = new SpriteBatch();
 		this.johnTex = new Texture("john.png");
