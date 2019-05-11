@@ -1,72 +1,23 @@
 package re.legend.crowd_simulator.agents
 
-/** 
- * 
- */
- 
-
+import io.sarl.core.Behaviors
+import io.sarl.core.Destroy
 import io.sarl.core.Initialize
 import io.sarl.core.Logging
+import re.legend.crowd_simulator.behaviors.KidBehavior
 
-import io.sarl.core.Lifecycle
-import io.sarl.core.Destroy
-import io.sarl.core.AgentSpawned
-import io.sarl.core.AgentKilled
-import io.sarl.core.ContextJoined
-import io.sarl.core.ContextLeft
-import io.sarl.core.MemberJoined
-import io.sarl.core.MemberLeft
-
-/** 
- * @authors Emile & Andre
- * 
- */
- 
-
- agent KidAgent{
- 	uses Logging, Lifecycle
+agent KidAgent {
+ 	uses Behaviors, Logging
  	
  	on Initialize {
  		loggingName = "KidAgent"
- 	}
- 	
- 	on Hello {
- 		info("I am KidAgent and I have received your Hello AdultAgent")
- 		killMe()
+		registerBehavior(new KidBehavior(this))
  	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
 		info("The KidAgent was stopped.")
-	}
-
-	on AgentSpawned {
-		// A new agent has been spawned in our context.
-	}
-
-	on AgentKilled {
-		// A new agent has been killed in our context.
-	}
-
-	on ContextJoined {
-		// Event trigger when an agent of the level joins a shared context.
-		// Sent to a agent of the same level.
-	}
-
-	on ContextLeft {
-		// Event trigger when an agent of the level jleaves a shared context.
-		// Sent to a agent of the same level.
-	}
-
-	on MemberJoined {
-		// Event trigger when an agent joins one of our shared super-holons.
-		// Sent to all members of the considered super-holon.
-	}
-
-	on MemberLeft {
-		// Event trigger when an agent leaves one of our shared super-holons.
-		// Sent to all members of the considered super-holon.
 	}
 }
  	
