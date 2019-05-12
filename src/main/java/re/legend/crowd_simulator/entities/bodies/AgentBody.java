@@ -119,7 +119,9 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 	
 	/**
-	 * 
+	 * Sets which objects and which bodies are perceived by this body
+	 * @param bodies the other bodies perceived by the body
+	 * @param objects the objects perceived by the body
 	 */
 	public void setPerceptions(List<AgentBody> bodies, List<SimulationEntity> objects) {
 		this.perceivedBodies = bodies;

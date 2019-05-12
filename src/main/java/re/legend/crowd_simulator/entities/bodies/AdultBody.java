@@ -7,6 +7,7 @@ import java.util.UUID;
 public class AdultBody extends AgentBody {
 	
 	private Sex sex;
+	
 	public AdultBody(float x, float y, Quaternion o, UUID id) {
 		super(x, y, o, id);
 	}

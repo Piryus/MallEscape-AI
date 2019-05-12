@@ -7,10 +7,12 @@ import io.sarl.core.Logging
 import re.legend.crowd_simulator.behaviors.AdultBehavior
 
 agent AdultAgent {
+	
 	uses Behaviors, Logging
 
 	on Initialize {
-		loggingName = "adult"
+		loggingName = "AdultAgent"
+		// Register an adult behavior for better clarity, the events will be managed there
 		registerBehavior(new AdultBehavior(this))
 	}
 

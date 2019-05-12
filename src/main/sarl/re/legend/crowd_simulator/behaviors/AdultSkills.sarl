@@ -9,6 +9,7 @@ skill AdultSkill implements AdultCapacities{
 	}
 
 	def moveForward() {
+		
 	}
 	
 	def moveBackward(){

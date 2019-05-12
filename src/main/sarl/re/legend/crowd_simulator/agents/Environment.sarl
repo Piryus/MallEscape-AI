@@ -2,11 +2,11 @@ package re.legend.crowd_simulator.agents
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Destroy
 import io.sarl.core.Initialize
-import io.sarl.core.Logging
 import io.sarl.core.Lifecycle
-import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Logging
 import re.legend.crowd_simulator.graphics.SimulationApplication
 
 /** 
@@ -21,9 +21,8 @@ agent Environment {
 	
 	on Initialize {
 		loggingName = "Environment"
-		info("Environment initialized, creating the world...")
 		
-		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
+		info("Environment initialized, creating the world...")
 
 		// TODO TEST ADULT CREATION
 		setSkill(new DefaultMapManager)
@@ -31,6 +30,7 @@ agent Environment {
 		spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
 		
 		// Instantiates application
+		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 		this.application = new SimulationApplication()
 		new LwjglApplication(this.application, config);
 		// Wait 5 secs to let the application load the graphics
