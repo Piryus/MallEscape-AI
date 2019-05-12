@@ -1,17 +1,34 @@
 package re.legend.crowd_simulator.behaviors
 
+import java.util.Random
 
+/** 
+ * Defines an adult's behavior
+ */
 behavior AdultBehavior {
-	
-	uses AdultCapacities
-	
+	uses AdultCapacity
+
 	def shop(status : AdultState) {
-		if (status == AdultState:: SHOP)
-		{
-			//Write moveForward skill first
+		if (status == AdultState::SHOP) {
+			// Write moveForward skill first
 		}
 	}
+
+	/** 
+	 * Moves the agent randomly
+	 */
+	def moveRandomly {
+		var rand = new Random
+		var dir : int
+		if (rand.nextBoolean)
+			dir = 1
+		else
+			dir = -1
+		var dir2 : int
+		if (rand.nextBoolean)
+			dir2 = 1
+		else
+			dir2 = -1
+		move(dir, dir2)
+	}
 }
-
-
-

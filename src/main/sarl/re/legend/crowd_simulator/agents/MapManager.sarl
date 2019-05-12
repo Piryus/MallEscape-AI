@@ -12,6 +12,7 @@ import re.legend.crowd_simulator.map.Map
 import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
 import re.legend.crowd_simulator.entities.SimulationEntity
+import java.util.UUID
 
 /**
  * Capacity to manage the map
@@ -49,6 +50,11 @@ capacity MapManager {
 	  * Compute the perceptions of each body on the map
 	  */
 	 def computePerceptions	 
+	 
+	 /**
+	  * Returns the AgentBody with the given ID
+	  */
+	 def getBodyWithId(id : UUID) : AgentBody
 }
 
 skill DefaultMapManager implements MapManager {
@@ -127,6 +133,14 @@ skill DefaultMapManager implements MapManager {
 				}
 			}
 			body.setPerceptions(bodies, objects)
+		}
+	}
+	
+	def getBodyWithId(id : UUID) : AgentBody {
+		for (body : this.map.bodies) {
+			if (body.getUuid.equals(id)) {
+				return body
+			}
 		}
 	}
 	

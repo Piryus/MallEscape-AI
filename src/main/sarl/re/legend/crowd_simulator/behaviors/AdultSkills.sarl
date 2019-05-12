@@ -1,8 +1,12 @@
 package re.legend.crowd_simulator.behaviors
 
 import com.badlogic.gdx.math.Vector2
+import re.legend.crowd_simulator.entities.bodies.AdultBody
 
-skill AdultSkill implements AdultCapacities{
+skill AdultSkill implements AdultCapacity {
+	
+	// Body on which the actions will be applied
+	var body : AdultBody
 	
 	def shop(position : Vector2) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
@@ -23,6 +27,11 @@ skill AdultSkill implements AdultCapacities{
 	def turnLeft(){
 		
 	}
+	
+	def move(x : float, y : float) {
+		
+	}
+	
 }
 
 
