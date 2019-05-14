@@ -13,6 +13,7 @@ import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
 import re.legend.crowd_simulator.entities.SimulationEntity
 import java.util.UUID
+import io.sarl.core.DefaultContextInteractions
 
 /**
  * Capacity to manage the map
@@ -58,6 +59,7 @@ capacity MapManager {
 }
 
 skill DefaultMapManager implements MapManager {
+	uses DefaultContextInteractions
 	
 	var map : Map
 	
@@ -144,4 +146,23 @@ skill DefaultMapManager implements MapManager {
 		}
 	}
 	
+	/**
+	 * Notify the agents contained in the space 
+	 */
+	def notifyAgents {
+		// Manage time first, we could create a structure here or something like this holding the time infos
+		// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
+		// Create and send the perception event to every bodies
+		for (body : getBodies) {
+			// Create the perception
+			var perception = new Perception(body
+
+			/* body.perceivedObjects, new Percept(body), timePercept
+			 */
+			)
+			perception.source = defaultSpace.getAddress(ID)
+			// Emit the perception
+			emit(perception)[it.UUID == body.uuid]
+		}
+	}
 }

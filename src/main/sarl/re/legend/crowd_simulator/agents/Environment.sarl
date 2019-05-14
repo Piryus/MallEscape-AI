@@ -56,19 +56,6 @@ agent Environment {
 		// You should put all the resource releasing statements in this block of code.
 		info("The World was destroyed.")
 	}
-	
-	def notifyAgents {
-		// Manage time first, we coudl create a structure here or something like this holding the time infos
-//		val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
-		// Create and send the perception event to every bodies
-//		for (body : getBodies) {
-			// Create the perception
-//			var ^event = new PerceptionEvent(body.perceivedObjects, new Percept(body), timePercept)
-//			^event.source = defaultSpace.getAddress(ID)
-			// Emit the perception
-//			getDefaultSpace.emit(^event)[it.UUID == body.id]
-//		}
-	}
 
 }
 
