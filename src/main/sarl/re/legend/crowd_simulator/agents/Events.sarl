@@ -1,17 +1,23 @@
 package re.legend.crowd_simulator.agents
 
+import java.util.List
+import re.legend.crowd_simulator.entities.SimulationEntity
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 
 // TODO Test purpose, game loop
 event GameLoopTest
 
-/**
+/** 
  * Perception sent to agents containing the perceiving body
  */
 event Perception {
 	val body : AgentBody
-	
-	new (b: AgentBody) {
+	val perceivedObjects : List<SimulationEntity>
+	val perceivedBodies : List<AgentBody>
+
+	new (b : AgentBody) {
 		this.body = b;
+		this.perceivedBodies = b.perceivedBodies;
+		this.perceivedObjects = b.perceivedObjects;
 	}
 }
