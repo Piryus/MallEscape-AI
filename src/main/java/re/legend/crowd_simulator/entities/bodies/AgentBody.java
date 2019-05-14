@@ -127,4 +127,18 @@ public abstract class AgentBody extends SimulationEntity {
 		this.perceivedBodies = bodies;
 		this.perceivedObjects = objects;
 	}
+	
+	/**
+	 * @return the objects perceived by the body
+	 */
+	public List<SimulationEntity> getPerceivedObjects() {
+		return this.perceivedObjects;
+	}
+	
+	/**
+	 * @return the bodies perceived by this body
+	 */
+	public List<AgentBody> getPerceivedBodies() {
+		return this.perceivedBodies;
+	}
 }
