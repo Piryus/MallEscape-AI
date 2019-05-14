@@ -1,19 +1,20 @@
-package re.legend.crowd_simulator.agents
+package re.legend.crowd_simulator.agents.environment
 
+import io.sarl.core.DefaultContextInteractions
 import java.util.ArrayList
 import java.util.List
 import java.util.Random
+import java.util.UUID
+import re.legend.crowd_simulator.agents.events.Perception
+import re.legend.crowd_simulator.entities.SimulationEntity
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.entities.bodies.DogBody
 import re.legend.crowd_simulator.entities.bodies.KidBody
-import re.legend.crowd_simulator.frustum.EntityFrustum
-import re.legend.crowd_simulator.map.Map
 import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
-import re.legend.crowd_simulator.entities.SimulationEntity
-import java.util.UUID
-import io.sarl.core.DefaultContextInteractions
+import re.legend.crowd_simulator.frustum.EntityFrustum
+import re.legend.crowd_simulator.map.Map
 
 /**
  * Capacity to manage the map

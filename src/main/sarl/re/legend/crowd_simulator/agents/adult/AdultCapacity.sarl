@@ -1,17 +1,19 @@
-package re.legend.crowd_simulator.behaviors
+package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
 
 /**
  * Select a shop and go
  */
-capacity AgentCapacities {
+capacity AdultCapacity {
 	
 	/**
 	 * Go shopping
 	 * @param position, current position
 	 */
-	def moveForward()
+	def shop(position: Vector2)
+	
+	def move(x : float, y : float)
 }
 
 

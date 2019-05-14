@@ -1,4 +1,4 @@
-package re.legend.crowd_simulator.agents
+package re.legend.crowd_simulator.agents.events
 
 import java.util.List
 import re.legend.crowd_simulator.entities.SimulationEntity

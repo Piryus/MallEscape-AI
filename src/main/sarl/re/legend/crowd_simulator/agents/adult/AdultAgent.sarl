@@ -1,10 +1,9 @@
-package re.legend.crowd_simulator.agents
+package re.legend.crowd_simulator.agents.adult
 
 import io.sarl.core.Behaviors
 import io.sarl.core.Destroy
 import io.sarl.core.Initialize
 import io.sarl.core.Logging
-import re.legend.crowd_simulator.behaviors.AdultBehavior
 
 agent AdultAgent {
 	

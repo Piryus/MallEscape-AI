@@ -1,10 +1,10 @@
-package re.legend.crowd_simulator.agents
+package re.legend.crowd_simulator.agents.kid
 
 import io.sarl.core.Behaviors
 import io.sarl.core.Destroy
 import io.sarl.core.Initialize
 import io.sarl.core.Logging
-import re.legend.crowd_simulator.behaviors.KidBehavior
+import re.legend.crowd_simulator.agents.kid.KidBehavior
 
 agent KidAgent {
  	uses Behaviors, Logging

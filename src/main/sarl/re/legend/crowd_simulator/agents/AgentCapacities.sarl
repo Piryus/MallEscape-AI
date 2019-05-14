@@ -1,0 +1,18 @@
+package re.legend.crowd_simulator.agents
+
+
+/**
+ * Select a shop and go
+ */
+capacity AgentCapacities {
+	
+	/**
+	 * Go shopping
+	 * @param position, current position
+	 */
+	def moveForward()
+}
+
+
+
+

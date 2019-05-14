@@ -1,24 +1,19 @@
-package re.legend.crowd_simulator.agents
+package re.legend.crowd_simulator.agents.dog
 
-/** 
- * 
- */
 import io.sarl.core.AgentKilled
 import io.sarl.core.AgentSpawned
 import io.sarl.core.ContextJoined
 import io.sarl.core.ContextLeft
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Destroy
 import io.sarl.core.Initialize
+import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.MemberJoined
 import io.sarl.core.MemberLeft
-import io.sarl.core.Lifecycle
-import io.sarl.core.DefaultContextInteractions
+import re.legend.crowd_simulator.agents.kid.KidAgent
 
-/** 
- * @authors Emile & Andre
- * 
- */
+
 event Hello
 
 agent DogtAgent {

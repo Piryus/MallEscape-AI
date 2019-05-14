@@ -1,0 +1,7 @@
+package re.legend.crowd_simulator.agents.kid
+
+
+behavior KidBehavior {
+
+	
+}
