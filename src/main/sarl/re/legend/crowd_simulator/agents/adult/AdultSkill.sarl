@@ -7,32 +7,28 @@ import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 
 skill AdultSkill implements AdultCapacity {
-	
+
 	// Body on which the actions will be applied
 	var body : AdultBody
-	
+
 	def shop(position : Vector2) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
 	def moveForward() {
-		
 	}
-	
-	def moveBackward(){
-		
+
+	def moveBackward() {
 	}
-	
-	def turnRight(){
-		
+
+	def turnRight() {
 	}
-	
-	def turnLeft(){
-		
+
+	def turnLeft() {
 	}
-	
+
 	def move(x : float, y : float) {
-		this.body.setPosition(x, y);
+		this.body.setPosition(this.body.position.x + x, this.body.position.y + y);
 	}
 
 	def shop(status : AdultState) {
@@ -43,23 +39,22 @@ skill AdultSkill implements AdultCapacity {
 
 	def moveRandomly(body : AgentBody) {
 		this.body = body as AdultBody
+
 		var rand = new Random
+
 		var dir : int
 		if (rand.nextBoolean)
 			dir = 1
 		else
 			dir = -1
+
 		var dir2 : int
 		if (rand.nextBoolean)
 			dir2 = 1
 		else
 			dir2 = -1
+
 		move(dir, dir2)
 	}
-	
+
 }
-
-
-
-
-
