@@ -11,6 +11,7 @@ agent AdultAgent {
 
 	on Initialize {
 		loggingName = "AdultAgent"
+		setSkill(new AdultSkill)
 		// Register an adult behavior for better clarity, the events will be managed there
 		registerBehavior(new AdultBehavior(this))
 	}

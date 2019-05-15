@@ -1,6 +1,7 @@
 package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
+import re.legend.crowd_simulator.entities.bodies.AgentBody
 
 /**
  * Select a shop and go
@@ -14,6 +15,11 @@ capacity AdultCapacity {
 	def shop(position: Vector2)
 	
 	def move(x : float, y : float)
+
+	/** 
+	 * Moves the agent randomly
+	 */
+	def moveRandomly(body : AgentBody)
 }
 
 

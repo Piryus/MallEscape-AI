@@ -57,6 +57,11 @@ capacity MapManager {
 	  * Returns the AgentBody with the given ID
 	  */
 	 def getBodyWithId(id : UUID) : AgentBody
+
+	/**
+	 * Notify the agents contained in the space 
+	 */
+	def notifyAgents
 }
 
 skill DefaultMapManager implements MapManager {
@@ -147,9 +152,6 @@ skill DefaultMapManager implements MapManager {
 		}
 	}
 	
-	/**
-	 * Notify the agents contained in the space 
-	 */
 	def notifyAgents {
 		// Manage time first, we could create a structure here or something like this holding the time infos
 		// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)

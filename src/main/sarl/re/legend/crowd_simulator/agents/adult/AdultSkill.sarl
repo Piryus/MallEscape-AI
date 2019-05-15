@@ -1,0 +1,65 @@
+package re.legend.crowd_simulator.agents.adult
+
+import com.badlogic.gdx.math.Vector2
+import java.util.Random
+import re.legend.crowd_simulator.behaviors.AdultState
+import re.legend.crowd_simulator.entities.bodies.AdultBody
+import re.legend.crowd_simulator.entities.bodies.AgentBody
+
+skill AdultSkill implements AdultCapacity {
+	
+	// Body on which the actions will be applied
+	var body : AdultBody
+	
+	def shop(position : Vector2) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+
+	def moveForward() {
+		
+	}
+	
+	def moveBackward(){
+		
+	}
+	
+	def turnRight(){
+		
+	}
+	
+	def turnLeft(){
+		
+	}
+	
+	def move(x : float, y : float) {
+		this.body.setPosition(x, y);
+	}
+
+	def shop(status : AdultState) {
+		if (status == AdultState::SHOP) {
+			// Write moveForward skill first
+		}
+	}
+
+	def moveRandomly(body : AgentBody) {
+		this.body = body as AdultBody
+		var rand = new Random
+		var dir : int
+		if (rand.nextBoolean)
+			dir = 1
+		else
+			dir = -1
+		var dir2 : int
+		if (rand.nextBoolean)
+			dir2 = 1
+		else
+			dir2 = -1
+		move(dir, dir2)
+	}
+	
+}
+
+
+
+
+
