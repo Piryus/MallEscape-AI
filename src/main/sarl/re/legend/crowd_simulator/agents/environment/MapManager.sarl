@@ -115,14 +115,21 @@ skill DefaultMapManager implements MapManager {
 	}
 	
 	def computePerceptions {
+		
 		var frustum : EntityFrustum
 		var bodies = new ArrayList<AgentBody>
 		var objects = new ArrayList<SimulationEntity>
+		
+		// 
 		for (body : map.bodies) {
 			frustum = body.getFrustum
+			
 			if (frustum === null)
 				frustum = new AdultFrustum(10)
+				
 			var frustumSideLength = frustum.getSideLength * Map.CELL_SIZE
+			
+			// Computes the perceived bodies
 			for (b : map.bodies) {
 				if (b.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
 					b.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
@@ -132,6 +139,8 @@ skill DefaultMapManager implements MapManager {
 						bodies.add(b);
 					}
 			}
+			
+			// Computes the perceived walls
 			for (w : map.getWalls) {
 				if (w.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
 					w.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
@@ -140,6 +149,8 @@ skill DefaultMapManager implements MapManager {
 					objects.add(w);
 				}
 			}
+			
+			// Adds the computed perceptions to the body
 			body.setPerceptions(bodies, objects)
 		}
 	}
@@ -156,7 +167,7 @@ skill DefaultMapManager implements MapManager {
 		// Manage time first, we could create a structure here or something like this holding the time infos
 		// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
 		// Create and send the perception event to every bodies
-		for (body : getBodies) {
+		for (body : this.map.bodies) {
 			// Create the perception
 			var perception = new Perception(body
 
