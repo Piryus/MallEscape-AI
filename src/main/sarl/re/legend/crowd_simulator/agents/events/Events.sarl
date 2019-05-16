@@ -21,3 +21,37 @@ event Perception {
 		this.perceivedObjects = b.perceivedObjects;
 	}
 }
+
+/**
+ * Synchronize with the simulation time
+ */
+event SyncEvent {
+	val currentTime : float
+	val lastStepDuration : float
+	
+	new(ct : float, lsd : float)
+	{
+		this.currentTime = ct
+		this.lastStepDuration = lsd
+	}	
+}
+
+event AdultCreated extends SyncEvent
+{
+	var x : float
+	var y : float
+	// frustrum
+	new(ct : float, lsd : float) {
+		super(ct, lsd)
+		x = -1
+		y = -1
+	}
+}
+
+event SyncAdult extends SyncEvent 
+{
+	new (ct : float, lsd : float)
+	{
+		super(ct, lsd)
+	}
+}

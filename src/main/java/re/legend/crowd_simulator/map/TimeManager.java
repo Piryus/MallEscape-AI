@@ -2,10 +2,10 @@ package re.legend.crowd_simulator.map;
 
 
 public class TimeManager {
-	long startTime=0;
-	long currentTime;
-	long endTime;
-	long spentTime; //duree
+	float startTime=0;
+	float currentTime;
+	float endTime;
+	float spentTime; //duree
 	
     public void start()
     {
@@ -13,7 +13,7 @@ public class TimeManager {
     	startTime = currentTime;
     }
     
-    public long getCurrentTime()
+    public float getCurrentTime()
     {
     	return currentTime;
     }

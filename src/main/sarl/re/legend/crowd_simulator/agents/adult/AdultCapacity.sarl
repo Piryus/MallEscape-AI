@@ -15,7 +15,11 @@ capacity AdultCapacity {
 	def shop(position: Vector2)
 	
 	def move(x : float, y : float)
-
+	def moveForward(body : AgentBody)
+	def moveBackward(body : AgentBody)
+	def turnLeft(body : AgentBody)
+	def turnRight(body : AgentBody)
+	
 	/** 
 	 * Moves the agent randomly
 	 */

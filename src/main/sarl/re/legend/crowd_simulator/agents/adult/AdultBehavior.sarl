@@ -10,7 +10,7 @@ behavior AdultBehavior {
 
 	on Perception {
 		var body = occurrence.body
-		moveRandomly(body)
+		turnLeft(body)
 	}
 
 }

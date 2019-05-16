@@ -15,24 +15,29 @@ skill AdultSkill implements AdultCapacity {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
-	def moveForward()
+	def moveForward(body: AgentBody)
 	{
-		this.body.setPosition(0, this.body.position.y - 1);
-	}
-
-	def moveBackward()
-	{
+		this.body = body as AdultBody
 		this.body.setPosition(0, this.body.position.y + 1);
 	}
 
-	def turnRight()
+	def moveBackward(body : AgentBody)
 	{
+		this.body = body as AdultBody
+		this.body.setPosition(0, this.body.position.y - 1);
+	}
+
+	def turnLeft(body : AgentBody) {
+		this.body = body as AdultBody
+		this.body.setPosition(this.body.position.x - 1, 0);
+	}
+
+	def turnRight(body : AgentBody)
+	{
+		this.body = body as AdultBody
 		this.body.setPosition(this.body.position.x + 1, 0);
 	}
 
-	def turnLeft() {
-		this.body.setPosition(this.body.position.x - 1, 0);
-	}
 
 	def move(x : float, y : float) {
 		this.body.setPosition(this.body.position.x + x, this.body.position.y + y);
