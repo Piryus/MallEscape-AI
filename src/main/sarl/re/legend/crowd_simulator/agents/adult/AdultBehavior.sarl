@@ -9,8 +9,7 @@ behavior AdultBehavior {
 	uses AdultCapacity
 
 	on Perception {
-		var body = occurrence.body
-		turnLeft(body)
+		moveRandomly(occurrence.body)
 	}
 
 }

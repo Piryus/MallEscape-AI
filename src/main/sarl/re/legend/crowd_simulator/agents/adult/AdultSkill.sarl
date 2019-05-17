@@ -5,8 +5,10 @@ import java.util.Random
 import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import io.sarl.core.Logging
 
 skill AdultSkill implements AdultCapacity {
+	uses Logging
 
 	// Body on which the actions will be applied
 	var body : AdultBody
@@ -15,14 +17,12 @@ skill AdultSkill implements AdultCapacity {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
-	def moveForward(body: AgentBody)
-	{
+	def moveForward(body : AgentBody) {
 		this.body = body as AdultBody
 		this.body.setPosition(0, this.body.position.y + 1);
 	}
 
-	def moveBackward(body : AgentBody)
-	{
+	def moveBackward(body : AgentBody) {
 		this.body = body as AdultBody
 		this.body.setPosition(0, this.body.position.y - 1);
 	}
@@ -32,12 +32,10 @@ skill AdultSkill implements AdultCapacity {
 		this.body.setPosition(this.body.position.x - 1, 0);
 	}
 
-	def turnRight(body : AgentBody)
-	{
+	def turnRight(body : AgentBody) {
 		this.body = body as AdultBody
 		this.body.setPosition(this.body.position.x + 1, 0);
 	}
-
 
 	def move(x : float, y : float) {
 		this.body.setPosition(this.body.position.x + x, this.body.position.y + y);
@@ -50,21 +48,36 @@ skill AdultSkill implements AdultCapacity {
 	}
 
 	def moveRandomly(body : AgentBody) {
+		// Retrieves the given body as an Adult Body
 		this.body = body as AdultBody
 
 		var rand = new Random
-
 		var dir : int
-		if (rand.nextBoolean)
-			dir = 1
-		else
-			dir = -1
-
 		var dir2 : int
-		if (rand.nextBoolean)
-			dir2 = 1
-		else
-			dir2 = -1
+		var authorizedMove = true
+
+		do {
+			authorizedMove = true
+			
+			if (rand.nextBoolean)
+				dir = 1
+			else
+				dir = -1
+
+			if (rand.nextBoolean)
+				dir2 = 1
+			else
+				dir2 = -1
+
+			for (object : this.body.perceivedObjects) {
+				if (object.position.x >= this.body.position.x + dir - 16 &&
+					object.position.x <= this.body.position.x + dir + 16 &&
+					object.position.y >= 560 - this.body.position.y + dir2 - 16 &&
+					object.position.y <= 560 - this.body.position.y + dir2 + 16) {
+					authorizedMove = false;
+				}
+			}
+		} while (!authorizedMove);
 
 		move(dir, dir2)
 	}

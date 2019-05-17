@@ -46,8 +46,8 @@ agent Environment {
 
 	on GameLoopTest {
 		computePerceptions
+		Thread::sleep(30);
 		notifyAgents
-		//randomMoveJohn
 		Thread::sleep(30);
 		this.application.update(getBodies);
 		emit(new GameLoopTest);

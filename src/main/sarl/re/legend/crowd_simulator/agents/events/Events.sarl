@@ -36,8 +36,7 @@ event SyncEvent {
 	}	
 }
 
-event AdultCreated extends SyncEvent
-{
+event AdultCreated extends SyncEvent {
 	var x : float
 	var y : float
 	// frustrum
@@ -48,8 +47,7 @@ event AdultCreated extends SyncEvent
 	}
 }
 
-event SyncAdult extends SyncEvent 
-{
+event SyncAdult extends SyncEvent {
 	new (ct : float, lsd : float)
 	{
 		super(ct, lsd)

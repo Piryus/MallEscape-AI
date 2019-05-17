@@ -133,8 +133,8 @@ skill DefaultMapManager implements MapManager {
 			for (b : map.bodies) {
 				if (b.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
 					b.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-					b.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
-					b.getPosition.y <= (body.getPosition.y + frustumSideLength) &&
+					b.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
+					b.getPosition.y <= (560 - body.getPosition.y + frustumSideLength) &&
 					b != body) {
 						bodies.add(b);
 					}
@@ -144,8 +144,8 @@ skill DefaultMapManager implements MapManager {
 			for (w : map.getWalls) {
 				if (w.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
 					w.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-					w.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
-					w.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
+					w.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
+					w.getPosition.y <= (560 - body.getPosition.y + frustumSideLength)) {
 					objects.add(w);
 				}
 			}
