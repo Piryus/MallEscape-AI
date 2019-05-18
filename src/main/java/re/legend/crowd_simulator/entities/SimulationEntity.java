@@ -35,4 +35,21 @@ public abstract class SimulationEntity implements Perceivable {
 	public Vector2 getPosition() {
 		return this.position;
 	}
+	
+	/**
+	 * Move the body of the passed x and y value
+	 * @param x the x axis value the body should be moved of
+	 * @param y the y axis value the body should be moved of
+	 */
+	public void moveOf(float x, float y) {
+		this.setPosition(this.position.x + x, this.position.y + y);
+	}
+	
+	/**
+	 * Move the body of the passed linear motion vector values
+	 * @param linearMotionVec
+	 */
+	public void moveOf(Vector2 linearMotionVec) {
+		this.setPosition(this.position.x + linearMotionVec.x, this.position.y + linearMotionVec.y);
+	}
 }

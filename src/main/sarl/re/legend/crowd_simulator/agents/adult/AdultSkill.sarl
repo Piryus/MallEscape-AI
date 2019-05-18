@@ -5,10 +5,9 @@ import java.util.Random
 import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
-import io.sarl.core.Logging
+import re.legend.crowd_simulator.influence.MotionInfluence
 
 skill AdultSkill implements AdultCapacity {
-	uses Logging
 
 	// Body on which the actions will be applied
 	var body : AdultBody
@@ -17,28 +16,13 @@ skill AdultSkill implements AdultCapacity {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
-	def moveForward(body : AgentBody) {
-		this.body = body as AdultBody
-		this.body.setPosition(0, this.body.position.y + 1);
-	}
-
-	def moveBackward(body : AgentBody) {
-		this.body = body as AdultBody
-		this.body.setPosition(0, this.body.position.y - 1);
-	}
-
-	def turnLeft(body : AgentBody) {
-		this.body = body as AdultBody
-		this.body.setPosition(this.body.position.x - 1, 0);
-	}
-
-	def turnRight(body : AgentBody) {
-		this.body = body as AdultBody
-		this.body.setPosition(this.body.position.x + 1, 0);
-	}
-
 	def move(x : float, y : float) {
-		this.body.setPosition(this.body.position.x + x, this.body.position.y + y);
+		// Creates a vector with the linear motion
+		var linearMotion = new Vector2(x, y)
+		// Creates the motion influence from the created vector
+		var motionInfluence = new MotionInfluence(this.body, linearMotion)
+		// Adds the influence to the body
+		this.body.addInfluence(motionInfluence)
 	}
 
 	def shop(status : AdultState) {

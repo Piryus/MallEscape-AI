@@ -45,10 +45,11 @@ agent Environment {
 	}
 
 	on GameLoopTest {
+		Thread.sleep(50)
 		computePerceptions
-		Thread::sleep(30);
 		notifyAgents
-		Thread::sleep(30);
+		computeInfluences
+		applyInfluences
 		this.application.update(getBodies);
 		emit(new GameLoopTest);
 		

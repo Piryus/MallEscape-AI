@@ -14,6 +14,8 @@ import re.legend.crowd_simulator.entities.bodies.KidBody
 import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
 import re.legend.crowd_simulator.frustum.EntityFrustum
+import re.legend.crowd_simulator.influence.Influence
+import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
 
 /**
@@ -62,12 +64,26 @@ capacity MapManager {
 	 * Notify the agents contained in the space 
 	 */
 	def notifyAgents
+	
+	/**
+	 * Compute the bodies' influences and solve conflicts
+	 */
+	def computeInfluences
+	
+	/**
+	 * Apply the computed influences
+	 */
+	def applyInfluences
 }
 
 skill DefaultMapManager implements MapManager {
 	uses DefaultContextInteractions
 	
+	// The map of the simulation
 	var map : Map
+	
+	// Computed influences to apply
+	var influencesToApply : List<Influence>
 	
 	def install {
 		this.map = new Map()
@@ -179,4 +195,35 @@ skill DefaultMapManager implements MapManager {
 			emit(perception)[it.UUID == body.uuid]
 		}
 	}
+	
+	def computeInfluences {
+		// List of definitive influences that will be applied
+		var influences = new ArrayList<Influence>
+		// Loop through the list of bodies, computing each body's influences
+		for (body : this.map.bodies) {
+			// Compute motion influences
+			for (motionInfluence : body.motionInfluences) {
+				// TODO Solve conflicts
+				// Adds the influence to the list of definitive influences that will be applied
+				influences.add(motionInfluence);
+			}
+			// TODO Compute other influences of the body as well
+			// Clear the body's influences in order to prepare next step
+			body.clearInfluences();
+		}
+		// Sets the influences to apply
+		this.influencesToApply = new ArrayList<Influence>(influences)
+	}
+	
+	def applyInfluences {
+		// Apply each influence
+		for (influence : this.influencesToApply) {
+			// Motion influence
+			if (influence instanceof MotionInfluence) {
+				// Move the agent's body
+				influence.agentBody.moveOf(influence.linearMotion)
+			}
+		}
+	}
+	
 }

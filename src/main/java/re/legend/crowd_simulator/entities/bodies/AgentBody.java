@@ -1,5 +1,6 @@
 package re.legend.crowd_simulator.entities.bodies;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.influence.Influence;
+import re.legend.crowd_simulator.influence.MotionInfluence;
 
 
 public abstract class AgentBody extends SimulationEntity {
@@ -43,6 +45,7 @@ public abstract class AgentBody extends SimulationEntity {
 		super(x, y);
 		this.orientation = orientation;
 		this.agentId = id;
+		this.influences = new ArrayList<>();
 	}
 	
 	/**
@@ -140,5 +143,39 @@ public abstract class AgentBody extends SimulationEntity {
 	 */
 	public List<AgentBody> getPerceivedBodies() {
 		return this.perceivedBodies;
+	}
+	
+	/**
+	 * @param influence the influence to add to the body
+	 */
+	public void addInfluence(Influence influence) {
+		this.influences.add(influence);
+	}
+	
+	/**
+	 * @return all the influences of the body
+	 */
+	public List<Influence> getInfluences() {
+		return this.influences;
+	}
+	
+	/**
+	 * @return all the motion influences of the body
+	 */
+	public List<MotionInfluence> getMotionInfluences() {
+		List<MotionInfluence> motionInfluences = new ArrayList<>();
+		for (Influence influence : this.influences) {
+			if (influence instanceof MotionInfluence) {
+				motionInfluences.add((MotionInfluence) influence);
+			}
+		}
+		return motionInfluences;
+	}
+	
+	/**
+	 * Clear the list of influences
+	 */
+	public void clearInfluences() {
+		this.influences.clear();
 	}
 }
