@@ -4,22 +4,37 @@ import com.badlogic.gdx.math.Vector2;
 
 
 public abstract class SimulationEntity implements Perceivable {
-	// Object's position
+	
+	// Entity's position
 	private Vector2 position;
 	
-	public SimulationEntity(float x, float y) {
+	// Entity's orientation
+	private float orientation;
+	
+	/**
+	 * Constructor with position and orientation using two floats
+	 * @param x the entity's position on the x axis
+	 * @param y the entity's position on the y axis
+	 */
+	public SimulationEntity(float x, float y, float orientation) {
 		this.position = new Vector2();
 		this.position.x = x;
 		this.position.y = y;
-	}
-	
-	public SimulationEntity(Vector2 position) {
-		this.position = new Vector2();
-		this.position = position;
+		this.orientation = orientation;
 	}
 	
 	/**
-	 * Sets the object's position
+	 * Constructor with position using a vector and orientation
+	 * @param position the entity's position
+	 */
+	public SimulationEntity(Vector2 position, float orientation) {
+		this.position = new Vector2();
+		this.position = position;
+		this.orientation = orientation;
+	}
+	
+	/**
+	 * Sets the entity's position
 	 * @param x the position of the body on the x axis
 	 * @param y the position of the body on the y axis
 	 */
@@ -29,7 +44,7 @@ public abstract class SimulationEntity implements Perceivable {
 	}
 	
 	/**
-	 * Return object's position
+	 * Return entity's position
 	 * @return the position of the body
 	 */
 	public Vector2 getPosition() {

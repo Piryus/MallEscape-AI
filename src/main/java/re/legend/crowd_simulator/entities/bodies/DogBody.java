@@ -1,17 +1,17 @@
 package re.legend.crowd_simulator.entities.bodies;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector2;
 import java.util.UUID;
+
+import com.badlogic.gdx.math.Vector2;
 
 
 public class DogBody extends AgentBody {
 
-	public DogBody(float x, float y, Quaternion o, UUID id) {
+	public DogBody(float x, float y, float o, UUID id) {
 		super(x, y, o, id);
 	}
 	
-	public DogBody(Vector2 position, UUID id) {
-		super(position, id);
+	public DogBody(Vector2 position, float o, UUID id) {
+		super(position, o, id);
 	}
 	
 }
