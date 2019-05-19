@@ -9,6 +9,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -47,6 +48,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private int mapWidth;
 	private int mapHeight;
 	
+	//Timer
+	private long startTimer;
+	private long worldTimer;
+	private String yourTimer; //display a string
+	BitmapFont fontTimer;
+	
 	@Override
 	public void create() {
 		// Attributes instantiation
@@ -55,6 +62,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch = new SpriteBatch();
 		this.johnTex = new Texture("john.png");
 		this.walls = new ArrayList<>();
+		
+		//Timer creation and stamp the startTimer
+		this.worldTimer = 0;
+		this.startTimer = System.currentTimeMillis();
+		this.yourTimer = "Time: 0";
+		fontTimer = new BitmapFont();
 		
 		// Loads map
 		this.loader = new TmxMapLoader();
@@ -103,6 +116,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		
 		this.spriteBatch.setProjectionMatrix(camera.combined);
 		this.spriteBatch.begin();
+		
+		//Renders timer
+		fontTimer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		fontTimer.draw(spriteBatch, yourTimer, 25, 100);
+		
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
 				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
@@ -181,6 +199,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void update(List<AgentBody> bodies) {
 		this.bodies = bodies;
+		this.worldTimer = (System.currentTimeMillis()-this.startTimer)/1000; //Time in seconds
+		this.yourTimer = "Time: " + this.worldTimer;
+		//System.out.println(this.worldTimer);
 	}
 	
 	public List<Wall> getWalls() {
