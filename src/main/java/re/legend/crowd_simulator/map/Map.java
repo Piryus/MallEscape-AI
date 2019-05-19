@@ -52,7 +52,7 @@ public class Map {
 		// Body position
 		float x = this.random.nextInt(200);
 		float y = this.random.nextInt(200);
-		Quaternion o = new Quaternion();
+		float orientation = 0;
 		
 		// Agent's ID
 		UUID id = agentUUID;
@@ -61,8 +61,8 @@ public class Map {
 		}
 		
 		// Create body instance
-		Constructor cons = bodyType.getDeclaredConstructor(float.class, float.class, Quaternion.class, UUID.class);
-		Object body = cons.newInstance(x, y, o, id);
+		Constructor cons = bodyType.getDeclaredConstructor(float.class, float.class, float.class, UUID.class);
+		Object body = cons.newInstance(x, y, orientation, id);
 
 		// Put the body into the tree map
 		this.bodies.put(id, (AgentBody) body);

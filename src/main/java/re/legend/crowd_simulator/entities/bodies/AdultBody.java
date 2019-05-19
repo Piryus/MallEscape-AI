@@ -1,19 +1,19 @@
 package re.legend.crowd_simulator.entities.bodies;
 
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector2;
 import java.util.UUID;
+
+import com.badlogic.gdx.math.Vector2;
 
 public class AdultBody extends AgentBody {
 	
 	private Sex sex;
 	
-	public AdultBody(float x, float y, Quaternion o, UUID id) {
-		super(x, y, o, id);
+	public AdultBody(float x, float y, float orientation, UUID id) {
+		super(x, y, orientation, id);
 	}
 	
-	public AdultBody(Vector2 position, UUID id) {
-		super(position, id);
+	public AdultBody(Vector2 position, float orientation, UUID id) {
+		super(position, orientation, id);
 	}
 
 	public Sex getSex() {

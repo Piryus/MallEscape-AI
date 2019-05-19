@@ -7,11 +7,11 @@ public class Wall extends GameObject {
 	public static final int SIZE = 16;
 
 	public Wall(float x, float y) {
-		super(x, y);
+		super(x, y, 0);
 	}
 	
 	public Wall(Vector2 position) {
-		super(position);
+		super(position, 0);
 	}
 
 }
