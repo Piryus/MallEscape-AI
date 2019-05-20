@@ -3,7 +3,6 @@ package re.legend.crowd_simulator.agents.environment
 import io.sarl.core.DefaultContextInteractions
 import java.util.ArrayList
 import java.util.List
-import java.util.Random
 import java.util.UUID
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.entities.SimulationEntity
@@ -46,9 +45,6 @@ capacity MapManager {
 	  * Set up the walls in the map object
 	  */
 	 def setupWalls(walls : List<Wall>)
-	 
-	 // TODO Test purpose
-	 def randomMoveJohn()
 	 
 	 /**
 	  * Compute the perceptions of each body on the map
@@ -115,27 +111,6 @@ skill DefaultMapManager implements MapManager {
 		new ArrayList<AgentBody>(this.map.getBodies)
 	}
 	
-	def randomMoveJohn() {
-		var rand = new Random
-		var dir : int
-		if (rand.nextBoolean)
-			dir = 1
-		else
-			dir = -1
-		var dir2 : int
-		if (rand.nextBoolean)
-			dir2 = 1
-		else
-			dir2 = -1
-		for (b : this.map.getBodies) {
-			if (b.getPosition.x + dir > 560 || b.getPosition.x + dir < 0)
-				dir = - dir
-			if (b.getPosition.y + dir2 > 560 || b.getPosition.y + dir2 < 0)
-				dir2 = -dir2
-			b.setPosition(b.getPosition.x + dir, b.getPosition.y + dir2)
-		}
-	}
-	
 	def setupWalls(walls : List<Wall>) {
 		map.setWalls(walls);
 	}
@@ -195,7 +170,7 @@ skill DefaultMapManager implements MapManager {
 		// Create and send the perception event to every bodies
 		for (body : this.map.bodies) {
 			// Create the perception
-			var perception = new Perception(body
+			var perception = new Perception(body, getCurrentTime
 
 			/* body.perceivedObjects, new Percept(body), timePercept
 			 */
