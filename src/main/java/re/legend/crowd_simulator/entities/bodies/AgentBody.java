@@ -22,10 +22,10 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 	
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 10;
+	public static final float MAX_VELOCITY = 20;
 	
 	// Max force of the agent
-	public static final float MAX_FORCE = 5;
+	public static final float MAX_FORCE = 10;
 	
 	// Coordinates of the target to reach
 	private Vector2 target;

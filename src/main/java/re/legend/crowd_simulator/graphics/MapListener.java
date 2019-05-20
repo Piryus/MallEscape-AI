@@ -8,9 +8,9 @@ import re.legend.crowd_simulator.entities.bodies.AgentBody;
  *
  */
 public interface MapListener {
+	
 	/**
 	 * 
 	 */
-
-	void update(List<AgentBody> bodies, long time);
+	void update(List<AgentBody> bodies, float time);
 }

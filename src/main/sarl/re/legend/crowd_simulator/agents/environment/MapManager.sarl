@@ -74,7 +74,7 @@ capacity MapManager {
 	/**
 	 * Return the current time in seconds since the beginning of the simulation
 	 */
-	def getCurrentTime : long
+	def getCurrentTime : float
 }
 
 skill DefaultMapManager implements MapManager {
@@ -88,7 +88,6 @@ skill DefaultMapManager implements MapManager {
 	
 	// Timer
 	var startTimer : long;
-	var worldTimer : long;
 	
 	def install {
 		this.map = new Map()
@@ -211,8 +210,8 @@ skill DefaultMapManager implements MapManager {
 		}
 	}
 	
-	def getCurrentTime : long {
-		return this.worldTimer = (System.currentTimeMillis() - this.startTimer) / 1000; 	// Time in seconds	
+	def getCurrentTime : float {
+		return (System.currentTimeMillis - this.startTimer) / 1000f; 	// Time in seconds	
 	}
 	
 }

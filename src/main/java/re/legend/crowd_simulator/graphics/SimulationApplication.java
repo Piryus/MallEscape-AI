@@ -49,8 +49,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private int mapHeight;
 	
 	//Timer
-	private long startTimer;
-	private long worldTimer;
 	private String strTimer; //display a string
 	BitmapFont fontTimer;
 	
@@ -64,8 +62,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.walls = new ArrayList<>();
 		
 		//Timer creation and stamp the startTimer
-		this.worldTimer = 0;
-		this.startTimer = System.currentTimeMillis();
 		this.strTimer = "Time: 0";
 		fontTimer = new BitmapFont();
 		
@@ -201,7 +197,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	}
 
 	@Override
-	public void update(List<AgentBody> bodies, long time) {
+	public void update(List<AgentBody> bodies, float time) {
 		this.bodies = bodies;
 		this.strTimer = "Time: " + time;
 	}
