@@ -50,7 +50,7 @@ agent Environment {
 		notifyAgents
 		computeInfluences
 		applyInfluences
-		this.application.update(getBodies);
+		this.application.update(getBodies, getCurrentTime);
 		emit(new GameLoopTest);
 		
 	}

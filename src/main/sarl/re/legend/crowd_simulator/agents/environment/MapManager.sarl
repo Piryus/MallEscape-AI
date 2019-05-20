@@ -74,6 +74,11 @@ capacity MapManager {
 	 * Apply the computed influences
 	 */
 	def applyInfluences
+	
+	/**
+	 * Return the current time in seconds since the beginning of the simulation
+	 */
+	def getCurrentTime : long
 }
 
 skill DefaultMapManager implements MapManager {
@@ -85,8 +90,13 @@ skill DefaultMapManager implements MapManager {
 	// Computed influences to apply
 	var influencesToApply : List<Influence>
 	
+	// Timer
+	var startTimer : long;
+	var worldTimer : long;
+	
 	def install {
 		this.map = new Map()
+		this.startTimer = System.currentTimeMillis()
 	}
 	
 	def createAdult : AdultBody {
@@ -224,6 +234,10 @@ skill DefaultMapManager implements MapManager {
 				influence.agentBody.moveOf(influence.linearMotion)
 			}
 		}
+	}
+	
+	def getCurrentTime : long {
+		return this.worldTimer = (System.currentTimeMillis() - this.startTimer) / 1000; 	// Time in seconds	
 	}
 	
 }

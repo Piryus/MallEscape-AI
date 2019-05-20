@@ -11,5 +11,6 @@ public interface MapListener {
 	/**
 	 * 
 	 */
-	void update(List<AgentBody> bodies);
+
+	void update(List<AgentBody> bodies, long time);
 }

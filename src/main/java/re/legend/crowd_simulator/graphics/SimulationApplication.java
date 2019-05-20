@@ -201,11 +201,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	}
 
 	@Override
-	public void update(List<AgentBody> bodies) {
+	public void update(List<AgentBody> bodies, long time) {
 		this.bodies = bodies;
-		this.worldTimer = (System.currentTimeMillis()-this.startTimer)/1000; //Time in seconds
-		this.strTimer = "Time: " + this.worldTimer;
-		//System.out.println(this.worldTimer);
+		this.strTimer = "Time: " + time;
 	}
 	
 	public List<Wall> getWalls() {
