@@ -48,10 +48,8 @@ public class Map {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public <T extends AgentBody> T createBody(Class<T> bodyType, UUID agentUUID) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public <T extends AgentBody> T createBody(Class<T> bodyType, UUID agentUUID, float x, float y) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		// Body position
-		float x = this.random.nextInt(200);
-		float y = this.random.nextInt(200);
 		float orientation = 0;
 		
 		// Agent's ID

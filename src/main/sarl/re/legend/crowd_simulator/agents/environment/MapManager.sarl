@@ -16,6 +16,8 @@ import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
+import io.sarl.core.Lifecycle
+import re.legend.crowd_simulator.agents.adult.AdultAgent
 
 /**
  * Capacity to manage the map
@@ -23,18 +25,20 @@ import re.legend.crowd_simulator.map.Map
 capacity MapManager {
 	/**
 	 * Create an adult body
-	 */
-	 def createAdult() : AdultBody
+	 */	 
+	 def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody
 	 
 	 /**
 	  * Create a kid body
-	  */
-	 def createKid() : KidBody
+	 */
+
+	 def createKid(spawnPosX : float, spawnPosY : float) : KidBody
 	 
 	 /**
 	  * Create a dog body
-	  */
-	 def createDog : DogBody
+	 */
+	
+	 def createDog(spawnPosX : float, spawnPosY : float) : DogBody
 	 
 	 /**
 	  * Return a list containing the bodies on the map
@@ -75,10 +79,15 @@ capacity MapManager {
 	 * Return the current time in seconds since the beginning of the simulation
 	 */
 	def getCurrentTime : float
+	
+	/**
+	 * Spawn agents on the environment
+	 */
+	def spawnerMethod(number : int, frequency : float)
 }
 
 skill DefaultMapManager implements MapManager {
-	uses DefaultContextInteractions
+	uses DefaultContextInteractions, Lifecycle
 	
 	// The map of the simulation
 	var map : Map
@@ -89,21 +98,25 @@ skill DefaultMapManager implements MapManager {
 	// Timer
 	var startTimer : long;
 	
+	//Time management for spawner
+	var lastTimeSpawner : float
+	
+	
 	def install {
 		this.map = new Map()
 		this.startTimer = System.currentTimeMillis()
 	}
 	
-	def createAdult : AdultBody {
-		this.map.createBody(typeof(AdultBody), null);
+	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody {
+		this.map.createBody(typeof(AdultBody), null, spawnPosX, spawnPosY);
 	}
 
-	def createKid : KidBody {
-		this.map.createBody(typeof(KidBody), null);
+	def createKid(spawnPosX : float, spawnPosY : float) : KidBody {
+		this.map.createBody(typeof(KidBody), null, spawnPosX, spawnPosY);
 	}
 
-	def createDog : DogBody {
-		this.map.createBody(typeof(DogBody), null);
+	def createDog(spawnPosX : float, spawnPosY : float) : DogBody {
+		this.map.createBody(typeof(DogBody), null, spawnPosX, spawnPosY);
 	}
 
 	def getBodies() : List<AgentBody> {
@@ -212,6 +225,18 @@ skill DefaultMapManager implements MapManager {
 	
 	def getCurrentTime : float {
 		return (System.currentTimeMillis - this.startTimer) / 1000f; 	// Time in seconds	
+	}
+
+	def spawnerMethod(number : int, frequency : float) {
+		this.lastTimeSpawner = getCurrentTime
+		
+		if (getCurrentTime >= (lastTimeSpawner + frequency)) {
+			for (var i = 0; i < number; i++) {
+				var adultTest = createAdult(1, 1)
+				spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
+			}
+		}
+		lastTimeSpawner = getCurrentTime
 	}
 	
 }
