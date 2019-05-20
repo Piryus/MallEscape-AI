@@ -11,6 +11,13 @@ skill AdultSkill implements AdultCapacity {
 
 	// Body on which the actions will be applied
 	var body : AdultBody
+	
+	// Last step time
+	var lastStepTime : float
+	
+	def install() {
+		this.lastStepTime = 0
+	}
 
 	def shop(position : Vector2) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
@@ -82,5 +89,14 @@ skill AdultSkill implements AdultCapacity {
 
 		move(dirX, dirY)
 	}
-
+	
+	def moveRandom2(body : AgentBody, currentTime : float) {
+		// Retrieves the agent's body
+		this.body = body as AdultBody
+		
+		this.body.seek(new Vector2(new Random().nextInt(500), new Random().nextInt(500)))
+		this.body.linearVelocity.scl(currentTime - this.lastStepTime)
+		move(this.body.linearVelocity.x, this.body.linearVelocity.y)
+		this.lastStepTime = currentTime
+	}
 }

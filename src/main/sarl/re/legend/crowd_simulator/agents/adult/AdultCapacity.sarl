@@ -25,6 +25,11 @@ capacity AdultCapacity {
 	 * Moves the agent randomly
 	 */
 	def moveRandomly(body : AgentBody)
+	
+	/**
+	 * Moves the agent along a path
+	 */
+	def moveRandom2(body : AgentBody, currentTime : float)
 }
 
 

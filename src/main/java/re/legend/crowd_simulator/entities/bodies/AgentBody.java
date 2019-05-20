@@ -21,6 +21,21 @@ public abstract class AgentBody extends SimulationEntity {
 	private Vector2 linearVelocity;
 	private float angularVelocity;
 	
+	// Max velocity of the agent
+	public static final float MAX_VELOCITY = 10;
+	
+	// Max force of the agent
+	public static final float MAX_FORCE = 5;
+	
+	// Coordinates of the target to reach
+	private Vector2 target;
+	
+	// Desired velocity - force towards the target
+	private Vector2 desiredVelocity;
+	
+	// Steering force (desired velocity -  current velocity)
+	private Vector2 steering;
+	
 	// Body's perception frustum
 	private EntityFrustum frustum;
 	
@@ -40,6 +55,7 @@ public abstract class AgentBody extends SimulationEntity {
 		super(x, y, orientation);
 		this.agentId = id;
 		this.influences = new ArrayList<>();
+		this.linearVelocity = new Vector2();
 	}
 	
 	/**
@@ -48,6 +64,8 @@ public abstract class AgentBody extends SimulationEntity {
 	public AgentBody(Vector2 position, float orientation, UUID id) {
 		super(position, orientation);
 		this.agentId = id;
+		this.influences = new ArrayList<>();
+		this.linearVelocity = new Vector2();
 	}
 	
 	/**
@@ -137,5 +155,96 @@ public abstract class AgentBody extends SimulationEntity {
 	 */
 	public void clearInfluences() {
 		this.influences.clear();
+	}
+
+	/**
+	 * @return the linearVelocity
+	 */
+	public Vector2 getLinearVelocity() {
+		return this.linearVelocity;
+	}
+
+	/**
+	 * @param linearVelocity the linearVelocity to set
+	 */
+	public void setLinearVelocity(Vector2 linearVelocity) {
+		this.linearVelocity = linearVelocity;
+	}
+
+	/**
+	 * @return the angularVelocity
+	 */
+	public float getAngularVelocity() {
+		return this.angularVelocity;
+	}
+
+	/**
+	 * @param angularVelocity the angularVelocity to set
+	 */
+	public void setAngularVelocity(float angularVelocity) {
+		this.angularVelocity = angularVelocity;
+	}
+
+	/**
+	 * @return the target
+	 */
+	public Vector2 getTarget() {
+		return this.target;
+	}
+
+	/**
+	 * @param target the target to set
+	 */
+	public void setTarget(Vector2 target) {
+		this.target = target;
+	}
+
+	/**
+	 * @return the desiredVelocity
+	 */
+	public Vector2 getDesiredVelocity() {
+		return this.desiredVelocity;
+	}
+
+	/**
+	 * @param desiredVelocity the desiredVelocity to set
+	 */
+	public void setDesiredVelocity(Vector2 desiredVelocity) {
+		this.desiredVelocity = desiredVelocity;
+	}
+
+	/**
+	 * @return the steering
+	 */
+	public Vector2 getSteering() {
+		return this.steering;
+	}
+
+	/**
+	 * @param steering the steering to set
+	 */
+	public void setSteering(Vector2 steering) {
+		this.steering = steering;
+	}
+	
+	public void seek(Vector2 target) {
+		// Sets the new target
+		this.target = target;
+		
+		// Computes the desired velocity towards the target
+		this.desiredVelocity = new Vector2(this.target).sub(this.position).nor().scl(MAX_VELOCITY);
+		
+		// Computes the steering force
+		this.steering = new Vector2(this.desiredVelocity).sub(this.linearVelocity);
+		float i = MAX_FORCE / this.steering.len();
+		i = i < 1.0f ? 1.0f : i;
+		this.steering.scl(i);
+		// TODO Make the force depends on the mass (sex dependent ?)
+		
+		// Computes the new velocity of the agent
+		this.linearVelocity.add(this.steering);
+		i = MAX_VELOCITY / this.linearVelocity.len();
+		i = i < 1.0f ? 1.0f : i;
+		this.linearVelocity.scl(i);
 	}
 }

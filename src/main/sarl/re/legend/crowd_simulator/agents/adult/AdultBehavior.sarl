@@ -9,7 +9,8 @@ behavior AdultBehavior {
 	uses AdultCapacity
 
 	on Perception {
-		moveRandomly(occurrence.body)
+		//moveRandomly(occurrence.body)
+		moveRandom2(occurrence.body, occurrence.currentTime)
 	}
 
 }

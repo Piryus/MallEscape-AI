@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class SimulationEntity implements Perceivable {
 	
 	// Entity's position
-	private Vector2 position;
+	protected Vector2 position;
 	
 	// Entity's orientation
 	private float orientation;

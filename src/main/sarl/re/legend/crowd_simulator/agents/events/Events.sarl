@@ -14,11 +14,13 @@ event Perception {
 	val body : AgentBody
 	val perceivedObjects : List<SimulationEntity>
 	val perceivedBodies : List<AgentBody>
+	val currentTime : float
 
-	new (b : AgentBody) {
+	new (b : AgentBody, time : float) {
 		this.body = b;
 		this.perceivedBodies = b.perceivedBodies;
 		this.perceivedObjects = b.perceivedObjects;
+		this.currentTime = time
 	}
 }
 
