@@ -51,7 +51,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	//Timer
 	private long startTimer;
 	private long worldTimer;
-	private String yourTimer; //display a string
+	private String strTimer; //display a string
 	BitmapFont fontTimer;
 	
 	@Override
@@ -66,7 +66,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		//Timer creation and stamp the startTimer
 		this.worldTimer = 0;
 		this.startTimer = System.currentTimeMillis();
-		this.yourTimer = "Time: 0";
+		this.strTimer = "Time: 0";
 		fontTimer = new BitmapFont();
 		
 		// Loads map
@@ -117,16 +117,20 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch.setProjectionMatrix(camera.combined);
 		this.spriteBatch.begin();
 		
-		//Renders timer
-		fontTimer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-		fontTimer.draw(spriteBatch, yourTimer, 25, 100);
-		
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
 				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
 			}
 		}
 		this.spriteBatch.end();
+		
+
+		//Renders timer, create a new fixed spriteBatch
+		SpriteBatch test = new SpriteBatch();
+		test.begin();
+		fontTimer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		fontTimer.draw(test, strTimer, Gdx.graphics.getWidth()/2 , 50);
+		test.end();
 	}
 
 	@Override
@@ -200,7 +204,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public void update(List<AgentBody> bodies) {
 		this.bodies = bodies;
 		this.worldTimer = (System.currentTimeMillis()-this.startTimer)/1000; //Time in seconds
-		this.yourTimer = "Time: " + this.worldTimer;
+		this.strTimer = "Time: " + this.worldTimer;
 		//System.out.println(this.worldTimer);
 	}
 	
