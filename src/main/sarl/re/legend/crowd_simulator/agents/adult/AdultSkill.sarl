@@ -15,8 +15,12 @@ skill AdultSkill implements AdultCapacity {
 	// Last step time
 	var lastStepTime : long
 	
+	// Time at which the agent has acquired its target, used for random moves
+	var targetAcquiredTime : long
+	
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
+		this.targetAcquiredTime = System.currentTimeMillis - 20000
 	}
 
 	def shop(position : Vector2) {
@@ -94,7 +98,16 @@ skill AdultSkill implements AdultCapacity {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
 		
-		this.body.seek(new Vector2(new Random().nextInt(500), new Random().nextInt(500)))
+		if (this.body.target == null) {
+			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500));
+		}
+		
+		if (System.currentTimeMillis > targetAcquiredTime + 20000) {
+			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500));
+			targetAcquiredTime = System.currentTimeMillis
+		}
+		
+		this.body.seek(this.body.target);
 		this.body.linearVelocity.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(this.body.linearVelocity.x, this.body.linearVelocity.y)
 		this.lastStepTime = System.currentTimeMillis

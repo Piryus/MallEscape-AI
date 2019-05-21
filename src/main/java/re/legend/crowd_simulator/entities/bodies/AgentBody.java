@@ -229,11 +229,22 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	public void seek(Vector2 target) {
+		float slowingDistance = 100f;
+		
 		// Sets the new target
 		this.target = target;
 
 		// Computes the desired velocity towards the target
-		this.desiredVelocity = new Vector2(this.target).sub(this.position).nor().scl(MAX_VELOCITY);
+		this.desiredVelocity = new Vector2(this.target).sub(this.position);
+		// Gets the distance to the target
+		float distance = this.desiredVelocity.len();
+		// Normalizes and scale to max velocity the desired velocity
+		this.desiredVelocity.nor().scl(MAX_VELOCITY);
+		
+		// On arrival, slows down the agent
+		if (distance < slowingDistance) {
+			this.desiredVelocity.scl(distance / slowingDistance);
+		}
 
 		// Computes the steering force
 		this.steering = new Vector2(this.desiredVelocity).sub(this.linearVelocity);
