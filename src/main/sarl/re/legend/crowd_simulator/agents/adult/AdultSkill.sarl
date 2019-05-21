@@ -90,7 +90,7 @@ skill AdultSkill implements AdultCapacity {
 		move(dirX, dirY)
 	}
 	
-	def moveRandom2(body : AgentBody, currentTime : float) {
+	def moveRandom2(body : AgentBody) {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
 		

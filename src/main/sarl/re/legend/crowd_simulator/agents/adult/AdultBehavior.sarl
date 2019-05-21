@@ -10,7 +10,7 @@ behavior AdultBehavior {
 
 	on Perception {
 		//moveRandomly(occurrence.body)
-		moveRandom2(occurrence.body, occurrence.currentTime)
+		moveRandom2(occurrence.body)
 	}
 
 }
