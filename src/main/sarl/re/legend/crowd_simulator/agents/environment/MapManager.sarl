@@ -105,6 +105,7 @@ skill DefaultMapManager implements MapManager {
 	def install {
 		this.map = new Map()
 		this.startTimer = System.currentTimeMillis()
+		this.lastTimeSpawner = getCurrentTime
 	}
 	
 	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody {
@@ -228,15 +229,13 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def spawnerMethod(number : int, frequency : float) {
-		this.lastTimeSpawner = getCurrentTime
-		
 		if (getCurrentTime >= (lastTimeSpawner + frequency)) {
 			for (var i = 0; i < number; i++) {
 				var adultTest = createAdult(1, 1)
 				spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
 			}
+			lastTimeSpawner = getCurrentTime
 		}
-		lastTimeSpawner = getCurrentTime
+		
 	}
-	
 }

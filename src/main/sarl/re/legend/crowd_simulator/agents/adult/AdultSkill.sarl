@@ -13,10 +13,10 @@ skill AdultSkill implements AdultCapacity {
 	var body : AdultBody
 	
 	// Last step time
-	var lastStepTime : float
+	var lastStepTime : long
 	
 	def install() {
-		this.lastStepTime = 0
+		this.lastStepTime = System.currentTimeMillis
 	}
 
 	def shop(position : Vector2) {
@@ -95,8 +95,8 @@ skill AdultSkill implements AdultCapacity {
 		this.body = body as AdultBody
 		
 		this.body.seek(new Vector2(new Random().nextInt(500), new Random().nextInt(500)))
-		this.body.linearVelocity.scl(currentTime - this.lastStepTime)
+		this.body.linearVelocity.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(this.body.linearVelocity.x, this.body.linearVelocity.y)
-		this.lastStepTime = currentTime
+		this.lastStepTime = System.currentTimeMillis
 	}
 }

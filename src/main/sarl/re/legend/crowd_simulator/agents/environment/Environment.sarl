@@ -47,12 +47,14 @@ agent Environment {
 
 	on GameLoopTest {
 		Thread.sleep(50)
-		spawnerMethod(3, 0)
+		spawnerMethod(2, 5.0f)
 		computePerceptions
 		notifyAgents
 		computeInfluences
 		applyInfluences
+		
 		this.application.update(getBodies, getCurrentTime);
+		
 		emit(new GameLoopTest);
 		
 	}
