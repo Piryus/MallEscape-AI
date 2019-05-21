@@ -10,6 +10,10 @@ import io.sarl.core.Logging
 import re.legend.crowd_simulator.agents.adult.AdultAgent
 import re.legend.crowd_simulator.agents.events.GameLoopTest
 import re.legend.crowd_simulator.graphics.SimulationApplication
+import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
+import re.legend.crowd_simulator.entities.bodies.AgentBody
+import com.badlogic.gdx.math.Vector2
+import re.legend.crowd_simulator.entities.bodies.AdultBody
 
 /** 
  * This agent is the environment, use Observer Pattern and link with LibGDX
@@ -26,6 +30,8 @@ agent Environment {
 		
 		info("Environment initialized, creating the world...")
 		
+		
+		System.out.println("This is what :" + typeof(AgentBody))
 		// Instantiates application
 		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 		this.application = new SimulationApplication()
@@ -45,8 +51,8 @@ agent Environment {
 
 	on GameLoopTest {
 		Thread.sleep(50)
-		spawnerMethod(2, 5.0f)
-		computePerceptions
+		//spawnerMethod(2, 5.0f)
+		SpawnerAgent.spawn(AdultBody, 2, 2, new Vector2(10,10),map)
 		notifyAgents
 		computeInfluences
 		applyInfluences

@@ -83,7 +83,12 @@ capacity MapManager {
 	/**
 	 * Spawn agents on the environment
 	 */
-	def spawnerMethod(number : int, frequency : float)
+	//def spawnerMethod(number : int, frequency : float)
+	
+	/**
+	 * Get the map
+	 */
+	 def getMap : Map
 }
 
 skill DefaultMapManager implements MapManager {
@@ -227,7 +232,12 @@ skill DefaultMapManager implements MapManager {
 	def getCurrentTime : float {
 		return (System.currentTimeMillis - this.startTimer) / 1000f; 	// Time in seconds	
 	}
+	
+	def getMap : Map {
+		return this.map;
+	}
 
+/* Move method to AgentSpawner
 	def spawnerMethod(number : int, frequency : float) {
 		if (getCurrentTime >= (lastTimeSpawner + frequency)) {
 			for (var i = 0; i < number; i++) {
@@ -238,4 +248,6 @@ skill DefaultMapManager implements MapManager {
 		}
 		
 	}
+	* 
+	*/
 }
