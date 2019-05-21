@@ -1,6 +1,7 @@
 package re.legend.crowd_simulator.agents.environment
 
 import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Lifecycle
 import java.util.ArrayList
 import java.util.List
 import java.util.UUID
@@ -16,103 +17,94 @@ import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
-import io.sarl.core.Lifecycle
-import re.legend.crowd_simulator.agents.adult.AdultAgent
 
-/**
+/** 
  * Capacity to manage the map
  */
 capacity MapManager {
-	/**
-	 * Create an adult body
-	 */	 
-	 def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody
-	 
-	 /**
-	  * Create a kid body
-	 */
 
-	 def createKid(spawnPosX : float, spawnPosY : float) : KidBody
-	 
-	 /**
-	  * Create a dog body
-	 */
-	
-	 def createDog(spawnPosX : float, spawnPosY : float) : DogBody
-	 
-	 /**
-	  * Return a list containing the bodies on the map
-	  */
-	 def getBodies() : List<AgentBody>
-	 
-	 /**
-	  * Set up the walls in the map object
-	  */
-	 def setupWalls(walls : List<Wall>)
-	 
-	 /**
-	  * Compute the perceptions of each body on the map
-	  */
-	 def computePerceptions	 
-	 
-	 /**
-	  * Returns the AgentBody with the given ID
-	  */
-	 def getBodyWithId(id : UUID) : AgentBody
+		/** 
+		 * Create an adult body
+		 */
+	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody
 
-	/**
+	/** 
+	 * Create a kid body
+	 */
+	def createKid(spawnPosX : float, spawnPosY : float) : KidBody
+
+	/** 
+	 * Create a dog body
+	 */
+	def createDog(spawnPosX : float, spawnPosY : float) : DogBody
+
+	/** 
+	 * Return a list containing the bodies on the map
+	 */
+	def getBodies() : List<AgentBody>
+
+	/** 
+	 * Set up the walls in the map object
+	 */
+	def setupWalls(walls : List<Wall>)
+
+	/** 
+	 * Compute the perceptions of each body on the map
+	 */
+	def computePerceptions
+
+	/** 
+	 * Returns the AgentBody with the given ID
+	 */
+	def getBodyWithId(id : UUID) : AgentBody
+
+	/** 
 	 * Notify the agents contained in the space 
 	 */
 	def notifyAgents
-	
-	/**
+
+	/** 
 	 * Compute the bodies' influences and solve conflicts
 	 */
 	def computeInfluences
-	
-	/**
+
+	/** 
 	 * Apply the computed influences
 	 */
 	def applyInfluences
-	
-	/**
+
+	/** 
 	 * Return the current time in seconds since the beginning of the simulation
 	 */
 	def getCurrentTime : float
-	
-	/**
-	 * Spawn agents on the environment
-	 */
-	//def spawnerMethod(number : int, frequency : float)
-	
-	/**
+
+	/** 
 	 * Get the map
 	 */
-	 def getMap : Map
+	def getMap : Map
 }
 
 skill DefaultMapManager implements MapManager {
 	uses DefaultContextInteractions, Lifecycle
-	
+
 	// The map of the simulation
 	var map : Map
-	
+
 	// Computed influences to apply
 	var influencesToApply : List<Influence>
-	
+
 	// Timer
 	var startTimer : long;
-	
-	//Time management for spawner
+
+	// Time management for spawner
 	var lastTimeSpawner : float
-	
-	
+
 	def install {
 		this.map = new Map()
 		this.startTimer = System.currentTimeMillis()
 		this.lastTimeSpawner = getCurrentTime
 	}
-	
+
 	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody {
 		this.map.createBody(typeof(AdultBody), null, spawnPosX, spawnPosY);
 	}
@@ -128,52 +120,52 @@ skill DefaultMapManager implements MapManager {
 	def getBodies() : List<AgentBody> {
 		new ArrayList<AgentBody>(this.map.getBodies)
 	}
-	
+
 	def setupWalls(walls : List<Wall>) {
 		map.setWalls(walls);
 	}
-	
+
 	def computePerceptions {
-		
-		var frustum : EntityFrustum
-		var bodies = new ArrayList<AgentBody>
-		var objects = new ArrayList<SimulationEntity>
-		
-		// 
-		for (body : map.bodies) {
-			frustum = body.getFrustum
-			
-			if (frustum === null)
-				frustum = new AdultFrustum(10)
-				
-			var frustumSideLength = frustum.getSideLength * Map.CELL_SIZE
-			
-			// Computes the perceived bodies
-			for (b : map.bodies) {
-				if (b.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
-					b.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-					b.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
-					b.getPosition.y <= (560 - body.getPosition.y + frustumSideLength) &&
-					b != body) {
+		synchronized (this.map) {
+			var frustum : EntityFrustum
+			var bodies = new ArrayList<AgentBody>
+			var objects = new ArrayList<SimulationEntity>
+
+			//
+			for (body : map.bodies) {
+				frustum = body.getFrustum
+
+				if (frustum === null)
+					frustum = new AdultFrustum(10)
+
+				var frustumSideLength = frustum.getSideLength * Map.CELL_SIZE
+
+				// Computes the perceived bodies
+				for (b : map.bodies) {
+					if (b.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
+						b.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
+						b.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
+						b.getPosition.y <= (560 - body.getPosition.y + frustumSideLength) && b != body) {
 						bodies.add(b);
 					}
-			}
-			
-			// Computes the perceived walls
-			for (w : map.getWalls) {
-				if (w.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
-					w.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-					w.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
-					w.getPosition.y <= (560 - body.getPosition.y + frustumSideLength)) {
-					objects.add(w);
 				}
+
+				// Computes the perceived walls
+				for (w : map.getWalls) {
+					if (w.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
+						w.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
+						w.getPosition.y >= (560 - body.getPosition.y - frustumSideLength) &&
+						w.getPosition.y <= (560 - body.getPosition.y + frustumSideLength)) {
+						objects.add(w);
+					}
+				}
+
+				// Adds the computed perceptions to the body
+				body.setPerceptions(bodies, objects)
 			}
-			
-			// Adds the computed perceptions to the body
-			body.setPerceptions(bodies, objects)
 		}
 	}
-	
+
 	def getBodyWithId(id : UUID) : AgentBody {
 		for (body : this.map.bodies) {
 			if (body.getUuid.equals(id)) {
@@ -181,24 +173,28 @@ skill DefaultMapManager implements MapManager {
 			}
 		}
 	}
-	
-	def notifyAgents {
-		// Manage time first, we could create a structure here or something like this holding the time infos
-		// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
-		// Create and send the perception event to every bodies
-		for (body : this.map.bodies) {
-			// Create the perception
-			var perception = new Perception(body, getCurrentTime
 
-			/* body.perceivedObjects, new Percept(body), timePercept
-			 */
-			)
-			perception.source = defaultSpace.getAddress(ID)
-			// Emit the perception
-			emit(perception)[it.UUID == body.uuid]
+	def notifyAgents {
+		synchronized (this.map) {
+			// Manage time first, we could create a structure here or something like this holding the time infos
+			// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
+			// Create and send the perception event to every bodies
+			for (body : this.map.bodies) {
+				// Create the perception
+				var perception = new Perception(
+					body,
+					getCurrentTime
+
+				/* body.perceivedObjects, new Percept(body), timePercept
+				 */
+				)
+				perception.source = defaultSpace.getAddress(ID)
+				// Emit the perception
+				emit(perception)[it.UUID == body.uuid]
+			}
 		}
 	}
-	
+
 	def computeInfluences {
 		// List of definitive influences that will be applied
 		var influences = new ArrayList<Influence>
@@ -217,7 +213,7 @@ skill DefaultMapManager implements MapManager {
 		// Sets the influences to apply
 		this.influencesToApply = new ArrayList<Influence>(influences)
 	}
-	
+
 	def applyInfluences {
 		// Apply each influence
 		for (influence : this.influencesToApply) {
@@ -228,26 +224,12 @@ skill DefaultMapManager implements MapManager {
 			}
 		}
 	}
-	
+
 	def getCurrentTime : float {
-		return (System.currentTimeMillis - this.startTimer) / 1000f; 	// Time in seconds	
+		return (System.currentTimeMillis - this.startTimer) / 1000f; 	// Time in seconds
 	}
-	
+
 	def getMap : Map {
 		return this.map;
 	}
-
-/* Move method to AgentSpawner
-	def spawnerMethod(number : int, frequency : float) {
-		if (getCurrentTime >= (lastTimeSpawner + frequency)) {
-			for (var i = 0; i < number; i++) {
-				var adultTest = createAdult(1, 1)
-				spawnInContextWithID(typeof(AdultAgent), adultTest.getUuid, defaultContext)
-			}
-			lastTimeSpawner = getCurrentTime
-		}
-		
-	}
-	* 
-	*/
 }

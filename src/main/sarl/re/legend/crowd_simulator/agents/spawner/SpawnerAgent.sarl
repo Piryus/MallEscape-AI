@@ -1,73 +1,56 @@
-/** 
- * 
- */
 package re.legend.crowd_simulator.agents.spawner
 
-import io.sarl.core.AgentKilled
-import io.sarl.core.AgentSpawned
-import io.sarl.core.ContextJoined
-import io.sarl.core.ContextLeft
-import io.sarl.core.Destroy
-import io.sarl.core.Initialize
-import io.sarl.core.Logging
-import io.sarl.core.MemberJoined
-import io.sarl.core.MemberLeft
-import io.sarl.core.Lifecycle
-import re.legend.crowd_simulator.agents.environment.MapManager
-import re.legend.crowd_simulator.agents.adult.AdultAgent
-import io.sarl.core.DefaultContextInteractions
-import re.legend.crowd_simulator.agents.events.GameLoopTest
 import com.badlogic.gdx.math.Vector2
-import re.legend.crowd_simulator.map.Map
-import re.legend.crowd_simulator.entities.bodies.AgentBody
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Initialize
+import io.sarl.core.Lifecycle
+import io.sarl.core.Schedules
+import re.legend.crowd_simulator.agents.adult.AdultAgent
 import re.legend.crowd_simulator.entities.bodies.AdultBody
+import re.legend.crowd_simulator.map.Map
 
-/** 
- * @author Andre
- * 
- */
 agent SpawnerAgent {
-	uses Lifecycle, DefaultContextInteractions
-	
-	
-	//Agent to pop
-	var agentHumanoid : AgentBody
+	uses Lifecycle, DefaultContextInteractions, Schedules
 
-	// Time management for spawner
-	var lastTimeSpawner : long
-	var frequency : long
-	
-	//
+	// Type of agent to spawn
+	var agentType : String
+
+	// Frequency at which the agents have to spawn (in milliseconds)
+	var frequency : int
+
+	// The map on which the agents will be spawned
 	var map : Map
-	var numberOfAgent : int
+
+	// The total number of agents to spawn
+	var numberOfAgents : int
+
+	// Number of agents spawned so far
+	var numberOfAgentsSpawned : int
+
+	// The agents' spawn position
 	var position : Vector2
 
-
 	on Initialize {
-		this.lastTimeSpawner = System.currentTimeMillis
-		
-		
-		this.agentHumanoid = occurrence.parameters.get(0) as AgentBody // Type of agent to pop
-		this.numberOfAgent = occurrence.parameters.get(1) as Integer //Number of agents to pop
-		this.frequency = occurrence.parameters.get(2) as Long //Frequency of popping agents
-		this.position = occurrence.parameters.get(3) as Vector2 //position of the spawn
+		this.agentType = occurrence.parameters.get(0) as String 
+		this.numberOfAgents = occurrence.parameters.get(1) as Integer
+		this.frequency = occurrence.parameters.get(2) as Integer
+		this.position = occurrence.parameters.get(3) as Vector2
 		this.map = occurrence.parameters.get(4) as Map
-		spawnerMethod
+		
+		this.numberOfAgentsSpawned = 0
+		
+		// Spawn the given number of agents at the given frequency
+		every(this.frequency)[spawn]
 	}
 
-	on Destroy {
-	}
-	
-	/*
-	 * Adult Spawner
+	/**
+	 * Spawn an agent with the spawner's parameters
 	 */
-	def spawnerMethod() {
-		for (var i = 0; i<this.numberOfAgent; i++)
-		{
-			var adultBody = this.map.createBody(typeof(AgentBody), null, position.x, position.y)
+	def spawn() {
+		if (this.numberOfAgentsSpawned < this.numberOfAgents) {
+			var adultBody = this.map.createBody(typeof(AdultBody), null, this.position.x, this.position.y)
 			spawnInContextWithID(typeof(AdultAgent), adultBody.getUuid, defaultContext)
-			Thread.sleep(50)
+			this.numberOfAgentsSpawned++;
 		}
 	}
 }
-

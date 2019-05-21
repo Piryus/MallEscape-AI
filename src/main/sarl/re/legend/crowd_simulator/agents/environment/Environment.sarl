@@ -2,18 +2,16 @@ package re.legend.crowd_simulator.agents.environment
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.math.Vector2
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Destroy
 import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
-import re.legend.crowd_simulator.agents.adult.AdultAgent
 import re.legend.crowd_simulator.agents.events.GameLoopTest
-import re.legend.crowd_simulator.graphics.SimulationApplication
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
-import re.legend.crowd_simulator.entities.bodies.AgentBody
-import com.badlogic.gdx.math.Vector2
 import re.legend.crowd_simulator.entities.bodies.AdultBody
+import re.legend.crowd_simulator.graphics.SimulationApplication
 
 /** 
  * This agent is the environment, use Observer Pattern and link with LibGDX
@@ -30,8 +28,6 @@ agent Environment {
 		
 		info("Environment initialized, creating the world...")
 		
-		
-		System.out.println("This is what :" + typeof(AgentBody))
 		// Instantiates application
 		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 		this.application = new SimulationApplication()
@@ -45,22 +41,21 @@ agent Environment {
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupWalls(this.application.getWalls);
 
+		// TODO Test spawner
+		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(10,10), map)
+		
 		// TODO Implement a real game loop
 		emit(new GameLoopTest)
 	}
 
 	on GameLoopTest {
 		Thread.sleep(50)
-		//spawnerMethod(2, 5.0f)
-		SpawnerAgent.spawn(AdultBody, 2, 2, new Vector2(10,10),map)
+		computePerceptions
 		notifyAgents
 		computeInfluences
 		applyInfluences
-		
 		this.application.update(getBodies, getCurrentTime);
-		
 		emit(new GameLoopTest);
-		
 	}
 
 	on Destroy {
