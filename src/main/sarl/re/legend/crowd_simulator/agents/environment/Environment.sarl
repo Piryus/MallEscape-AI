@@ -10,7 +10,6 @@ import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import re.legend.crowd_simulator.agents.events.GameLoopTest
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
-import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.graphics.SimulationApplication
 
 /** 
@@ -18,21 +17,21 @@ import re.legend.crowd_simulator.graphics.SimulationApplication
  * The environment will spawn "agent spirit" for people, their body, and match them
  */
 agent Environment {
-	
+
 	uses Logging, Lifecycle, DefaultContextInteractions, MapManager
-	
+
 	var application : SimulationApplication
-	
+
 	on Initialize {
 		loggingName = "Environment"
-		
+
 		info("Environment initialized, creating the world...")
-		
+
 		// Instantiates application
 		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 		this.application = new SimulationApplication()
 		new LwjglApplication(this.application, config);
-		
+
 		// Wait 5 secs to let the application load the graphics
 		Thread::sleep(5000);
 
@@ -42,8 +41,8 @@ agent Environment {
 		setupWalls(this.application.getWalls);
 
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(10,10), map)
-		
+		spawn(SpawnerAgent, "Adult", 200, 100, new Vector2(10, 10), map)
+
 		// TODO Implement a real game loop
 		emit(new GameLoopTest)
 	}
@@ -65,4 +64,3 @@ agent Environment {
 	}
 
 }
-

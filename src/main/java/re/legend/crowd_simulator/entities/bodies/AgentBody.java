@@ -126,7 +126,9 @@ public abstract class AgentBody extends SimulationEntity {
 	 * @param influence the influence to add to the body
 	 */
 	public void addInfluence(Influence influence) {
-		this.influences.add(influence);
+		synchronized (this.influences) {
+			this.influences.add(influence);
+		}
 	}
 
 	/**
@@ -142,9 +144,11 @@ public abstract class AgentBody extends SimulationEntity {
 	public List<MotionInfluence> getMotionInfluences() {
 		List<MotionInfluence> motionInfluences = new ArrayList<>();
 		if (this.influences != null && !this.influences.isEmpty()) {
-			for (Influence influence : this.influences) {
-				if (influence instanceof MotionInfluence) {
-					motionInfluences.add((MotionInfluence) influence);
+			synchronized (this.influences) {
+				for (Influence influence : this.influences) {
+					if (influence instanceof MotionInfluence) {
+						motionInfluences.add((MotionInfluence) influence);
+					}
 				}
 			}
 		}
@@ -230,7 +234,7 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void seek(Vector2 target) {
 		float slowingDistance = 100f;
-		
+
 		// Sets the new target
 		this.target = target;
 
@@ -240,7 +244,7 @@ public abstract class AgentBody extends SimulationEntity {
 		float distance = this.desiredVelocity.len();
 		// Normalizes and scale to max velocity the desired velocity
 		this.desiredVelocity.nor().scl(MAX_VELOCITY);
-		
+
 		// On arrival, slows down the agent
 		if (distance < slowingDistance) {
 			this.desiredVelocity.scl(distance / slowingDistance);

@@ -106,7 +106,9 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody {
-		this.map.createBody(typeof(AdultBody), null, spawnPosX, spawnPosY);
+		synchronized (this.map.bodies) {
+			this.map.createBody(typeof(AdultBody), null, spawnPosX, spawnPosY);
+		}
 	}
 
 	def createKid(spawnPosX : float, spawnPosY : float) : KidBody {
@@ -118,15 +120,18 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def getBodies() : List<AgentBody> {
-		new ArrayList<AgentBody>(this.map.getBodies)
+		synchronized (this.map.bodies) {
+			return this.map.getBodies.toList;
+
+		}
 	}
 
 	def setupWalls(walls : List<Wall>) {
-		map.setWalls(walls);
+		this.map.setWalls(walls);
 	}
 
 	def computePerceptions {
-		synchronized (this.map) {
+		synchronized (this.map.bodies) {
 			var frustum : EntityFrustum
 			var bodies = new ArrayList<AgentBody>
 			var objects = new ArrayList<SimulationEntity>
@@ -167,15 +172,17 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def getBodyWithId(id : UUID) : AgentBody {
-		for (body : this.map.bodies) {
-			if (body.getUuid.equals(id)) {
-				return body
+		synchronized (this.map.bodies) {
+			for (body : this.map.bodies) {
+				if (body.getUuid.equals(id)) {
+					return body
+				}
 			}
 		}
 	}
 
 	def notifyAgents {
-		synchronized (this.map) {
+		synchronized (this.map.bodies) {
 			// Manage time first, we could create a structure here or something like this holding the time infos
 			// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
 			// Create and send the perception event to every bodies
@@ -196,22 +203,24 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def computeInfluences {
-		// List of definitive influences that will be applied
-		var influences = new ArrayList<Influence>
-		// Loop through the list of bodies, computing each body's influences
-		for (body : this.map.bodies) {
-			// Compute motion influences
-			for (motionInfluence : body.motionInfluences) {
-				// TODO Solve conflicts
-				// Adds the influence to the list of definitive influences that will be applied
-				influences.add(motionInfluence);
+		synchronized (this.map.bodies) {
+			// List of definitive influences that will be applied
+			var influences = new ArrayList<Influence>
+			// Loop through the list of bodies, computing each body's influences
+			for (body : this.map.bodies) {
+				// Compute motion influences
+				for (motionInfluence : body.motionInfluences) {
+					// TODO Solve conflicts
+					// Adds the influence to the list of definitive influences that will be applied
+					influences.add(motionInfluence);
+				}
+				// TODO Compute other influences of the body as well
+				// Clear the body's influences in order to prepare next step
+				body.clearInfluences();
 			}
-			// TODO Compute other influences of the body as well
-			// Clear the body's influences in order to prepare next step
-			body.clearInfluences();
+			// Sets the influences to apply
+			this.influencesToApply = new ArrayList<Influence>(influences)
 		}
-		// Sets the influences to apply
-		this.influencesToApply = new ArrayList<Influence>(influences)
 	}
 
 	def applyInfluences {

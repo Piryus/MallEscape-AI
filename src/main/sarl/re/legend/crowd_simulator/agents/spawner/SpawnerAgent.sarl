@@ -31,26 +31,28 @@ agent SpawnerAgent {
 	var position : Vector2
 
 	on Initialize {
-		this.agentType = occurrence.parameters.get(0) as String 
+		this.agentType = occurrence.parameters.get(0) as String
 		this.numberOfAgents = occurrence.parameters.get(1) as Integer
 		this.frequency = occurrence.parameters.get(2) as Integer
 		this.position = occurrence.parameters.get(3) as Vector2
 		this.map = occurrence.parameters.get(4) as Map
-		
+
 		this.numberOfAgentsSpawned = 0
-		
+
 		// Spawn the given number of agents at the given frequency
 		every(this.frequency)[spawn]
 	}
 
-	/**
+	/** 
 	 * Spawn an agent with the spawner's parameters
 	 */
 	def spawn() {
-		if (this.numberOfAgentsSpawned < this.numberOfAgents) {
-			var adultBody = this.map.createBody(typeof(AdultBody), null, this.position.x, this.position.y)
-			spawnInContextWithID(typeof(AdultAgent), adultBody.getUuid, defaultContext)
-			this.numberOfAgentsSpawned++;
+		synchronized (this.map.bodies) {
+			if (this.numberOfAgentsSpawned < this.numberOfAgents) {
+				var adultBody = this.map.createBody(typeof(AdultBody), null, this.position.x, this.position.y)
+				spawnInContextWithID(typeof(AdultAgent), adultBody.getUuid, defaultContext)
+				this.numberOfAgentsSpawned++;
+			}
 		}
 	}
 }
