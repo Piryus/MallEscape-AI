@@ -8,6 +8,7 @@ import io.sarl.core.Destroy
 import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
+import io.sarl.core.Schedules
 import re.legend.crowd_simulator.agents.events.GameLoopTest
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
 import re.legend.crowd_simulator.graphics.SimulationApplication
@@ -18,7 +19,7 @@ import re.legend.crowd_simulator.graphics.SimulationApplication
  */
 agent Environment {
 
-	uses Logging, Lifecycle, DefaultContextInteractions, MapManager
+	uses Logging, Lifecycle, DefaultContextInteractions, MapManager, Schedules
 
 	var application : SimulationApplication
 
@@ -44,17 +45,15 @@ agent Environment {
 		spawn(SpawnerAgent, "Adult", 200, 100, new Vector2(10, 10), map)
 
 		// TODO Implement a real game loop
-		emit(new GameLoopTest)
+		every(50)[emit(new GameLoopTest)]
 	}
 
 	on GameLoopTest {
-		Thread.sleep(50)
 		computePerceptions
 		notifyAgents
 		computeInfluences
 		applyInfluences
 		this.application.update(getBodies, getCurrentTime);
-		emit(new GameLoopTest);
 	}
 
 	on Destroy {
