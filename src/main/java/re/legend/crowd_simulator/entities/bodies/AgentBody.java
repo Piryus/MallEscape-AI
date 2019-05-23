@@ -55,16 +55,15 @@ public abstract class AgentBody extends SimulationEntity {
 		this.agentId = id;
 		this.influences = new ArrayList<>();
 		this.linearVelocity = new Vector2();
+		this.perceivedBodies = new ArrayList<>();
+		this.perceivedObjects = new ArrayList<>();
 	}
 
 	/**
 	 * Constructor with body's position (vector2) and UUID
 	 */
 	public AgentBody(Vector2 position, float orientation, UUID id) {
-		super(position, orientation);
-		this.agentId = id;
-		this.influences = new ArrayList<>();
-		this.linearVelocity = new Vector2();
+		this(position.x, position.y, orientation, id);
 	}
 
 	/**
