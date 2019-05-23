@@ -26,6 +26,9 @@ public abstract class AgentBody extends SimulationEntity {
 	// Max force of the agent
 	public static final float MAX_FORCE = 10;
 
+	// Max distance at which the agent can perceive other bodies
+	public static final float PERCEPTION_DISTANCE = 100;
+
 	// Coordinates of the target to reach
 	private Vector2 target;
 
@@ -46,6 +49,10 @@ public abstract class AgentBody extends SimulationEntity {
 
 	// Body's influences
 	private List<Influence> influences;
+
+	private Vector2 ahead;
+	private Vector2 ahead2;
+	private Vector2 avoidance;
 
 	/**
 	 * Constructor with body's position (two floats) and UUID
@@ -103,8 +110,12 @@ public abstract class AgentBody extends SimulationEntity {
 	 * @param objects the objects perceived by the body
 	 */
 	public void setPerceptions(List<AgentBody> bodies, List<SimulationEntity> objects) {
-		this.perceivedBodies = bodies;
-		this.perceivedObjects = objects;
+		synchronized (this.perceivedBodies) {
+			this.perceivedBodies = bodies;
+		}
+		synchronized (this.perceivedObjects) {
+			this.perceivedObjects = objects;
+		}
 	}
 
 	/**
@@ -251,15 +262,61 @@ public abstract class AgentBody extends SimulationEntity {
 
 		// Computes the steering force
 		this.steering = new Vector2(this.desiredVelocity).sub(this.linearVelocity);
+		// TODO Make the force depends on the mass (sex dependent ?)
+	}
+
+	public void avoidCollisionWithBodies() {
+		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
+		float dynamicLength = linearVelocity.len() / MAX_VELOCITY;
+		this.ahead = new Vector2(this.position).add(new Vector2(linearVelocity).nor()).scl(dynamicLength);
+		this.ahead2 = new Vector2(ahead).scl(0.5f);
+
+		// Find the most threatening body's position
+		Vector2 bodyToAvoidPosition = findMostThreateningBody();
+
+		this.avoidance = new Vector2(ahead);
+
+		if (bodyToAvoidPosition != null) {
+			this.avoidance.sub(bodyToAvoidPosition);
+		} else {
+			this.avoidance.scl(0);
+		}
+
+		this.steering.add(this.avoidance);
 		float i = MAX_FORCE / this.steering.len();
 		i = i < 1.0f ? 1.0f : i;
 		this.steering.scl(i);
-		// TODO Make the force depends on the mass (sex dependent ?)
+	}
 
+	public void computesVelocity() {
 		// Computes the new velocity of the agent
-		this.linearVelocity.add(this.steering);
-		i = MAX_VELOCITY / this.linearVelocity.len();
+		this.linearVelocity.add(this.steering).add(this.avoidance);
+		float i = MAX_VELOCITY / this.linearVelocity.len();
 		i = i < 1.0f ? 1.0f : i;
 		this.linearVelocity.scl(i);
+	}
+
+	private boolean lineIntersectsBodyCircle(Vector2 ahead, Vector2 ahead2, Vector2 bodyPosition) {
+		return distance(bodyPosition, ahead) <= 20 || distance(bodyPosition, ahead2) <= 20;
+	}
+
+	private double distance(Vector2 obj1, Vector2 obj2) {
+		return Math.sqrt((obj1.x - obj2.x) * (obj1.x - obj2.x) + (obj1.y - obj2.y) * (obj1.y - obj2.y));
+	}
+
+	private Vector2 findMostThreateningBody() {
+		Vector2 mostThreateningBodyPos = null;
+		synchronized (this.perceivedBodies) {
+			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+				for (AgentBody body : this.perceivedBodies) {
+					boolean collisionWithBody = lineIntersectsBodyCircle(ahead, ahead2, body.position);
+					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
+							body.position) < distance(this.position, mostThreateningBodyPos))) {
+						mostThreateningBodyPos = body.position;
+					}
+				}
+			}
+		}
+		return mostThreateningBodyPos;
 	}
 }

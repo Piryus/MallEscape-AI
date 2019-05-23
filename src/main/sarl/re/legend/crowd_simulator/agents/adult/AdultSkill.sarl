@@ -107,7 +107,9 @@ skill AdultSkill implements AdultCapacity {
 			targetAcquiredTime = System.currentTimeMillis
 		}
 		
-		this.body.seek(this.body.target);
+		this.body.seek(this.body.target)
+		this.body.avoidCollisionWithBodies
+		this.body.computesVelocity
 		this.body.linearVelocity.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(this.body.linearVelocity.x, this.body.linearVelocity.y)
 		this.lastStepTime = System.currentTimeMillis
