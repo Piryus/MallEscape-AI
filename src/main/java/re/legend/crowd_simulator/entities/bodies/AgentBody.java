@@ -82,68 +82,6 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/**
-	 * Add 2 Vector2
-	 */
-	public Vector2 addVector2(Vector2 position, Vector2 linearVelocity) {
-		return new Vector2(position.x + linearVelocity.x, position.y + linearVelocity.y);
-	}
-	
-	/**
-	 * substract 2 Vector2
-	 */
-	public Vector2 subVector2(Vector2 position, Vector2 linearVelocity) {
-		return new Vector2(position.x - linearVelocity.x, position.y - linearVelocity.y);
-	}
-	
-	/**
-	 * 
-	 * @param vectorA
-	 * @param coeff
-	 * @return Vector time a float
-	 */
-	public Vector2 multiplyVector2(Vector2 vectorA,float coeff)
-	{
-		return new Vector2(vectorA.x*coeff, vectorA.y*coeff);
-	}
-
-	/**
-	 * Move with the linear velocity
-	 */
-	public Vector2 moveWithVelocity(Vector2 linearVelocity) {
-		return addVector2(this.getPosition(), linearVelocity);
-		// with deltaT
-		// return (addVector2(this.getPosition(), linearVelocity))/2*deltaT
-	}
-	
-	/**
-	 * 
-	 * @param number
-	 * @return sqrt of a float
-	 */
-	public float root(float number)
-	{
-		if(number<0)
-		{
-			return -1;//error
-		}
-		
-		if(number==0 || number==1)
-		{
-			return number;
-		}
-		//making work for non-perfect square
-		float root = 0.0f;
-		float precision = 0.1f;
-		float square = root;
-		while(square<number)
-		{
-			root=root+precision;
-			square = root*root;
-		}
-		return root;
-	}
-
-	/**
 	 * @return the perception frustum of the body
 	 */
 	public EntityFrustum getFrustum() {
@@ -317,8 +255,8 @@ public abstract class AgentBody extends SimulationEntity {
 		//float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY;
 		//this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
 		//this.ahead2 = this.ahead.cpy().scl(0.5f);
-		this.ahead = addVector2(this.position, multiplyVector2(this.linearVelocity.nor(),PERCEPTION_DISTANCE));
-		this.ahead2 = addVector2(this.position, multiplyVector2(this.linearVelocity.nor(),PERCEPTION_DISTANCE*0.5f));
+		this.ahead = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE));
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE*0.5f));
 		
 
 		// Find the most threatening body's position
@@ -368,30 +306,11 @@ public abstract class AgentBody extends SimulationEntity {
 			//System.out.println("Il y a collision");
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 	
-	/*
 	private static double distance(Vector2 obj1, Vector2 obj2) {
 		return Math.sqrt((obj1.x - obj2.x) * (obj1.x - obj2.x) + (obj1.y - obj2.y) * (obj1.y - obj2.y));
-	}*/
-	/**
-	 * 
-	 * @param objectA
-	 * @param objectB
-	 * @return distance between 2 objects in float
-	 */
-	public float distanceObject(SimulationEntity objectA, SimulationEntity objectB)
-	{
-		return root((objectA.getPosition().x-objectB.getPosition().x)*(objectA.getPosition().x-objectB.getPosition().x)+(objectA.getPosition().y-objectB.getPosition().y)*(objectA.getPosition().y-objectB.getPosition().y));
-	}
-	
-	public float distance(Vector2 vectorA, Vector2 vectorB)
-	{
-		return root((vectorA.x-vectorB.x)*(vectorA.x-vectorB.x)+(vectorA.y-vectorB.y)*(vectorA.y-vectorB.y));
 	}
 	
 
@@ -419,7 +338,7 @@ public abstract class AgentBody extends SimulationEntity {
 				for (AgentBody body : this.perceivedBodies) {
 					boolean collisionWithBody = lineIntersectsBodyCircle(this.ahead, this.ahead2, body.position);
 					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
-							body.position) < distanceObject(this, mostThreateningBodyPos))) {
+							body.position) < distance(this.position, mostThreateningBodyPos.getPosition()))) {
 						mostThreateningBodyPos = body;
 					}
 				}
