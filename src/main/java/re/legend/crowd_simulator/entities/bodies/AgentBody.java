@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
@@ -21,10 +22,10 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 20;
+	public static final float MAX_VELOCITY = 15;
 
 	// Max force of the agent
-	public static final float MAX_FORCE = 10;
+	public static final float MAX_FORCE = 30;
 
 	// Max distance at which the agent can perceive other bodies
 	public static final float PERCEPTION_DISTANCE = 50;
@@ -52,7 +53,7 @@ public abstract class AgentBody extends SimulationEntity {
 
 	private Vector2 ahead;
 	private Vector2 ahead2;
-	private Vector2 avoidance;
+	//private Vector2 avoidance;
 
 	/**
 	 * Constructor with body's position (two floats) and UUID
@@ -86,6 +87,24 @@ public abstract class AgentBody extends SimulationEntity {
 	public Vector2 addVector2(Vector2 position, Vector2 linearVelocity) {
 		return new Vector2(position.x + linearVelocity.x, position.y + linearVelocity.y);
 	}
+	
+	/**
+	 * substract 2 Vector2
+	 */
+	public Vector2 subVector2(Vector2 position, Vector2 linearVelocity) {
+		return new Vector2(position.x - linearVelocity.x, position.y - linearVelocity.y);
+	}
+	
+	/**
+	 * 
+	 * @param vectorA
+	 * @param coeff
+	 * @return Vector time a float
+	 */
+	public Vector2 multiplyVector2(Vector2 vectorA,float coeff)
+	{
+		return new Vector2(vectorA.x*coeff, vectorA.y*coeff);
+	}
 
 	/**
 	 * Move with the linear velocity
@@ -94,6 +113,34 @@ public abstract class AgentBody extends SimulationEntity {
 		return addVector2(this.getPosition(), linearVelocity);
 		// with deltaT
 		// return (addVector2(this.getPosition(), linearVelocity))/2*deltaT
+	}
+	
+	/**
+	 * 
+	 * @param number
+	 * @return sqrt of a float
+	 */
+	public float root(float number)
+	{
+		if(number<0)
+		{
+			return -1;//error
+		}
+		
+		if(number==0 || number==1)
+		{
+			return number;
+		}
+		//making work for non-perfect square
+		float root = 0.0f;
+		float precision = 0.1f;
+		float square = root;
+		while(square<number)
+		{
+			root=root+precision;
+			square = root*root;
+		}
+		return root;
 	}
 
 	/**
@@ -267,23 +314,41 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void avoidCollisionWithBodies() {
 		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
-		float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY;
-		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
-		this.ahead2 = this.ahead.cpy().scl(0.5f);
+		//float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY;
+		//this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
+		//this.ahead2 = this.ahead.cpy().scl(0.5f);
+		this.ahead = addVector2(this.position, multiplyVector2(this.linearVelocity.nor(),PERCEPTION_DISTANCE));
+		this.ahead2 = addVector2(this.position, multiplyVector2(this.linearVelocity.nor(),PERCEPTION_DISTANCE*0.5f));
+		
 
 		// Find the most threatening body's position
 		Vector2 bodyToAvoidPosition = findMostThreateningBody();
-
+		Vector2 avoidance = new Vector2(0,0);
 		// Computes the avoidance force
-		this.avoidance = this.ahead.cpy();
+		//avoidance = multiplyVector2(subVector2(this.ahead,bodyToAvoidPosition).nor(),MAX_FORCE);
+		//avoidance = this.ahead.cpy();
+		//avoidance = this.ahead;
+		
+		
 		if (bodyToAvoidPosition != null) {
-			this.avoidance.sub(bodyToAvoidPosition);
+			//this.avoidance.sub(bodyToAvoidPosition);
+			//avoidance.sub(bodyToAvoidPosition);
+			avoidance.x = (ahead.x - bodyToAvoidPosition.x)*MAX_FORCE;
+			avoidance.y = (ahead.y - bodyToAvoidPosition.y)*MAX_FORCE;
+			avoidance.nor();
+			
+			avoidance.scl(MAX_FORCE);
+			
+			//avoidance.scl(1/MAX_FORCE);//Recover normal speed
+			
 		} else {
-			this.avoidance.scl(0);
+			//this.avoidance.scl(0);
+			avoidance.scl(0);
 		}
 
 		// Adds the avoidance force to the steering
-		this.steering.add(this.avoidance);
+		//this.steering.add(this.avoidance);
+		steering.add(avoidance);
 //		float i = MAX_FORCE / this.steering.len();
 //		i = i < 1.0f ? 1.0f : i;
 //		this.steering.scl(i);
@@ -298,12 +363,37 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	private boolean lineIntersectsBodyCircle(Vector2 ahead, Vector2 ahead2, Vector2 bodyPosition) {
-		return distance(bodyPosition, ahead) <= 10 || distance(bodyPosition, ahead2) <= 10 || distance(bodyPosition, this.position) <= 10;
+		if (distance(bodyPosition, ahead) <= 50 || distance(bodyPosition, ahead2) <= 25 || distance(bodyPosition, this.position) <= 60)
+		{
+			//System.out.println("Il y a collision");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
-
+	
+	/*
 	private static double distance(Vector2 obj1, Vector2 obj2) {
 		return Math.sqrt((obj1.x - obj2.x) * (obj1.x - obj2.x) + (obj1.y - obj2.y) * (obj1.y - obj2.y));
+	}*/
+	/**
+	 * 
+	 * @param objectA
+	 * @param objectB
+	 * @return distance between 2 objects in float
+	 */
+	public float distanceObject(SimulationEntity objectA, SimulationEntity objectB)
+	{
+		return root((objectA.getPosition().x-objectB.getPosition().x)*(objectA.getPosition().x-objectB.getPosition().x)+(objectA.getPosition().y-objectB.getPosition().y)*(objectA.getPosition().y-objectB.getPosition().y));
 	}
+	
+	public float distance(Vector2 vectorA, Vector2 vectorB)
+	{
+		return root((vectorA.x-vectorB.x)*(vectorA.x-vectorB.x)+(vectorA.y-vectorB.y)*(vectorA.y-vectorB.y));
+	}
+	
 
 	private Vector2 findMostThreateningBody() {
 		Vector2 mostThreateningBodyPos = null;
@@ -320,4 +410,22 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningBodyPos;
 	}
+	
+	/*To rewrite*/
+	private SimulationEntity findMostThreateningBody2() {
+		SimulationEntity mostThreateningBodyPos = null;
+		synchronized (this.perceivedBodies) {
+			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+				for (AgentBody body : this.perceivedBodies) {
+					boolean collisionWithBody = lineIntersectsBodyCircle(this.ahead, this.ahead2, body.position);
+					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
+							body.position) < distanceObject(this, mostThreateningBodyPos))) {
+						mostThreateningBodyPos = body;
+					}
+				}
+			}
+		}
+		return mostThreateningBodyPos;
+	}
+	
 }
