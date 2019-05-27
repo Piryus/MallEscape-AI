@@ -197,7 +197,7 @@ public abstract class AgentBody extends SimulationEntity {
 		this.desiredVelocity = this.target.cpy().sub(this.position);
 		// Gets the distance to the target
 		float distance = this.desiredVelocity.len();
-		// Normalizes and scale to max velocity the desired velocity
+		// Normalizes and scale to the desired velocity the maximum velocity 
 		this.desiredVelocity.nor().scl(MAX_VELOCITY);
 
 		// On arrival, slows down the agent
@@ -230,7 +230,7 @@ public abstract class AgentBody extends SimulationEntity {
 		// threatening body found
 		// If no body was found, the avoidance force is simply null
 		if (bodyToAvoidPosition != null) {
-			this.avoidance = ahead.cpy().sub(bodyToAvoidPosition).scl(MAX_FORCE).nor().scl(MAX_FORCE);
+			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).scl(MAX_FORCE).nor().scl(MAX_FORCE);
 			// Recovers normal speed
 //			avoidance.scl(1/MAX_FORCE);
 		} else {
