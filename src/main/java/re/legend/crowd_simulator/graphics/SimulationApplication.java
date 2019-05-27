@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -41,9 +42,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
 
-	// TODO Remove below once bodies rendering is implemented
-	// John's texture
-	private Texture johnTex;
+	// Adult bodies textures sprite
+	private Texture adultTextures;
+	private TextureRegion adultStillLeft;
+	private TextureRegion adultStillRight;
+	private TextureRegion adultStillFace;
+	private TextureRegion adultStillBack;
 
 	// SpriteBatche for the map
 	private SpriteBatch spriteBatch;
@@ -71,8 +75,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.lastTouch = new Vector2();
 		this.spriteBatch = new SpriteBatch();
 		this.fixedSpriteBatch = new SpriteBatch();
-		this.johnTex = new Texture("john.png");
 		this.walls = new ArrayList<>();
+		
+		// Loads textures
+		this.adultTextures = new Texture("adult_bodies.png");
+		this.adultStillLeft = new TextureRegion(this.adultTextures, 0, 0, 16, 16);
+		this.adultStillFace = new TextureRegion(this.adultTextures, 16, 0, 16, 16);
+		this.adultStillBack = new TextureRegion(this.adultTextures, 32, 0, 16, 16);
+		this.adultStillRight = new TextureRegion(this.adultTextures, 48, 0, 16, 16);
 
 		// Timer creation and stamp the startTimer
 		this.strTimer = "Time: 0";
@@ -82,12 +92,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Loads map
 		this.loader = new TmxMapLoader();
 		this.map = this.loader.load("map/map.tmx");
-		this.renderer = new OrthogonalTiledMapRenderer(map);
-		this.mapWidth = (int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth");
-		this.mapHeight = (int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight");
+		this.renderer = new OrthogonalTiledMapRenderer(this.map);
+		this.mapWidth = (int) this.map.getProperties().get("width") * (int) this.map.getProperties().get("tilewidth");
+		this.mapHeight = (int) this.map.getProperties().get("height") * (int) this.map.getProperties().get("tileheight");
 
 		// Loads walls
-		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) renderer.getMap().getLayers().get("Walls");
+		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) this.renderer.getMap().getLayers().get("Walls");
 		Cell cell;
 		for (int x = 0; x < wallsLayer.getWidth(); x++) {
 			for (int y = 0; y < wallsLayer.getHeight(); y++) {
@@ -136,7 +146,15 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
+					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
+					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
+					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
+					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				}
 			}
 		}
 		this.spriteBatch.end();
@@ -214,8 +232,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public boolean touchDragged(int x, int y, int pointer) {
 		float deltaX = Gdx.input.getDeltaX();
 		float deltaY = Gdx.input.getDeltaY();
-		camera.translate(-deltaX, deltaY);
-		camera.update();
+		this.camera.translate(-deltaX, deltaY);
+		this.camera.update();
 		return false;
 	}
 
