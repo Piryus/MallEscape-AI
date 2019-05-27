@@ -17,6 +17,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -97,10 +100,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 		// Loads map
 		this.loader = new TmxMapLoader();
-		this.map = this.loader.load("map/map.tmx");
-		this.renderer = new OrthogonalTiledMapRenderer(this.map);
-		this.mapWidth = (int) this.map.getProperties().get("width") * (int) this.map.getProperties().get("tilewidth");
-		this.mapHeight = (int) this.map.getProperties().get("height") * (int) this.map.getProperties().get("tileheight");
+		this.map = this.loader.load("map/map2.tmx");
+		this.renderer = new OrthogonalTiledMapRenderer(map);
+		this.mapWidth = (int) map.getProperties().get("width") * (int) map.getProperties().get("tilewidth");
+		this.mapHeight = (int) map.getProperties().get("height") * (int) map.getProperties().get("tileheight");
 
 		// Loads walls
 		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) this.renderer.getMap().getLayers().get("Walls");
@@ -112,6 +115,20 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
+		
+		//Test Access to an object
+		MapLayer layer = map.getLayers().get(0);
+		MapObject way= layer.getObjects().get("Way");
+		
+		//Get Access to female/male shop on map2
+		/*
+		MapLayer layer2 = map.getLayers().get("Walls");
+		
+		MapObject femaleShop= layer2.getObjects().get("ShopFObject");
+		MapObject maleShop= layer2.getObjects().get("ShopMObject");
+		MapObject road = layer2.getObjects().get("Road");
+		*/
+		
 
 		this.camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
 		this.camera.position.set(this.mapWidth / 2, this.mapHeight / 2, 0);
