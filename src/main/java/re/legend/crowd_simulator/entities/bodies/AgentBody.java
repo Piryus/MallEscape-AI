@@ -21,7 +21,7 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 15;
+	public static final float MAX_VELOCITY = 100;
 
 	// Max force of the agent
 	public static final float MAX_FORCE = 30;
@@ -179,6 +179,34 @@ public abstract class AgentBody extends SimulationEntity {
 	public Vector2 getTarget() {
 		return this.target;
 	}
+	
+	/**
+	 * @return the ahead vector
+	 */
+	public Vector2 getAhead() {
+		return this.ahead;
+	}
+
+	/**
+	 * @return the ahead2 vector
+	 */
+	public Vector2 getAhead2() {
+		return this.ahead2;
+	}
+
+	/**
+	 * @return the desired velocity of the agent
+	 */
+	public Vector2 getDesiredVelocity() {
+		return this.desiredVelocity;
+	}
+
+	/**
+	 * @return the avoidance force of the agent
+	 */
+	public Vector2 getAvoidance() {
+		return this.avoidance;
+	}
 
 	/**
 	 * @param target the target to set
@@ -215,8 +243,8 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void avoidCollisionWithBodies() {
 		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
-		this.ahead = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE));
-		this.ahead2 = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE * 0.5f));
+		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE * 0.5f));
 
 		// We could also use a dynamic length as shown below
 //		 float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY; 
@@ -230,9 +258,9 @@ public abstract class AgentBody extends SimulationEntity {
 		// threatening body found
 		// If no body was found, the avoidance force is simply null
 		if (bodyToAvoidPosition != null) {
-			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).scl(MAX_FORCE).nor().scl(MAX_FORCE);
+			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).nor().scl(MAX_FORCE);
 			// Recovers normal speed
-//			avoidance.scl(1/MAX_FORCE);
+//			avoidance.scl(1 / MAX_FORCE);
 		} else {
 			this.avoidance.scl(0);
 		}
@@ -257,16 +285,12 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
-		if (distance(bodyPosition, this.ahead) <= 50 || distance(bodyPosition, this.ahead2) <= 25
-				|| distance(bodyPosition, this.position) <= 60) {
+		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 1 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 1
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 1) {
 			// System.out.println("Collision found.");
 			return true;
 		}
 		return false;
-	}
-
-	private static double distance(Vector2 obj1, Vector2 obj2) {
-		return Math.sqrt((obj1.x - obj2.x) * (obj1.x - obj2.x) + (obj1.y - obj2.y) * (obj1.y - obj2.y));
 	}
 
 	private Vector2 findMostThreateningBodyPosition() {
@@ -277,8 +301,8 @@ public abstract class AgentBody extends SimulationEntity {
 				for (AgentBody body : this.perceivedBodies) {
 					// Checks if the agent's ahead vectors collide with the perceived body
 					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
-					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
-							body.position) < distance(this.position, mostThreateningBodyPos))) {
+					if (collisionWithBody && (mostThreateningBodyPos == null || Vector2.dst(this.position.x, this.position.y, 
+							body.position.x, body.position.y) < Vector2.dst(this.position.x, this.position.y, mostThreateningBodyPos.x, mostThreateningBodyPos.y))) {
 						mostThreateningBodyPos = body.position;
 					}
 				}
@@ -288,20 +312,20 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/* To rewrite */
-	private SimulationEntity findMostThreateningBody2() {
-		SimulationEntity mostThreateningBodyPos = null;
-		synchronized (this.perceivedBodies) {
-			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
-				for (AgentBody body : this.perceivedBodies) {
-					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
-					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
-							body.position) < distance(this.position, mostThreateningBodyPos.getPosition()))) {
-						mostThreateningBodyPos = body;
-					}
-				}
-			}
-		}
-		return mostThreateningBodyPos;
-	}
+//	private SimulationEntity findMostThreateningBody2() {
+//		SimulationEntity mostThreateningBodyPos = null;
+//		synchronized (this.perceivedBodies) {
+//			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+//				for (AgentBody body : this.perceivedBodies) {
+//					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
+//					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
+//							body.position) < Vector2.dst(this.position, mostThreateningBodyPos.getPosition()))) {
+//						mostThreateningBodyPos = body;
+//					}
+//				}
+//			}
+//		}
+//		return mostThreateningBodyPos;
+//	}
 
 }
