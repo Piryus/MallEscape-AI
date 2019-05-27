@@ -14,6 +14,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -61,8 +63,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private GlyphLayout timerLayout;
 
 	// Font generator and parameter
-	FreeTypeFontGenerator generator;
-	FreeTypeFontParameter parameter;
+	private FreeTypeFontGenerator generator;
+	private FreeTypeFontParameter parameter;
+
+	// Shape renderer
+	private ShapeRenderer shapeRenderer;
 
 	@Override
 	public void create() {
@@ -73,6 +78,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.johnTex = new Texture("john.png");
 		this.walls = new ArrayList<>();
+		this.shapeRenderer = new ShapeRenderer();
 
 		// Timer creation and stamp the startTimer
 		this.strTimer = "Time: 0";
@@ -131,15 +137,41 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.renderer.setView(this.camera);
 		this.renderer.render();
 
+		
 		this.spriteBatch.setProjectionMatrix(this.camera.combined);
 		this.spriteBatch.begin();
-
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				this.spriteBatch.draw(this.johnTex, body.getPosition().x, body.getPosition().y);
 			}
 		}
 		this.spriteBatch.end();
+		
+		this.shapeRenderer.setProjectionMatrix(this.camera.combined);
+		this.shapeRenderer.begin(ShapeType.Line);
+		for (AgentBody body : this.bodies) {
+			if (body instanceof AdultBody) {
+				// Agent's private circle
+				this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
+				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 30);
+				// Agent's ahead vector
+				this.shapeRenderer.setColor(1, 1, 1, 1); // White
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead().x, body.getAhead().y);
+				// Agent's ahead2 vector
+				//this.shapeRenderer.setColor(1, 0, 0, 1);
+				//this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead2().x, body.getAhead2().y);
+				// Agent's velocity vector
+				this.shapeRenderer.setColor(0, 1, 0, 1); // Green
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y + body.getLinearVelocity().y);
+				// Agent's avoidance vector
+				this.shapeRenderer.setColor(0.5f, 0, 0.5f, 1); // Purple
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getAvoidance().x, body.getPosition().y + body.getAvoidance().y);
+				// Agent's desired velocity vector
+				this.shapeRenderer.setColor(1, 0, 0, 1); // Red
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getDesiredVelocity().x, body.getPosition().y + body.getDesiredVelocity().y);
+			}
+		}
+		this.shapeRenderer.end();
 
 		// Changes the parameter text to the current time
 		this.parameter.characters = this.strTimer;

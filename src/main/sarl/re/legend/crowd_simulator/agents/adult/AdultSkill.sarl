@@ -98,18 +98,22 @@ skill AdultSkill implements AdultCapacity {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
 		
+		// If the body don't have a target, give it a random one
 		if (this.body.target == null) {
-			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500));
+			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500))
 		}
 		
-		if (System.currentTimeMillis > targetAcquiredTime + 20000) {
-			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500));
-			targetAcquiredTime = System.currentTimeMillis
+		// If the body has had its target for longer than 20 seconds, give it a new one
+		if (System.currentTimeMillis > this.targetAcquiredTime + 20000) {
+			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500))
+			this.targetAcquiredTime = System.currentTimeMillis
 		}
 		
-		this.body.seek(this.body.target);
-		this.body.linearVelocity.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
-		move(this.body.linearVelocity.x, this.body.linearVelocity.y)
+		this.body.seek
+		this.body.avoidCollisionWithBodies
+		this.body.computesVelocity
+		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
+		move(movement.x, movement.y)
 		this.lastStepTime = System.currentTimeMillis
 	}
 }
