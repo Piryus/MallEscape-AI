@@ -12,25 +12,21 @@ public abstract class SimulationEntity implements Perceivable {
 	private float orientation;
 	
 	/**
+	 * Constructor with position using a vector and orientation
+	 * @param position the entity's position
+	 */
+	public SimulationEntity(Vector2 position, float orientation) {
+		this.position = position;
+		this.orientation = orientation;
+	}
+	
+	/**
 	 * Constructor with position and orientation using two floats
 	 * @param x the entity's position on the x axis
 	 * @param y the entity's position on the y axis
 	 */
 	public SimulationEntity(float x, float y, float orientation) {
-		this.position = new Vector2();
-		this.position.x = x;
-		this.position.y = y;
-		this.orientation = orientation;
-	}
-	
-	/**
-	 * Constructor with position using a vector and orientation
-	 * @param position the entity's position
-	 */
-	public SimulationEntity(Vector2 position, float orientation) {
-		this.position = new Vector2();
-		this.position = position;
-		this.orientation = orientation;
+		this(new Vector2(x, y), orientation);
 	}
 	
 	/**

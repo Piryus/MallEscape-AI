@@ -21,10 +21,13 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 20;
+	public static final float MAX_VELOCITY = 100;
 
 	// Max force of the agent
-	public static final float MAX_FORCE = 10;
+	public static final float MAX_FORCE = 30;
+
+	// Max distance at which the agent can perceive other bodies
+	public static final float PERCEPTION_DISTANCE = 50;
 
 	// Coordinates of the target to reach
 	private Vector2 target;
@@ -47,6 +50,10 @@ public abstract class AgentBody extends SimulationEntity {
 	// Body's influences
 	private List<Influence> influences;
 
+	private Vector2 ahead;
+	private Vector2 ahead2;
+	private Vector2 avoidance;
+
 	/**
 	 * Constructor with body's position (two floats) and UUID
 	 */
@@ -55,16 +62,18 @@ public abstract class AgentBody extends SimulationEntity {
 		this.agentId = id;
 		this.influences = new ArrayList<>();
 		this.linearVelocity = new Vector2();
+		this.perceivedBodies = new ArrayList<>();
+		this.perceivedObjects = new ArrayList<>();
+		this.ahead = new Vector2();
+		this.ahead2 = new Vector2();
+		this.avoidance = new Vector2();
 	}
 
 	/**
 	 * Constructor with body's position (vector2) and UUID
 	 */
 	public AgentBody(Vector2 position, float orientation, UUID id) {
-		super(position, orientation);
-		this.agentId = id;
-		this.influences = new ArrayList<>();
-		this.linearVelocity = new Vector2();
+		this(position.x, position.y, orientation, id);
 	}
 
 	/**
@@ -72,22 +81,6 @@ public abstract class AgentBody extends SimulationEntity {
 	 */
 	public UUID getUuid() {
 		return this.agentId;
-	}
-
-	/**
-	 * Add 2 Vector2
-	 */
-	public Vector2 addVector2(Vector2 position, Vector2 linearVelocity) {
-		return new Vector2(position.x + linearVelocity.x, position.y + linearVelocity.y);
-	}
-
-	/**
-	 * Move with the linear velocity
-	 */
-	public Vector2 moveWithVelocity(Vector2 linearVelocity) {
-		return addVector2(this.getPosition(), linearVelocity);
-		// with deltaT
-		// return (addVector2(this.getPosition(), linearVelocity))/2*deltaT
 	}
 
 	/**
@@ -104,8 +97,12 @@ public abstract class AgentBody extends SimulationEntity {
 	 * @param objects the objects perceived by the body
 	 */
 	public void setPerceptions(List<AgentBody> bodies, List<SimulationEntity> objects) {
-		this.perceivedBodies = bodies;
-		this.perceivedObjects = objects;
+		synchronized (this.perceivedBodies) {
+			this.perceivedBodies = bodies;
+		}
+		synchronized (this.perceivedObjects) {
+			this.perceivedObjects = objects;
+		}
 	}
 
 	/**
@@ -170,13 +167,6 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/**
-	 * @param linearVelocity the linearVelocity to set
-	 */
-	public void setLinearVelocity(Vector2 linearVelocity) {
-		this.linearVelocity = linearVelocity;
-	}
-
-	/**
 	 * @return the angularVelocity
 	 */
 	public float getAngularVelocity() {
@@ -184,17 +174,38 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/**
-	 * @param angularVelocity the angularVelocity to set
-	 */
-	public void setAngularVelocity(float angularVelocity) {
-		this.angularVelocity = angularVelocity;
-	}
-
-	/**
 	 * @return the target
 	 */
 	public Vector2 getTarget() {
 		return this.target;
+	}
+	
+	/**
+	 * @return the ahead vector
+	 */
+	public Vector2 getAhead() {
+		return this.ahead;
+	}
+
+	/**
+	 * @return the ahead2 vector
+	 */
+	public Vector2 getAhead2() {
+		return this.ahead2;
+	}
+
+	/**
+	 * @return the desired velocity of the agent
+	 */
+	public Vector2 getDesiredVelocity() {
+		return this.desiredVelocity;
+	}
+
+	/**
+	 * @return the avoidance force of the agent
+	 */
+	public Vector2 getAvoidance() {
+		return this.avoidance;
 	}
 
 	/**
@@ -204,63 +215,117 @@ public abstract class AgentBody extends SimulationEntity {
 		this.target = target;
 	}
 
-	/**
-	 * @return the desiredVelocity
-	 */
-	public Vector2 getDesiredVelocity() {
-		return this.desiredVelocity;
-	}
-
-	/**
-	 * @param desiredVelocity the desiredVelocity to set
-	 */
-	public void setDesiredVelocity(Vector2 desiredVelocity) {
-		this.desiredVelocity = desiredVelocity;
-	}
-
-	/**
-	 * @return the steering
-	 */
-	public Vector2 getSteering() {
-		return this.steering;
-	}
-
-	/**
-	 * @param steering the steering to set
-	 */
-	public void setSteering(Vector2 steering) {
-		this.steering = steering;
-	}
-
-	public void seek(Vector2 target) {
-		float slowingDistance = 100f;
-
-		// Sets the new target
-		this.target = target;
+	public void seek() {
+		// Distance from the target at which the agent should start slowing down
+		float slowDownDistance = 100f;
+		// Distance at which it should stop
+		float stopDistance = 10f;
 
 		// Computes the desired velocity towards the target
-		this.desiredVelocity = new Vector2(this.target).sub(this.position);
+		this.desiredVelocity = this.target.cpy().sub(this.position);
 		// Gets the distance to the target
 		float distance = this.desiredVelocity.len();
-		// Normalizes and scale to max velocity the desired velocity
+		// Normalizes and scale to the desired velocity the maximum velocity 
 		this.desiredVelocity.nor().scl(MAX_VELOCITY);
 
 		// On arrival, slows down the agent
-		if (distance < slowingDistance) {
-			this.desiredVelocity.scl(distance / slowingDistance);
+		if (distance <= slowDownDistance) {
+			this.desiredVelocity.scl(distance / slowDownDistance);
+		} else if (distance <= stopDistance) {
+			// If the agent is within the "stop circle", scale the desired velocity to 0
+			this.desiredVelocity.scl(0);
 		}
 
 		// Computes the steering force
-		this.steering = new Vector2(this.desiredVelocity).sub(this.linearVelocity);
-		float i = MAX_FORCE / this.steering.len();
-		i = i < 1.0f ? 1.0f : i;
-		this.steering.scl(i);
+		this.steering = this.desiredVelocity.cpy().sub(this.linearVelocity);
 		// TODO Make the force depends on the mass (sex dependent ?)
+	}
 
+	public void avoidCollisionWithBodies() {
+		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
+		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE * 0.5f));
+
+		// We could also use a dynamic length as shown below
+//		 float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY; 
+//		 this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
+//		 this.ahead2 = this.ahead.cpy().scl(0.5f);
+
+		// Find the most threatening body's position
+		Vector2 bodyToAvoidPosition = findMostThreateningBodyPosition();
+
+		// Computes the avoidance force depending on the position of the most
+		// threatening body found
+		// If no body was found, the avoidance force is simply null
+		if (bodyToAvoidPosition != null) {
+			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).nor().scl(MAX_FORCE);
+			// Recovers normal speed
+//			avoidance.scl(1 / MAX_FORCE);
+		} else {
+			this.avoidance.scl(0);
+		}
+
+		// Adds the avoidance force to the steering
+		this.steering.add(this.avoidance);
+
+		// TODO Inspect the code below, is it useful ?
+//		float i = MAX_FORCE / this.steering.len();
+//		i = i < 1.0f ? 1.0f : i;
+//		this.steering.scl(i);
+	}
+
+	public void computesVelocity() {
 		// Computes the new velocity of the agent
 		this.linearVelocity.add(this.steering);
-		i = MAX_VELOCITY / this.linearVelocity.len();
-		i = i < 1.0f ? 1.0f : i;
-		this.linearVelocity.scl(i);
+
+		// TODO Inspect the code below, is it useful ?
+//		float i = MAX_VELOCITY / this.linearVelocity.len();
+//		i = i < 1.0f ? 1.0f : i;
+//		this.linearVelocity.scl(i);
 	}
+
+	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
+		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 1 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 1
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 1) {
+			// System.out.println("Collision found.");
+			return true;
+		}
+		return false;
+	}
+
+	private Vector2 findMostThreateningBodyPosition() {
+		Vector2 mostThreateningBodyPos = null;
+		synchronized (this.perceivedBodies) {
+			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+				// Loop through the perceived bodies of the agent
+				for (AgentBody body : this.perceivedBodies) {
+					// Checks if the agent's ahead vectors collide with the perceived body
+					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
+					if (collisionWithBody && (mostThreateningBodyPos == null || Vector2.dst(this.position.x, this.position.y, 
+							body.position.x, body.position.y) < Vector2.dst(this.position.x, this.position.y, mostThreateningBodyPos.x, mostThreateningBodyPos.y))) {
+						mostThreateningBodyPos = body.position;
+					}
+				}
+			}
+		}
+		return mostThreateningBodyPos;
+	}
+
+	/* To rewrite */
+//	private SimulationEntity findMostThreateningBody2() {
+//		SimulationEntity mostThreateningBodyPos = null;
+//		synchronized (this.perceivedBodies) {
+//			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+//				for (AgentBody body : this.perceivedBodies) {
+//					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
+//					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
+//							body.position) < Vector2.dst(this.position, mostThreateningBodyPos.getPosition()))) {
+//						mostThreateningBodyPos = body;
+//					}
+//				}
+//			}
+//		}
+//		return mostThreateningBodyPos;
+//	}
+
 }
