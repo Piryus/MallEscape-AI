@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
@@ -53,7 +52,7 @@ public abstract class AgentBody extends SimulationEntity {
 
 	private Vector2 ahead;
 	private Vector2 ahead2;
-	//private Vector2 avoidance;
+	private Vector2 avoidance;
 
 	/**
 	 * Constructor with body's position (two floats) and UUID
@@ -65,6 +64,9 @@ public abstract class AgentBody extends SimulationEntity {
 		this.linearVelocity = new Vector2();
 		this.perceivedBodies = new ArrayList<>();
 		this.perceivedObjects = new ArrayList<>();
+		this.ahead = new Vector2();
+		this.ahead2 = new Vector2();
+		this.avoidance = new Vector2();
 	}
 
 	/**
@@ -165,24 +167,10 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/**
-	 * @param linearVelocity the linearVelocity to set
-	 */
-	public void setLinearVelocity(Vector2 linearVelocity) {
-		this.linearVelocity = linearVelocity;
-	}
-
-	/**
 	 * @return the angularVelocity
 	 */
 	public float getAngularVelocity() {
 		return this.angularVelocity;
-	}
-
-	/**
-	 * @param angularVelocity the angularVelocity to set
-	 */
-	public void setAngularVelocity(float angularVelocity) {
-		this.angularVelocity = angularVelocity;
 	}
 
 	/**
@@ -199,36 +187,10 @@ public abstract class AgentBody extends SimulationEntity {
 		this.target = target;
 	}
 
-	/**
-	 * @return the desiredVelocity
-	 */
-	public Vector2 getDesiredVelocity() {
-		return this.desiredVelocity;
-	}
-
-	/**
-	 * @param desiredVelocity the desiredVelocity to set
-	 */
-	public void setDesiredVelocity(Vector2 desiredVelocity) {
-		this.desiredVelocity = desiredVelocity;
-	}
-
-	/**
-	 * @return the steering
-	 */
-	public Vector2 getSteering() {
-		return this.steering;
-	}
-
-	/**
-	 * @param steering the steering to set
-	 */
-	public void setSteering(Vector2 steering) {
-		this.steering = steering;
-	}
-
 	public void seek() {
+		// Distance from the target at which the agent should start slowing down
 		float slowDownDistance = 100f;
+		// Distance at which it should stop
 		float stopDistance = 10f;
 
 		// Computes the desired velocity towards the target
@@ -242,6 +204,7 @@ public abstract class AgentBody extends SimulationEntity {
 		if (distance <= slowDownDistance) {
 			this.desiredVelocity.scl(distance / slowDownDistance);
 		} else if (distance <= stopDistance) {
+			// If the agent is within the "stop circle", scale the desired velocity to 0
 			this.desiredVelocity.scl(0);
 		}
 
@@ -252,41 +215,32 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void avoidCollisionWithBodies() {
 		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
-		//float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY;
-		//this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
-		//this.ahead2 = this.ahead.cpy().scl(0.5f);
 		this.ahead = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE));
-		this.ahead2 = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE*0.5f));
-		
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.nor().scl(PERCEPTION_DISTANCE * 0.5f));
+
+		// We could also use a dynamic length as shown below
+//		 float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY; 
+//		 this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
+//		 this.ahead2 = this.ahead.cpy().scl(0.5f);
 
 		// Find the most threatening body's position
-		Vector2 bodyToAvoidPosition = findMostThreateningBody();
-		Vector2 avoidance = new Vector2(0,0);
-		// Computes the avoidance force
-		//avoidance = multiplyVector2(subVector2(this.ahead,bodyToAvoidPosition).nor(),MAX_FORCE);
-		//avoidance = this.ahead.cpy();
-		//avoidance = this.ahead;
-		
-		
+		Vector2 bodyToAvoidPosition = findMostThreateningBodyPosition();
+
+		// Computes the avoidance force depending on the position of the most
+		// threatening body found
+		// If no body was found, the avoidance force is simply null
 		if (bodyToAvoidPosition != null) {
-			//this.avoidance.sub(bodyToAvoidPosition);
-			//avoidance.sub(bodyToAvoidPosition);
-			avoidance.x = (ahead.x - bodyToAvoidPosition.x)*MAX_FORCE;
-			avoidance.y = (ahead.y - bodyToAvoidPosition.y)*MAX_FORCE;
-			avoidance.nor();
-			
-			avoidance.scl(MAX_FORCE);
-			
-			//avoidance.scl(1/MAX_FORCE);//Recover normal speed
-			
+			this.avoidance = ahead.cpy().sub(bodyToAvoidPosition).scl(MAX_FORCE).nor().scl(MAX_FORCE);
+			// Recovers normal speed
+//			avoidance.scl(1/MAX_FORCE);
 		} else {
-			//this.avoidance.scl(0);
-			avoidance.scl(0);
+			this.avoidance.scl(0);
 		}
 
 		// Adds the avoidance force to the steering
-		//this.steering.add(this.avoidance);
-		steering.add(avoidance);
+		this.steering.add(this.avoidance);
+
+		// TODO Inspect the code below, is it useful ?
 //		float i = MAX_FORCE / this.steering.len();
 //		i = i < 1.0f ? 1.0f : i;
 //		this.steering.scl(i);
@@ -295,31 +249,34 @@ public abstract class AgentBody extends SimulationEntity {
 	public void computesVelocity() {
 		// Computes the new velocity of the agent
 		this.linearVelocity.add(this.steering);
+
+		// TODO Inspect the code below, is it useful ?
 //		float i = MAX_VELOCITY / this.linearVelocity.len();
 //		i = i < 1.0f ? 1.0f : i;
 //		this.linearVelocity.scl(i);
 	}
 
-	private boolean lineIntersectsBodyCircle(Vector2 ahead, Vector2 ahead2, Vector2 bodyPosition) {
-		if (distance(bodyPosition, ahead) <= 50 || distance(bodyPosition, ahead2) <= 25 || distance(bodyPosition, this.position) <= 60)
-		{
-			//System.out.println("Il y a collision");
+	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
+		if (distance(bodyPosition, this.ahead) <= 50 || distance(bodyPosition, this.ahead2) <= 25
+				|| distance(bodyPosition, this.position) <= 60) {
+			// System.out.println("Collision found.");
 			return true;
 		}
 		return false;
 	}
-	
+
 	private static double distance(Vector2 obj1, Vector2 obj2) {
 		return Math.sqrt((obj1.x - obj2.x) * (obj1.x - obj2.x) + (obj1.y - obj2.y) * (obj1.y - obj2.y));
 	}
-	
 
-	private Vector2 findMostThreateningBody() {
+	private Vector2 findMostThreateningBodyPosition() {
 		Vector2 mostThreateningBodyPos = null;
 		synchronized (this.perceivedBodies) {
 			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
+				// Loop through the perceived bodies of the agent
 				for (AgentBody body : this.perceivedBodies) {
-					boolean collisionWithBody = lineIntersectsBodyCircle(this.ahead, this.ahead2, body.position);
+					// Checks if the agent's ahead vectors collide with the perceived body
+					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
 					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
 							body.position) < distance(this.position, mostThreateningBodyPos))) {
 						mostThreateningBodyPos = body.position;
@@ -329,14 +286,14 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningBodyPos;
 	}
-	
-	/*To rewrite*/
+
+	/* To rewrite */
 	private SimulationEntity findMostThreateningBody2() {
 		SimulationEntity mostThreateningBodyPos = null;
 		synchronized (this.perceivedBodies) {
 			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
 				for (AgentBody body : this.perceivedBodies) {
-					boolean collisionWithBody = lineIntersectsBodyCircle(this.ahead, this.ahead2, body.position);
+					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
 					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
 							body.position) < distance(this.position, mostThreateningBodyPos.getPosition()))) {
 						mostThreateningBodyPos = body;
@@ -346,5 +303,5 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningBodyPos;
 	}
-	
+
 }
