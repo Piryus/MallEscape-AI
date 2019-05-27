@@ -169,7 +169,15 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch.begin();
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				this.spriteBatch.draw(this.johnTex, body.getPosition().x, this.mapHeight - body.getPosition().y);
+				if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
+					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x, body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
+					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x, body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
+					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x, body.getPosition().y);
+				} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
+					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x, body.getPosition().y);
+				}
 			}
 		}
 		this.spriteBatch.end();
