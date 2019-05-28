@@ -190,7 +190,21 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			if (wall instanceof SimulationEntity)
 			{
 				this.shapeRenderer.setColor(1, 1, 1, 1); // White
-				this.shapeRenderer.circle(wall.getPosition().x, wall.getPosition().y, 5);
+				//this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8, 12);//Global
+				//Bottom
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+5, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+5, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+5, 6);
+				
+				//Middle
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+8, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+8, 6);
+				
+				//Top
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+11, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+11, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+11, 6);
 			}
 		}
 		for (AgentBody body : this.bodies) {

@@ -285,7 +285,7 @@ public abstract class AgentBody extends SimulationEntity {
 
 
 		if (wallToAvoidPosition != null) {
-			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE);
+			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE*3);//More force so the ahead vector is not stuck in the wall
 		}
 		else {
 			this.avoidance.scl(0);
@@ -309,7 +309,6 @@ public abstract class AgentBody extends SimulationEntity {
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
 		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 10 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 10
 				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 10) {
-			// System.out.println("Collision found.");
 			return true;
 		}
 		return false;
@@ -317,9 +316,20 @@ public abstract class AgentBody extends SimulationEntity {
 	
 	//Do it in square in the future?
 	private boolean lineIntersectsWallCircle(Vector2 wall) {
-		if (Vector2.dst(wall.x, wall.y, this.ahead.x, this.ahead.y) <= 5 || Vector2.dst(wall.x, wall.y, this.ahead2.x, this.ahead2.y) <= 5
-				|| Vector2.dst(wall.x, wall.y, this.position.x, this.position.y) <= 5) {
-			// System.out.println("Collision found.");
+		if (Vector2.dst(wall.x+4, wall.y+4, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+4, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+4, this.ahead.x, this.ahead.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+8, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+8, this.ahead.x, this.ahead.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+11, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+11, this.ahead.x, this.ahead.y) <= 6
+				/*|| Vector2.dst(wall.x+8, wall.y+8, this.ahead.x, this.ahead.y) <= 12 */
+				
+				|| Vector2.dst(wall.x+4, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6)
+				/*|| Vector2.dst(wall.x+8, wall.y+8, this.ahead2.x, this.ahead2.y) <= 12*/
+				
+				/*|| Vector2.dst(wall.x+8, wall.y+8, this.position.x, this.position.y) <= 12)*/
+		{
+			//New target because no pathfinding yet
+			this.target= new Vector2();
 			return true;
 		}
 		return false;
