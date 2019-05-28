@@ -106,6 +106,7 @@ skill AdultSkill implements AdultCapacity {
 
 		this.body.seek
 		this.body.avoidCollisionWithBodies
+		this.body.avoidCollisionWithWalls
 		this.body.computesVelocity
 		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(movement.x, movement.y)

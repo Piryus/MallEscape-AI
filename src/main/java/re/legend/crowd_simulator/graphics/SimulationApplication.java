@@ -26,6 +26,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
@@ -184,6 +185,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Renders the forces applied on the agents
 		this.shapeRenderer.setProjectionMatrix(this.camera.combined);
 		this.shapeRenderer.begin(ShapeType.Line);
+		for (SimulationEntity wall : this.walls)
+		{
+			if (wall instanceof SimulationEntity)
+			{
+				this.shapeRenderer.setColor(1, 1, 1, 1); // White
+				this.shapeRenderer.circle(wall.getPosition().x, wall.getPosition().y, 5);
+			}
+		}
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
 				// Agent's private circle

@@ -273,6 +273,28 @@ public abstract class AgentBody extends SimulationEntity {
 //		i = i < 1.0f ? 1.0f : i;
 //		this.steering.scl(i);
 	}
+	
+	//Avoid collision with Walls
+	public void avoidCollisionWithWalls() {
+		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
+		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE * 0.5f));
+
+		// Find the most threatening body's position
+		Vector2 wallToAvoidPosition = findMostThreateningWall();
+
+
+		if (wallToAvoidPosition != null) {
+			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE);
+		}
+		else {
+			this.avoidance.scl(0);
+		}
+
+		// Adds the avoidance force to the steering
+		this.steering.add(this.avoidance);
+
+	}
 
 	public void computesVelocity() {
 		// Computes the new velocity of the agent
@@ -287,6 +309,16 @@ public abstract class AgentBody extends SimulationEntity {
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
 		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 10 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 10
 				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 10) {
+			// System.out.println("Collision found.");
+			return true;
+		}
+		return false;
+	}
+	
+	//Do it in square in the future?
+	private boolean lineIntersectsWallCircle(Vector2 wall) {
+		if (Vector2.dst(wall.x, wall.y, this.ahead.x, this.ahead.y) <= 5 || Vector2.dst(wall.x, wall.y, this.ahead2.x, this.ahead2.y) <= 5
+				|| Vector2.dst(wall.x, wall.y, this.position.x, this.position.y) <= 5) {
 			// System.out.println("Collision found.");
 			return true;
 		}
@@ -309,6 +341,23 @@ public abstract class AgentBody extends SimulationEntity {
 			}
 		}
 		return mostThreateningBodyPos;
+	}
+	
+	private Vector2 findMostThreateningWall() {
+		Vector2 mostThreateningWallPos = null;
+		synchronized (this.perceivedObjects) {
+			if (this.perceivedObjects != null && !this.perceivedObjects.isEmpty()) {
+				for (SimulationEntity wall : this.perceivedObjects) {
+					// Checks if the agent's ahead vectors collide with the perceived body
+					boolean collisionWithWall = lineIntersectsWallCircle(wall.getPosition());
+					if (collisionWithWall && (mostThreateningWallPos == null || Vector2.dst(this.position.x, this.position.y, 
+							wall.getPosition().x, wall.getPosition().y) < Vector2.dst(this.position.x, this.position.y, mostThreateningWallPos.x, mostThreateningWallPos.y))) {
+						mostThreateningWallPos = wall.getPosition();
+					}
+				}
+			}
+		}
+		return mostThreateningWallPos;
 	}
 
 	/* To rewrite */
