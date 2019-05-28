@@ -11,13 +11,13 @@ skill AdultSkill implements AdultCapacity {
 
 	// Body on which the actions will be applied
 	var body : AdultBody
-	
+
 	// Last step time
 	var lastStepTime : long
-	
+
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
-	
+
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
@@ -57,7 +57,7 @@ skill AdultSkill implements AdultCapacity {
 
 		do {
 			authorizedMove = true
-			
+
 			// Random direction on X axis
 			if (rand.nextBoolean)
 				dirX = 1
@@ -72,43 +72,38 @@ skill AdultSkill implements AdultCapacity {
 
 			// Checks for each body's perceived objects if the move doesn't put the body in a wall
 			for (object : this.body.perceivedObjects) {
-				if (
-					// Move on X axis wrong
-					(this.body.position.x >= object.position.x &&
-					this.body.position.x <= object.position.x + 16 &&
+				if (// Move on X axis wrong
+				(this.body.position.x >= object.position.x && this.body.position.x <= object.position.x + 16 &&
 					560 - this.body.position.y + dirY >= object.position.y &&
-					560 - this.body.position.y + dirY <= object.position.y + 16) ||
-					// Move on Y axis wrong
-					(this.body.position.x + dirX >= object.position.x &&
-					this.body.position.x + dirX <= object.position.x + 16 && 
+					560 - this.body.position.y + dirY <= object.position.y + 16) || // Move on Y axis wrong
+				(this.body.position.x + dirX >= object.position.x &&
+					this.body.position.x + dirX <= object.position.x + 16 &&
 					560 - this.body.position.y >= object.position.y &&
-					560 - this.body.position.y <= object.position.y + 16)
-					) {
+					560 - this.body.position.y <= object.position.y + 16)) {
 					authorizedMove = false;
 				}
 			}
-			
 
 		} while (!authorizedMove);
 
 		move(dirX, dirY)
 	}
-	
+
 	def moveRandom2(body : AgentBody) {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
-		
+
 		// If the body don't have a target, give it a random one
 		if (this.body.target == null) {
 			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500))
 		}
-		
+
 		// If the body has had its target for longer than 20 seconds, give it a new one
 		if (System.currentTimeMillis > this.targetAcquiredTime + 20000) {
 			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500))
 			this.targetAcquiredTime = System.currentTimeMillis
 		}
-		
+
 		this.body.seek
 		this.body.avoidCollisionWithBodies
 		this.body.computesVelocity

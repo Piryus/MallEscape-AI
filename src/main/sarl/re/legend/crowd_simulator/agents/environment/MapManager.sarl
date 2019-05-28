@@ -1,7 +1,6 @@
 package re.legend.crowd_simulator.agents.environment
 
 import io.sarl.core.DefaultContextInteractions
-import io.sarl.core.Lifecycle
 import java.util.ArrayList
 import java.util.List
 import java.util.UUID
@@ -85,7 +84,7 @@ capacity MapManager {
 }
 
 skill DefaultMapManager implements MapManager {
-	uses DefaultContextInteractions, Lifecycle
+	uses DefaultContextInteractions
 
 	// The map of the simulation
 	var map : Map
@@ -96,13 +95,9 @@ skill DefaultMapManager implements MapManager {
 	// Timer
 	var startTimer : long;
 
-	// Time management for spawner
-	var lastTimeSpawner : float
-
 	def install {
 		this.map = new Map()
 		this.startTimer = System.currentTimeMillis()
-		this.lastTimeSpawner = getCurrentTime
 	}
 
 	def createAdult(spawnPosX : float, spawnPosY : float) : AdultBody {
@@ -133,11 +128,15 @@ skill DefaultMapManager implements MapManager {
 	def computePerceptions {
 		synchronized (this.map.bodies) {
 			var frustum : EntityFrustum
+
 			var bodies = new ArrayList<AgentBody>
 			var objects = new ArrayList<SimulationEntity>
 
-			//
 			for (body : map.bodies) {
+				// Clears the perception lists
+				bodies = new ArrayList<AgentBody>
+				objects = new ArrayList<SimulationEntity>
+
 				frustum = body.getFrustum
 
 				if (frustum === null)
@@ -150,7 +149,7 @@ skill DefaultMapManager implements MapManager {
 					if (b.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
 						b.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
 						b.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
-						b.getPosition.y <= (body.getPosition.y + frustumSideLength) && b != body) {
+						b.getPosition.y <= (body.getPosition.y + frustumSideLength) && b.uuid != body.uuid) {
 						bodies.add(b);
 					}
 				}
