@@ -21,13 +21,13 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 20;
+	public static final float MAX_VELOCITY = 10;
 
 	// Max force of the agent
-	public static final float MAX_FORCE = 30;
+	public static final float MAX_FORCE = 15;
 
 	// Max distance at which the agent can perceive other bodies
-	public static final float PERCEPTION_DISTANCE = 50;
+	public static final float PERCEPTION_DISTANCE = 10;
 
 	// Coordinates of the target to reach
 	private Vector2 target;
@@ -285,8 +285,8 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
-		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 25 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 25
-				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 25) {
+		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 10 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 10
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 10) {
 			// System.out.println("Collision found.");
 			return true;
 		}

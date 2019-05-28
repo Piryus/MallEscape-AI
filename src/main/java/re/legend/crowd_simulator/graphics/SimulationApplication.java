@@ -169,13 +169,13 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
 				if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
-					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
-					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
-					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
-					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x - 8, body.getPosition().y);
 				}
 			}
 		}
@@ -188,7 +188,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			if (body instanceof AdultBody) {
 				// Agent's private circle
 				this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
-				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 30);
+				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 10);
 				// Agent's ahead vector
 				this.shapeRenderer.setColor(1, 1, 1, 1); // White
 				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead().x,
