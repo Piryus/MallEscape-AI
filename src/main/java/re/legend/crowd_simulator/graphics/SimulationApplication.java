@@ -19,7 +19,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -27,6 +26,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
@@ -65,7 +65,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private int mapHeight;
 
 	// Timer
-	private String strTimer; // display a string
+	private String strTimer;
 	private BitmapFont fontTimer;
 	private GlyphLayout timerLayout;
 
@@ -85,8 +85,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
 		this.shapeRenderer = new ShapeRenderer();
-		
-		// Loads textures
+
+		// Loads bodies textures
 		this.adultTextures = new Texture("adult_bodies.png");
 		this.adultStillLeft = new TextureRegion(this.adultTextures, 0, 0, 16, 16);
 		this.adultStillFace = new TextureRegion(this.adultTextures, 16, 0, 16, 16);
@@ -107,29 +107,28 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 		// Loads walls
 		TiledMapTileLayer wallsLayer = (TiledMapTileLayer) this.renderer.getMap().getLayers().get("Walls");
-		Cell cell;
 		for (int x = 0; x < wallsLayer.getWidth(); x++) {
 			for (int y = 0; y < wallsLayer.getHeight(); y++) {
-				if ((cell = wallsLayer.getCell(x, y)) != null) {
+				if ((wallsLayer.getCell(x, y)) != null) {
 					this.walls.add(new Wall(x * Wall.SIZE, y * Wall.SIZE));
 				}
 			}
 		}
-		
-		//Test Access to an object
-		MapLayer layer = map.getLayers().get(0);
-		MapObject way= layer.getObjects().get("Way");
-		
-		//Get Access to female/male shop on map2
-		/*
-		MapLayer layer2 = map.getLayers().get("Walls");
-		
-		MapObject femaleShop= layer2.getObjects().get("ShopFObject");
-		MapObject maleShop= layer2.getObjects().get("ShopMObject");
-		MapObject road = layer2.getObjects().get("Road");
-		*/
-		
 
+		// Test Access to an object
+		MapLayer layer = map.getLayers().get(0);
+		MapObject way = layer.getObjects().get("Way");
+
+		// Get Access to female/male shop on map2
+		/*
+		 * MapLayer layer2 = map.getLayers().get("Walls");
+		 * 
+		 * MapObject femaleShop= layer2.getObjects().get("ShopFObject"); MapObject
+		 * maleShop= layer2.getObjects().get("ShopMObject"); MapObject road =
+		 * layer2.getObjects().get("Road");
+		 */
+
+		// Sets camera properties
 		this.camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
 		this.camera.position.set(this.mapWidth / 2, this.mapHeight / 2, 0);
 
@@ -155,6 +154,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	@Override
 	public void render() {
+		// Sets background color
 		Gdx.gl.glClearColor((float) 97 / 255, (float) 133 / 255, (float) 248 / 255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -164,46 +164,79 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.renderer.setView(this.camera);
 		this.renderer.render();
 
-		
+		// Renders the bodies on the map
 		this.spriteBatch.setProjectionMatrix(this.camera.combined);
 		this.spriteBatch.begin();
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
 				if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
-					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
-					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
-					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x - 8, body.getPosition().y);
 				} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
-					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x, body.getPosition().y);
+					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x - 8, body.getPosition().y);
 				}
 			}
 		}
 		this.spriteBatch.end();
-		
+
+		// Renders the forces applied on the agents
 		this.shapeRenderer.setProjectionMatrix(this.camera.combined);
 		this.shapeRenderer.begin(ShapeType.Line);
+		for (SimulationEntity wall : this.walls)
+		{
+			if (wall instanceof SimulationEntity)
+			{
+				this.shapeRenderer.setColor(1, 1, 1, 1); // White
+				//this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8, 12);//Global
+				//Bottom
+				/*
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+5, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+5, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+5, 6);
+				
+				//Middle
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+8, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+8, 6);
+				
+				//Top
+				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+11, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+11, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+11, 6);*/
+			}
+		}
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
+				/*
 				// Agent's private circle
 				this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
-				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 30);
+				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 10);
 				// Agent's ahead vector
 				this.shapeRenderer.setColor(1, 1, 1, 1); // White
-				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead().x, body.getAhead().y);
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead().x,
+						body.getAhead().y);
 				// Agent's ahead2 vector
-				//this.shapeRenderer.setColor(1, 0, 0, 1);
-				//this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead2().x, body.getAhead2().y);
+				// this.shapeRenderer.setColor(1, 0, 0, 1);
+				// this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+				// body.getAhead2().x, body.getAhead2().y);
 				// Agent's velocity vector
 				this.shapeRenderer.setColor(0, 1, 0, 1); // Green
-				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y + body.getLinearVelocity().y);
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+						body.getPosition().x + body.getLinearVelocity().x,
+						body.getPosition().y + body.getLinearVelocity().y);
 				// Agent's avoidance vector
 				this.shapeRenderer.setColor(0.5f, 0, 0.5f, 1); // Purple
-				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getAvoidance().x, body.getPosition().y + body.getAvoidance().y);
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+						body.getPosition().x + body.getAvoidance().x, body.getPosition().y + body.getAvoidance().y);
 				// Agent's desired velocity vector
 				this.shapeRenderer.setColor(1, 0, 0, 1); // Red
-				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getDesiredVelocity().x, body.getPosition().y + body.getDesiredVelocity().y);
+				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+						body.getPosition().x + body.getDesiredVelocity().x,
+						body.getPosition().y + body.getDesiredVelocity().y);
+						*/
 			}
 		}
 		this.shapeRenderer.end();
@@ -227,13 +260,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void resize(int arg0, int arg1) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -262,7 +293,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	@Override
 	public boolean scrolled(int amount) {
-		// Camera zoom
+		// Manages camera zoom
 		if (amount == 1 && this.camera.zoom >= 1) {
 			this.camera.zoom++;
 		} else if (amount == -1 && this.camera.zoom > 1) {
