@@ -58,6 +58,10 @@
 			<artifactId>gdx-freetype-platform</artifactId>
 			<classifier>natives-desktop</classifier>
 		</dependency>
+		<dependency>
+			<groupId>com.kotcrab.vis</groupId>
+			<artifactId>vis-ui</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -140,6 +144,11 @@
 				<artifactId>gdx-freetype-platform</artifactId>
 				<version>1.9.9</version>
 				<classifier>natives-desktop</classifier>
+			</dependency>
+			<dependency>
+				<groupId>com.kotcrab.vis</groupId>
+				<artifactId>vis-ui</artifactId>
+				<version>1.4.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
