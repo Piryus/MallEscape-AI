@@ -21,13 +21,13 @@ public abstract class AgentBody extends SimulationEntity {
 	private float angularVelocity;
 
 	// Max velocity of the agent
-	public static final float MAX_VELOCITY = 100;
+	public static final float MAX_VELOCITY = 10;
 
 	// Max force of the agent
-	public static final float MAX_FORCE = 30;
+	public static final float MAX_FORCE = 15;
 
 	// Max distance at which the agent can perceive other bodies
-	public static final float PERCEPTION_DISTANCE = 50;
+	public static final float PERCEPTION_DISTANCE = 10;
 
 	// Coordinates of the target to reach
 	private Vector2 target;
@@ -218,21 +218,24 @@ public abstract class AgentBody extends SimulationEntity {
 	public void seek() {
 		// Distance from the target at which the agent should start slowing down
 		float slowDownDistance = 100f;
+		
 		// Distance at which it should stop
 		float stopDistance = 10f;
 
 		// Computes the desired velocity towards the target
 		this.desiredVelocity = this.target.cpy().sub(this.position);
+		
 		// Gets the distance to the target
 		float distance = this.desiredVelocity.len();
+		
 		// Normalizes and scale to the desired velocity the maximum velocity 
 		this.desiredVelocity.nor().scl(MAX_VELOCITY);
 
 		// On arrival, slows down the agent
 		if (distance <= slowDownDistance) {
 			this.desiredVelocity.scl(distance / slowDownDistance);
-		} else if (distance <= stopDistance) {
-			// If the agent is within the "stop circle", scale the desired velocity to 0
+		}
+		else if (distance <= stopDistance) {
 			this.desiredVelocity.scl(0);
 		}
 
@@ -246,48 +249,71 @@ public abstract class AgentBody extends SimulationEntity {
 		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
 		this.ahead2 = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE * 0.5f));
 
-		// We could also use a dynamic length as shown below
-//		 float dynamicLength = this.linearVelocity.len() / MAX_VELOCITY; 
-//		 this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor()).scl(dynamicLength);
-//		 this.ahead2 = this.ahead.cpy().scl(0.5f);
-
 		// Find the most threatening body's position
 		Vector2 bodyToAvoidPosition = findMostThreateningBodyPosition();
 
-		// Computes the avoidance force depending on the position of the most
-		// threatening body found
-		// If no body was found, the avoidance force is simply null
+		// Computes the avoidance force depending on the position of the most threatening body found
+		// If no body was found, the avoidance force is null
 		if (bodyToAvoidPosition != null) {
 			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).nor().scl(MAX_FORCE);
-			// Recovers normal speed
-//			avoidance.scl(1 / MAX_FORCE);
-		} else {
+		}
+		else {
 			this.avoidance.scl(0);
 		}
 
 		// Adds the avoidance force to the steering
 		this.steering.add(this.avoidance);
+	}
+	
+	//Avoid collision with Walls
+	public void avoidCollisionWithWalls() {
+		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
+		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
+		this.ahead2 = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE * 0.5f));
 
-		// TODO Inspect the code below, is it useful ?
-//		float i = MAX_FORCE / this.steering.len();
-//		i = i < 1.0f ? 1.0f : i;
-//		this.steering.scl(i);
+		// Find the most threatening wall position
+		Vector2 wallToAvoidPosition = findMostThreateningWall();
+		
+		// Computes the avoidance force depending on the position of the closest wall found
+		// If no wall was found, the avoidance force is null
+		if (wallToAvoidPosition != null) {
+			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE*3);//More force so the ahead vector is not stuck in the wall
+		}
+		else
+		{
+			this.avoidance.scl(0);
+		}
+
+		// Adds the avoidance force to the steering
+		this.steering.add(this.avoidance);
 	}
 
 	public void computesVelocity() {
 		// Computes the new velocity of the agent
 		this.linearVelocity.add(this.steering);
-
-		// TODO Inspect the code below, is it useful ?
-//		float i = MAX_VELOCITY / this.linearVelocity.len();
-//		i = i < 1.0f ? 1.0f : i;
-//		this.linearVelocity.scl(i);
 	}
 
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
-		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 1 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 1
-				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 1) {
-			// System.out.println("Collision found.");
+		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= 10 || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= 10
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= 10) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	private boolean lineIntersectsWallCircle(Vector2 wall) {
+		if (Vector2.dst(wall.x+4, wall.y+4, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+4, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+4, this.ahead.x, this.ahead.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+8, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+8, this.ahead.x, this.ahead.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+8, wall.y+11, this.ahead.x, this.ahead.y) <= 6 || Vector2.dst(wall.x+12, wall.y+11, this.ahead.x, this.ahead.y) <= 6
+				
+				|| Vector2.dst(wall.x+4, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+4, this.ahead2.x, this.ahead2.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+8, this.ahead2.x, this.ahead2.y) <= 6
+				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6)
+
+		{
+			//New target because to not force into the same wall
+			this.target= new Vector2();
 			return true;
 		}
 		return false;
@@ -310,22 +336,21 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningBodyPos;
 	}
-
-	/* To rewrite */
-//	private SimulationEntity findMostThreateningBody2() {
-//		SimulationEntity mostThreateningBodyPos = null;
-//		synchronized (this.perceivedBodies) {
-//			if (this.perceivedBodies != null && !this.perceivedBodies.isEmpty()) {
-//				for (AgentBody body : this.perceivedBodies) {
-//					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
-//					if (collisionWithBody && (mostThreateningBodyPos == null || distance(this.position,
-//							body.position) < Vector2.dst(this.position, mostThreateningBodyPos.getPosition()))) {
-//						mostThreateningBodyPos = body;
-//					}
-//				}
-//			}
-//		}
-//		return mostThreateningBodyPos;
-//	}
-
+	
+	private Vector2 findMostThreateningWall() {
+		Vector2 mostThreateningWallPos = null;
+		synchronized (this.perceivedObjects) {
+			if (this.perceivedObjects != null && !this.perceivedObjects.isEmpty()) {
+				for (SimulationEntity wall : this.perceivedObjects) {
+					// Checks if the agent's ahead vectors collide with the perceived body
+					boolean collisionWithWall = lineIntersectsWallCircle(wall.getPosition());
+					if (collisionWithWall && (mostThreateningWallPos == null || Vector2.dst(this.position.x, this.position.y, 
+							wall.getPosition().x, wall.getPosition().y) < Vector2.dst(this.position.x, this.position.y, mostThreateningWallPos.x, mostThreateningWallPos.y))) {
+						mostThreateningWallPos = wall.getPosition();
+					}
+				}
+			}
+		}
+		return mostThreateningWallPos;
+	}
 }
