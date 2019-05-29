@@ -192,6 +192,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				this.shapeRenderer.setColor(1, 1, 1, 1); // White
 				//this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8, 12);//Global
 				//Bottom
+				/*
 				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+5, 6);
 				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+5, 6);
 				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+5, 6);
@@ -204,11 +205,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				//Top
 				this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+11, 6);
 				this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+11, 6);
-				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+11, 6);
+				this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+11, 6);*/
 			}
 		}
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
+				/*
 				// Agent's private circle
 				this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
 				this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 10);
@@ -234,6 +236,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
 						body.getPosition().x + body.getDesiredVelocity().x,
 						body.getPosition().y + body.getDesiredVelocity().y);
+						*/
 			}
 		}
 		this.shapeRenderer.end();
