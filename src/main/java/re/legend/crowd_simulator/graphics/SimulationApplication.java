@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -21,10 +22,13 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisTextButton;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
@@ -75,6 +79,13 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Shape renderer
 	private ShapeRenderer shapeRenderer;
+	
+	// Stage
+	private Stage stage;
+	private VisTextButton startButton;
+	
+	// Input multiplexer (used to interact with both the UI and the map)
+	private InputMultiplexer inputMultiplexer; 
 
 	@Override
 	public void create() {
@@ -136,8 +147,19 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/coolvetica.ttf"));
 		this.parameter = new FreeTypeFontParameter();
 		this.parameter.size = 30;
+		
+		// Stage initialization
+		VisUI.load();
+		this.stage = new Stage(new ScreenViewport());	
+//		this.startButton = new VisTextButton("Start");
+//		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth())/2, (Gdx.graphics.getHeight() - this.startButton.getHeight())/2);
+//		this.stage.addActor(this.startButton);
 
-		Gdx.input.setInputProcessor(this);
+		// Adds input processors
+		this.inputMultiplexer = new InputMultiplexer();
+		this.inputMultiplexer.addProcessor(this);
+		this.inputMultiplexer.addProcessor(this.stage);
+		Gdx.input.setInputProcessor(this.inputMultiplexer);
 	}
 
 	@Override
@@ -254,12 +276,17 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		float posY = this.timerLayout.height + 10;
 		this.fontTimer.draw(this.fixedSpriteBatch, this.strTimer, posX, posY);
 		this.fixedSpriteBatch.end();
+		
+		// Stage rendering
+		float delta = Gdx.graphics.getDeltaTime();
+		this.stage.act(delta);
+		this.stage.draw();
 
 	}
 
 	@Override
-	public void resize(int arg0, int arg1) {
-		// TODO Auto-generated method stub
+	public void resize(int width, int height) {
+		this.stage.getViewport().update(width, height, true);
 	}
 
 	@Override
