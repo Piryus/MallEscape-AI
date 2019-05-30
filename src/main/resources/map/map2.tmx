@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="35" height="35" tilewidth="16" tileheight="16" infinite="0" nextlayerid="35" nextobjectid="40">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="35" height="35" tilewidth="16" tileheight="16" infinite="0" nextlayerid="36" nextobjectid="61">
  <tileset firstgid="1" name="tilemap" tilewidth="16" tileheight="16" spacing="1" tilecount="504" columns="28">
   <image source="tilemap.png" width="476" height="305"/>
  </tileset>
@@ -207,7 +207,7 @@
  <objectgroup id="34" name="Roads">
   <object id="35" name="RoadW" x="1.77636e-14" y="240.401" width="254.869" height="77.9076"/>
   <object id="37" name="RoadE" x="304.396" y="240.401" width="254.869" height="77.9076"/>
-  <object id="38" name="RoadN" x="239.844" y="1.19087e-05" width="79.0204" height="257.095"/>
+  <object id="38" name="RoadN" x="239.844" y="1.19087e-5" width="79.0204" height="257.095"/>
   <object id="39" name="RoadS" x="239.844" y="302.17" width="79.0204" height="257.095"/>
  </objectgroup>
  <objectgroup id="32" name="ShopMObject">
@@ -236,5 +236,21 @@
   <object id="24" name="ShopF6" x="330.576" y="337.501" width="116.606" height="110.025"/>
   <object id="25" name="ShopF6B" x="435.064" y="416.549" width="115.424" height="30.9771"/>
   <object id="26" name="ShopF6eb" x="319.673" y="367.484" width="23.929" height="31.8857"/>
+ </objectgroup>
+ <objectgroup id="35" name="Path">
+  <object id="42" x="279.333" y="542"/>
+  <object id="43" x="279.333" y="496.667"/>
+  <object id="44" x="280" y="455.333"/>
+  <object id="45" x="281.333" y="419.333"/>
+  <object id="46" x="279.333" y="371.333"/>
+  <object id="47" x="280" y="339.333"/>
+  <object id="48" x="256" y="315.333"/>
+  <object id="49" x="213.333" y="291.333"/>
+  <object id="50" x="236" y="260"/>
+  <object id="51" x="266.667" y="228.667"/>
+  <object id="52" x="284" y="190.667"/>
+  <object id="58" x="283.333" y="152.667"/>
+  <object id="59" x="283.333" y="116.667"/>
+  <object id="60" x="282" y="79.3333"/>
  </objectgroup>
 </map>
