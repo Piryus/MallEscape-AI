@@ -353,4 +353,8 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningWallPos;
 	}
+	
+	public boolean hasReachedTarget() {
+		return Vector2.dst(this.position.x, this.position.y, this.target.x, this.target.y) < 10;
+	}
 }

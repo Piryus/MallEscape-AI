@@ -41,6 +41,9 @@ agent Environment {
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupWalls(this.application.getWalls);
 
+		// Gets the waypoints from the tiled map and set them up into the map object
+		setupWaypoints(this.application.getWaypoints)
+
 		// TODO Test spawner
 		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(270, 220), map)
 

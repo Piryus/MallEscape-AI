@@ -85,7 +85,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private VisTextButton startButton;
 	
 	// Input multiplexer (used to interact with both the UI and the map)
-	private InputMultiplexer inputMultiplexer; 
+	private InputMultiplexer inputMultiplexer;
+	
+	// Waypoints of the map
+	private List<Vector2> waypoints;
 
 	@Override
 	public void create() {
@@ -96,6 +99,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
 		this.shapeRenderer = new ShapeRenderer();
+		this.waypoints = new ArrayList<>();
 
 		// Loads bodies textures
 		this.adultTextures = new Texture("adult_bodies.png");
@@ -357,5 +361,16 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	public List<Wall> getWalls() {
 		return this.walls;
+	}
+	
+	public List<Vector2> getWaypoints() {
+		// Retrieves the waypoints from the path object layer of the map
+		MapLayer pathLayer = (MapLayer) this.map.getLayers().get("Path");
+		for(MapObject waypoint : pathLayer.getObjects()) {
+			float xPos = (float) waypoint.getProperties().get("x");
+			float yPos = (float) waypoint.getProperties().get("y");
+			this.waypoints.add(new Vector2(xPos, yPos));
+		}
+		return this.waypoints;
 	}
 }

@@ -6,6 +6,8 @@ import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
+import re.legend.crowd_simulator.pathfinding.Path
+import java.util.List
 
 skill AdultSkill implements AdultCapacity {
 
@@ -17,6 +19,12 @@ skill AdultSkill implements AdultCapacity {
 
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
+	
+	// Current path followed by the agent
+	var path : Path
+	
+	// The current node the agent is targeting
+	var currentNode : int
 
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
@@ -56,6 +64,31 @@ skill AdultSkill implements AdultCapacity {
 			this.targetAcquiredTime = System.currentTimeMillis
 		}
 
+		this.body.seek
+		this.body.avoidCollisionWithBodies
+		this.body.avoidCollisionWithWalls
+		this.body.computesVelocity
+		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
+		move(movement.x, movement.y)
+		this.lastStepTime = System.currentTimeMillis
+	}
+	
+	def moveAlongPath(body : AgentBody, waypoints : List<Vector2>) {
+		if (this.body == null) {
+			this.body = body as AdultBody
+		}
+		
+		if (this.path == null) {
+			this.path = new Path(waypoints)
+			this.currentNode = 0;
+			this.body.target = this.path.getNode(this.currentNode)
+		}
+		
+		if (this.body.hasReachedTarget && this.path.length > this.currentNode + 1) {
+			this.currentNode++
+			this.body.target = this.path.getNode(this.currentNode)
+		}
+		
 		this.body.seek
 		this.body.avoidCollisionWithBodies
 		this.body.avoidCollisionWithWalls
