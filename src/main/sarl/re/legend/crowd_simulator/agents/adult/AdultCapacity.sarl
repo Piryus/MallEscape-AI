@@ -25,6 +25,11 @@ capacity AdultCapacity {
 	 * Moves the agent randomly, giving him a new random target every 20 seconds
 	 */
 	def moveRandomly(body : AgentBody)
+	
+	/**
+	 * Move the agent to the female shop
+	 */
+	 def moveToFemaleShop(body : AgentBody)
 }
 
 

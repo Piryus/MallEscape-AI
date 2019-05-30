@@ -10,11 +10,27 @@ behavior AdultBehavior {
 	uses AdultCapacity
 
 	var state = AdultState::FEMALE_SHOP
-	//Create pheromone
 	
 	on Perception [state == AdultState::FEMALE_SHOP] {
-		//moveRandomly(occurrence.body)
-		moveRandomly(occurrence.body)
+		moveToFemaleShop(occurrence.body)
+		// moveToMaleShop(occurence.body)
+	
+		//this.state = AdultState::MALE_SHOP
+	}
+
+	on Perception [state == AdultState::MALE_SHOP] {
+
+
+	}
+
+	on Perception [state == AdultState::PICK_UP_PRODUCT] {
+
+
+	}
+
+	on Perception [state == AdultState::EVACUATE] {
+
+
 	}
 
 }

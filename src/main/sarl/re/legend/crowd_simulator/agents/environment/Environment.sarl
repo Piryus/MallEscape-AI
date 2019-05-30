@@ -42,7 +42,10 @@ agent Environment {
 		setupWalls(this.application.getWalls);
 
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(270, 220), map)
+		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(50, 280), map) // West
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 500), map) // North
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(500, 280), map) // Est
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 50), map) //South
 
 		// TODO Implement a real game loop
 		every(50)[emit(new GameLoopTest)]

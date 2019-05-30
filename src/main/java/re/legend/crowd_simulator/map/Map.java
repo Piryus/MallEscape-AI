@@ -24,6 +24,9 @@ public class Map {
 	// List of walls on the map
 	private List<Wall> walls;
 	
+	//List of female shop on the map
+	
+	
 	// Size of each cell of the map
 	public static final int CELL_SIZE = 16; 
 	
