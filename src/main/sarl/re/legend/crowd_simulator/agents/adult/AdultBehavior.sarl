@@ -14,7 +14,7 @@ behavior AdultBehavior {
 	
 	on Perception [state == AdultState::FEMALE_SHOP] {
 		//moveRandomly(occurrence.body)
-		moveRandom2(occurrence.body)
+		moveRandomly(occurrence.body)
 	}
 
 }
