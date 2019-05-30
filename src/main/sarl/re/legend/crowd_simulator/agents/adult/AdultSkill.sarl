@@ -42,53 +42,6 @@ skill AdultSkill implements AdultCapacity {
 	}
 
 	def moveRandomly(body : AgentBody) {
-		// Retrieves the given body as an Adult Body
-		this.body = body as AdultBody
-
-		// Just a simple random number getter
-		var rand = new Random
-		// Delta movement on X axis
-		var dirX : int
-		// Delta movement on Y axis
-		var dirY : int
-		// Boolean used to check if the body isn't going through a wall
-		var authorizedMove = true
-
-		do {
-			authorizedMove = true
-
-			// Random direction on X axis
-			if (rand.nextBoolean)
-				dirX = 1
-			else
-				dirX = -1
-
-			// Random direction on Y axis
-			if (rand.nextBoolean)
-				dirY = 1
-			else
-				dirY = -1
-
-			// Checks for each body's perceived objects if the move doesn't put the body in a wall
-			for (object : this.body.perceivedObjects) {
-				if (// Move on X axis wrong
-				(this.body.position.x >= object.position.x && this.body.position.x <= object.position.x + 16 &&
-					560 - this.body.position.y + dirY >= object.position.y &&
-					560 - this.body.position.y + dirY <= object.position.y + 16) || // Move on Y axis wrong
-				(this.body.position.x + dirX >= object.position.x &&
-					this.body.position.x + dirX <= object.position.x + 16 &&
-					560 - this.body.position.y >= object.position.y &&
-					560 - this.body.position.y <= object.position.y + 16)) {
-					authorizedMove = false;
-				}
-			}
-
-		} while (!authorizedMove);
-
-		move(dirX, dirY)
-	}
-
-	def moveRandom2(body : AgentBody) {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
 

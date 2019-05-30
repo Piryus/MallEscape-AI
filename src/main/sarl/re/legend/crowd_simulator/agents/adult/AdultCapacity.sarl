@@ -21,15 +21,10 @@ capacity AdultCapacity {
 	 */
 	def move(x : float, y : float)
 	
-	/** 
-	 * Moves the agent randomly
+	/**
+	 * Moves the agent randomly, giving him a new random target every 20 seconds
 	 */
 	def moveRandomly(body : AgentBody)
-	
-	/**
-	 * Moves the agent along a path
-	 */
-	def moveRandom2(body : AgentBody)
 }
 
 
