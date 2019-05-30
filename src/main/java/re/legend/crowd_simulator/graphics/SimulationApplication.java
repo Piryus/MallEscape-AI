@@ -33,6 +33,8 @@ import com.kotcrab.vis.ui.widget.VisTextButton;
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.FemaleShop;
+import re.legend.crowd_simulator.entities.gameobjects.MaleShop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
@@ -50,7 +52,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
-
+	private List<FemaleShop> femaleShop;
+	private List<MaleShop> maleShop;
+	
 	// Adult bodies textures sprite
 	private Texture adultTextures;
 	private TextureRegion adultStillLeft;
@@ -95,6 +99,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch = new SpriteBatch();
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
+		this.maleShop = new ArrayList();
+		this.femaleShop = new ArrayList();
 		this.shapeRenderer = new ShapeRenderer();
 
 		// Loads bodies textures
@@ -122,6 +128,26 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			for (int y = 0; y < wallsLayer.getHeight(); y++) {
 				if ((wallsLayer.getCell(x, y)) != null) {
 					this.walls.add(new Wall(x * Wall.SIZE, y * Wall.SIZE));
+				}
+			}
+		}
+		
+		// Loads female shops
+		TiledMapTileLayer femaleShopLayer = (TiledMapTileLayer) this.renderer.getMap().getLayers().get("FemaleShop");
+		for (int x = 0; x < femaleShopLayer.getWidth(); x++) {
+			for (int y = 0; y < femaleShopLayer.getHeight(); y++) {
+				if ((femaleShopLayer.getCell(x, y)) != null) {
+					this.femaleShop.add(new FemaleShop(x * FemaleShop.SIZE, y * FemaleShop.SIZE));
+				}
+			}
+		}
+		
+		// Loads male shops
+		TiledMapTileLayer maleShopLayer = (TiledMapTileLayer) this.renderer.getMap().getLayers().get("MaleShop");
+		for (int x = 0; x < maleShopLayer.getWidth(); x++) {
+			for (int y = 0; y < maleShopLayer.getHeight(); y++) {
+				if ((maleShopLayer.getCell(x, y)) != null) {
+					this.maleShop.add(new MaleShop(x * MaleShop.SIZE, y * MaleShop.SIZE));
 				}
 			}
 		}
@@ -357,5 +383,13 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	public List<Wall> getWalls() {
 		return this.walls;
+	}
+	
+	public List<FemaleShop> getFemaleShop() {
+		return this.femaleShop;
+	}
+	
+	public List<MaleShop> getMaleShop() {
+		return this.maleShop;
 	}
 }

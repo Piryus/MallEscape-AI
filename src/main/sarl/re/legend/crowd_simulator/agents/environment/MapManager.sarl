@@ -16,6 +16,8 @@ import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
+import re.legend.crowd_simulator.entities.gameobjects.FemaleShop
+import re.legend.crowd_simulator.entities.gameobjects.MaleShop
 
 /** 
  * Capacity to manage the map
@@ -47,6 +49,15 @@ capacity MapManager {
 	 */
 	def setupWalls(walls : List<Wall>)
 
+	/** 
+	 * Set up female shops in the map object
+	 */
+	def setupFemaleShop(femaleShop : List<FemaleShop>)
+
+	/** 
+	 * Set up male shops in the map object
+	 */
+	def setupMaleShop(maleShop : List<MaleShop>)
 	/** 
 	 * Compute the perceptions of each body on the map
 	 */
@@ -124,6 +135,14 @@ skill DefaultMapManager implements MapManager {
 	def setupWalls(walls : List<Wall>) {
 		this.map.setWalls(walls);
 	}
+	
+	def setupFemaleShop(femaleShop : List<FemaleShop>){
+		this.map.setFemaleShop(femaleShop);
+	}
+
+	def setupMaleShop(maleShop : List<MaleShop>) {
+		this.map.setMaleShop(maleShop);
+	}
 
 	def computePerceptions {
 		synchronized (this.map.bodies) {
@@ -161,6 +180,26 @@ skill DefaultMapManager implements MapManager {
 						w.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
 						w.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
 						objects.add(w);
+					}
+				}
+
+				// Computes the female shops
+				for (f : map.getFemaleShop) {
+					if (f.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
+						f.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
+						f.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
+						f.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
+						objects.add(f);
+					}
+				}
+
+				// Computes the male shops
+				for (m : map.getMaleShop) {
+					if (m.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
+						m.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
+						m.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
+						m.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
+						objects.add(m);
 					}
 				}
 
