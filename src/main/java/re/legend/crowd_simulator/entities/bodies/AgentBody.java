@@ -10,6 +10,7 @@ import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.influence.Influence;
 import re.legend.crowd_simulator.influence.MotionInfluence;
+import re.legend.crowd_simulator.pathfinding.Path;
 
 public abstract class AgentBody extends SimulationEntity {
 
@@ -53,6 +54,13 @@ public abstract class AgentBody extends SimulationEntity {
 	private Vector2 ahead;
 	private Vector2 ahead2;
 	private Vector2 avoidance;
+	
+	// Current path followed by the agent
+	private Path path;
+	
+	// The current node the agent is targeting
+	private int currentNode;
+
 
 	/**
 	 * Constructor with body's position (two floats) and UUID
@@ -209,6 +217,20 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	/**
+	 * @return the path followed by the agent
+	 */
+	public Path getPath() {
+		return path;
+	}
+
+	/**
+	 * @param path the path the agent must follow
+	 */
+	public void setPath(Path path) {
+		this.path = path;
+	}
+
+	/**
 	 * @param target the target to set
 	 */
 	public void setTarget(Vector2 target) {
@@ -217,7 +239,7 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void seek() {
 		// Distance from the target at which the agent should start slowing down
-		float slowDownDistance = 100f;
+		float slowDownDistance = 40f;
 		
 		// Distance at which it should stop
 		float stopDistance = 10f;
@@ -312,8 +334,6 @@ public abstract class AgentBody extends SimulationEntity {
 				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+8, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6 || Vector2.dst(wall.x+12, wall.y+11, this.ahead2.x, this.ahead2.y) <= 6)
 
 		{
-			//New target because to not force into the same wall
-			this.target= new Vector2();
 			return true;
 		}
 		return false;
@@ -355,6 +375,13 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 	
 	public boolean hasReachedTarget() {
-		return Vector2.dst(this.position.x, this.position.y, this.target.x, this.target.y) < 10;
+		return Vector2.dst(this.position.x, this.position.y, this.target.x, this.target.y) < 40f;
+	}
+	
+	public void followPath() {
+		if (hasReachedTarget() && this.path.length() > this.currentNode + 1) {
+			this.currentNode++;
+			this.target = this.path.getNode(this.currentNode);
+		}
 	}
 }

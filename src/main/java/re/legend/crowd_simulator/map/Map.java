@@ -5,11 +5,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
+import com.google.common.graph.MutableGraph;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
@@ -27,7 +27,7 @@ public class Map {
 	private List<Wall> walls;
 
 	// List of waypoints on the map
-	private List<Vector2> waypoints;
+	private MutableGraph<Vector2> waypoints;
 
 	/**
 	 * Default constructor
@@ -35,7 +35,6 @@ public class Map {
 	public Map() {
 		this.bodies = new TreeMap<>();
 		this.walls = new ArrayList<>();
-		this.waypoints = new ArrayList<>();
 	}
 
 	/**
@@ -98,11 +97,11 @@ public class Map {
 		return this.walls;
 	}
 
-	public void setWaypoints(List<Vector2> waypoints) {
+	public void setWaypoints(MutableGraph<Vector2> waypoints) {
 		this.waypoints = waypoints;
 	}
 	
-	public List<Vector2> getWaypoints() {
+	public MutableGraph<Vector2> getWaypoints() {
 		return this.waypoints;
 	}
 }

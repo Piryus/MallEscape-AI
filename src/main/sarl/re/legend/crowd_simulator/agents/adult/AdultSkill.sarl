@@ -1,13 +1,16 @@
 package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
+import com.google.common.graph.MutableGraph
 import java.util.Random
 import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
-import re.legend.crowd_simulator.pathfinding.Path
 import java.util.List
+import java.util.ArrayList
+import java.util.Queue
+import java.util.LinkedList
 
 skill AdultSkill implements AdultCapacity {
 
@@ -20,12 +23,6 @@ skill AdultSkill implements AdultCapacity {
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
 	
-	// Current path followed by the agent
-	var path : Path
-	
-	// The current node the agent is targeting
-	var currentNode : int
-
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
@@ -73,22 +70,67 @@ skill AdultSkill implements AdultCapacity {
 		this.lastStepTime = System.currentTimeMillis
 	}
 	
-	def moveAlongPath(body : AgentBody, waypoints : List<Vector2>) {
+	def moveAlongPath(body : AgentBody, waypoints : MutableGraph<Vector2>) {
 		if (this.body == null) {
 			this.body = body as AdultBody
 		}
-		
-		if (this.path == null) {
-			this.path = new Path(waypoints)
-			this.currentNode = 0;
-			this.body.target = this.path.getNode(this.currentNode)
+
+		// TODO Remove this, test purpose only, target should be assigned via agent's state
+		this.body.target = new Vector2(87, 48);
+
+		// First, let's find the nearest node to the target
+		var nearestTargetNode = waypoints.nodes.get(0)
+		for (node : waypoints.nodes) {
+			if (Vector2.dst(this.body.target.x, this.body.target.y, node.x, node.y) <
+				Vector2.dst(this.body.target.x, this.body.target.y, nearestTargetNode.x, nearestTargetNode.y)) {
+				nearestTargetNode = node
+			}
 		}
 		
-		if (this.body.hasReachedTarget && this.path.length > this.currentNode + 1) {
-			this.currentNode++
-			this.body.target = this.path.getNode(this.currentNode)
+		// Finds the nearest node to the current body position
+		var nearestBodyNode = waypoints.nodes.get(0)
+		for (node : waypoints.nodes) {
+			if (Vector2.dst(this.body.position.x, this.body.position.y, node.x, node.y) <
+				Vector2.dst(this.body.position.x, this.body.position.y, nearestBodyNode.x, nearestBodyNode.y)) {
+				nearestBodyNode = node
+			}
 		}
 		
+		// A* to find the shortest path to the target node
+		var openList = new ArrayList<Vector2>();
+		var closedList = new ArrayList<Vector2>();
+		
+		openList.add(nearestBodyNode)
+		
+		while(!openList.isEmpty) {
+			var g = 0
+			// Node with the least f on the open list
+			var q = openList.get(0)
+			// Temp value to find q
+			var minF = Vector2.dst(q.x, q.y, nearestTargetNode.x, nearestTargetNode.y)
+			
+			// Find the node with the least f on the open list
+			for (node : openList) {
+				if(Vector2.dst(node.x, node.y, nearestTargetNode.x, nearestTargetNode.y) < minF) {
+					q = node
+					openList.remove(node)
+				}
+			}
+			
+			// For each successor of q
+			for(successor : waypoints.adjacentNodes(q)) {
+				var sucG = g + Vector2.dst(successor.x, successor.y, q.x, q.y)
+				var sucH = Vector2.dst(successor.x, successor.y, nearestTargetNode.x, nearestTargetNode.y)
+				var sucF = sucG + sucH
+			}
+		}
+		
+		if (this.body.path == null) {
+			//this.body.path = new Path(waypoints)
+			this.body.target = this.body.path.getNode(0)
+		}
+		
+		this.body.followPath
 		this.body.seek
 		this.body.avoidCollisionWithBodies
 		this.body.avoidCollisionWithWalls
