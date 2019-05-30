@@ -1,6 +1,7 @@
 package re.legend.crowd_simulator.agents.adult
 
 import re.legend.crowd_simulator.agents.events.Perception
+import re.legend.crowd_simulator.behaviors.AdultState
 
 /** 
  * Defines an adult's behavior
@@ -8,7 +9,10 @@ import re.legend.crowd_simulator.agents.events.Perception
 behavior AdultBehavior {
 	uses AdultCapacity
 
-	on Perception {
+	var state = AdultState::FEMALE_SHOP
+	//Create pheromone
+	
+	on Perception [state == AdultState::FEMALE_SHOP] {
 		//moveRandomly(occurrence.body)
 		moveRandom2(occurrence.body)
 	}

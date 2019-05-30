@@ -37,8 +37,7 @@ skill AdultSkill implements AdultCapacity {
 	}
 
 	def shop(status : AdultState) {
-		if (status == AdultState::SHOP) {
-			// Write moveForward skill first
+		if (status == AdultState::FEMALE_SHOP) {
 		}
 	}
 
