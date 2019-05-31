@@ -179,6 +179,10 @@ skill AdultSkill implements AdultCapacity {
 		this.lastStepTime = System.currentTimeMillis
 	}
 
+	/** 
+	 * Backtrack a path from the given node
+	 * @return a path from the start node to the end node (= given node) 
+	 */
 	def computePath(goal : AStarNode) : Path {
 		var nodesList = new ArrayList<Vector2>()
 		var currentNode = goal
