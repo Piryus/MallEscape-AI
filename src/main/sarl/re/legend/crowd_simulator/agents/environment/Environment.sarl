@@ -33,13 +33,17 @@ agent Environment {
 		this.application = new SimulationApplication()
 		new LwjglApplication(this.application, config);
 
-		// Wait 5 secs to let the application load the graphics
-		Thread::sleep(5000);
+		// Wait 7 secs to let the application load the graphics
+		// TODO Make a loading screen
+		Thread::sleep(7000);
 
 		setSkill(new DefaultMapManager)
 
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupWalls(this.application.getWalls);
+
+		// Gets the waypoints from the tiled map and set them up into the map object
+		setupWaypoints(this.application.getWaypoints)
 
 		// TODO Test spawner
 		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(270, 220), map)

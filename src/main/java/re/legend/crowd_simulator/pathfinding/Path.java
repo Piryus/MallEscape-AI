@@ -17,7 +17,7 @@ public class Path {
 	 * Default constructor (empty path)
 	 */
 	public Path() {
-		nodes = new ArrayList<Vector2>();
+		this.nodes = new ArrayList<>();
 	}
 	
 	/**
@@ -33,13 +33,28 @@ public class Path {
 	 * @param node the node to add to the path
 	 */
 	public void addNode(Vector2 node) {
-		nodes.add(node);
+		this.nodes.add(node);
 	}
 	
 	/**
 	 * @return the nodes of the path
 	 */
 	public List<Vector2> getNodes() {
-		return nodes;
+		return this.nodes;
+	}
+	
+	/**
+	 * @param node the node number on the path
+	 * @return the node (vector2) at the given position on the path
+	 */
+	public Vector2 getNode(int node) {
+		return this.nodes.get(node);
+	}
+	
+	/**
+	 * @return the number of nodes in the path
+	 */
+	public int length() {
+		return this.nodes.size();
 	}
 }

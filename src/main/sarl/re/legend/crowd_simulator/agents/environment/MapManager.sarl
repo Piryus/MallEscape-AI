@@ -1,5 +1,6 @@
 package re.legend.crowd_simulator.agents.environment
 
+import com.google.common.graph.MutableGraph
 import io.sarl.core.DefaultContextInteractions
 import java.util.ArrayList
 import java.util.List
@@ -16,6 +17,7 @@ import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
+import re.legend.crowd_simulator.pathfinding.AStarNode
 
 /** 
  * Capacity to manage the map
@@ -81,6 +83,11 @@ capacity MapManager {
 	 * Get the map
 	 */
 	def getMap : Map
+
+	/** 
+	 * Set up the waypoints for pathfinding
+	 */
+	def setupWaypoints(waypoints : MutableGraph<AStarNode>)
 }
 
 skill DefaultMapManager implements MapManager {
@@ -182,18 +189,10 @@ skill DefaultMapManager implements MapManager {
 
 	def notifyAgents {
 		synchronized (this.map.bodies) {
-			// Manage time first, we could create a structure here or something like this holding the time infos
-			// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
 			// Create and send the perception event to every bodies
 			for (body : this.map.bodies) {
 				// Create the perception
-				var perception = new Perception(
-					body,
-					getCurrentTime
-
-				/* body.perceivedObjects, new Percept(body), timePercept
-				 */
-				)
+				var perception = new Perception(body, getCurrentTime, this.map.waypoints)
 				perception.source = defaultSpace.getAddress(ID)
 				// Emit the perception
 				emit(perception)[it.UUID == body.uuid]
@@ -240,4 +239,9 @@ skill DefaultMapManager implements MapManager {
 	def getMap : Map {
 		return this.map;
 	}
+
+	def setupWaypoints(waypoints : MutableGraph<AStarNode>) {
+		this.map.setWaypoints(waypoints)
+	}
+
 }

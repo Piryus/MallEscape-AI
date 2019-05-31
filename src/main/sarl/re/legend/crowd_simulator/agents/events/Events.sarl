@@ -1,8 +1,8 @@
 package re.legend.crowd_simulator.agents.events
 
-import java.util.List
-import re.legend.crowd_simulator.entities.SimulationEntity
+import com.google.common.graph.MutableGraph
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import re.legend.crowd_simulator.pathfinding.AStarNode
 
 // TODO Test purpose, game loop
 event GameLoopTest
@@ -12,46 +12,12 @@ event GameLoopTest
  */
 event Perception {
 	val body : AgentBody
-	val perceivedObjects : List<SimulationEntity>
-	val perceivedBodies : List<AgentBody>
 	val currentTime : float
+	val waypoints : MutableGraph<AStarNode>
 
-	new (b : AgentBody, time : float) {
-		this.body = b;
-		this.perceivedBodies = b.perceivedBodies;
-		this.perceivedObjects = b.perceivedObjects;
+	new (b : AgentBody, time : float, waypoints : MutableGraph<AStarNode>) {
+		this.body = b
 		this.currentTime = time
-	}
-}
-
-/**
- * Synchronize with the simulation time
- */
-event SyncEvent {
-	val currentTime : float
-	val lastStepDuration : float
-	
-	new(ct : float, lsd : float)
-	{
-		this.currentTime = ct
-		this.lastStepDuration = lsd
-	}	
-}
-
-event AdultCreated extends SyncEvent {
-	var x : float
-	var y : float
-	// frustrum
-	new(ct : float, lsd : float) {
-		super(ct, lsd)
-		x = -1
-		y = -1
-	}
-}
-
-event SyncAdult extends SyncEvent {
-	new (ct : float, lsd : float)
-	{
-		super(ct, lsd)
+		this.waypoints = waypoints
 	}
 }
