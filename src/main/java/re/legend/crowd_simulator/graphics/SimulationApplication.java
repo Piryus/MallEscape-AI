@@ -36,6 +36,7 @@ import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
+import re.legend.crowd_simulator.pathfinding.AStarNode;
 
 public class SimulationApplication extends ApplicationAdapter implements InputProcessor, MapListener {
 	private OrthographicCamera camera;
@@ -90,7 +91,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private InputMultiplexer inputMultiplexer;
 
 	// Waypoints of the map
-	private MutableGraph<Vector2> waypoints;
+	private MutableGraph<AStarNode> waypoints;
 
 	@Override
 	public void create() {
@@ -131,16 +132,17 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
-		
-		// Retrieves the waypoints from the path object layer of the map and build a graph
+
+		// Retrieves the waypoints from the path object layer of the map and build a
+		// graph
 		MapLayer pathLayer = (MapLayer) this.map.getLayers().get("Path");
-		for(MapObject waypoint : pathLayer.getObjects()) {
+		for (MapObject waypoint : pathLayer.getObjects()) {
 			float xPos = (float) waypoint.getProperties().get("x");
 			float yPos = (float) waypoint.getProperties().get("y");
-			Vector2 newWaypoint = new Vector2(xPos, yPos);
-			for(Vector2 node : this.waypoints.nodes()) {
-				if (Vector2.dst(node.x, node.y, newWaypoint.x, newWaypoint.y) < 30f) {
-					this.waypoints.addNode(newWaypoint);
+			AStarNode newWaypoint = new AStarNode(xPos, yPos);
+			this.waypoints.addNode(newWaypoint);
+			for (AStarNode node : this.waypoints.nodes()) {
+				if (node != newWaypoint && Vector2.dst(node.x, node.y, newWaypoint.x, newWaypoint.y) < 60f) {
 					this.waypoints.putEdge(node, newWaypoint);
 				}
 			}
@@ -167,10 +169,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/coolvetica.ttf"));
 		this.parameter = new FreeTypeFontParameter();
 		this.parameter.size = 30;
-		
+
 		// Stage initialization
 		VisUI.load();
-		this.stage = new Stage(new ScreenViewport());	
+		this.stage = new Stage(new ScreenViewport());
 //		this.startButton = new VisTextButton("Start");
 //		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth())/2, (Gdx.graphics.getHeight() - this.startButton.getHeight())/2);
 //		this.stage.addActor(this.startButton);
@@ -277,6 +279,16 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				 * body.getPosition().x + body.getDesiredVelocity().x, body.getPosition().y +
 				 * body.getDesiredVelocity().y);
 				 */
+				if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
+					this.shapeRenderer.setColor(1, 0, 0, 1);
+					for (Vector2 node : body.getPath().getNodes()) {
+						this.shapeRenderer.circle(node.x, node.y, 5);
+					}
+					for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
+						this.shapeRenderer.line(body.getPath().getNodes().get(i), body.getPath().getNodes().get(i + 1));
+					}
+				}
+
 			}
 		}
 		this.shapeRenderer.end();
@@ -377,7 +389,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		return this.walls;
 	}
 
-	public MutableGraph<Vector2> getWaypoints() {
+	public MutableGraph<AStarNode> getWaypoints() {
 		return this.waypoints;
 	}
 }

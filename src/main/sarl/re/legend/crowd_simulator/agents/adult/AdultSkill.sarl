@@ -2,15 +2,14 @@ package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
+import java.util.ArrayList
 import java.util.Random
 import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
-import java.util.List
-import java.util.ArrayList
-import java.util.Queue
-import java.util.LinkedList
+import re.legend.crowd_simulator.pathfinding.AStarNode
+import re.legend.crowd_simulator.pathfinding.Path
 
 skill AdultSkill implements AdultCapacity {
 
@@ -22,7 +21,7 @@ skill AdultSkill implements AdultCapacity {
 
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
-	
+
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
@@ -69,67 +68,107 @@ skill AdultSkill implements AdultCapacity {
 		move(movement.x, movement.y)
 		this.lastStepTime = System.currentTimeMillis
 	}
-	
-	def moveAlongPath(body : AgentBody, waypoints : MutableGraph<Vector2>) {
+
+	def moveAlongPath(body : AgentBody, waypoints : MutableGraph<AStarNode>) {
 		if (this.body == null) {
 			this.body = body as AdultBody
 		}
 
-		// TODO Remove this, test purpose only, target should be assigned via agent's state
-		this.body.target = new Vector2(87, 48);
+		if (this.body.path == null) {
+			// TODO Remove this, test purpose only, target should be assigned via agent's state
+			var x = (Math.random * 560) as float
+			var y = (Math.random * 560) as float
+			this.body.target = new Vector2(x, y);
 
-		// First, let's find the nearest node to the target
-		var nearestTargetNode = waypoints.nodes.get(0)
-		for (node : waypoints.nodes) {
-			if (Vector2.dst(this.body.target.x, this.body.target.y, node.x, node.y) <
-				Vector2.dst(this.body.target.x, this.body.target.y, nearestTargetNode.x, nearestTargetNode.y)) {
-				nearestTargetNode = node
-			}
-		}
-		
-		// Finds the nearest node to the current body position
-		var nearestBodyNode = waypoints.nodes.get(0)
-		for (node : waypoints.nodes) {
-			if (Vector2.dst(this.body.position.x, this.body.position.y, node.x, node.y) <
-				Vector2.dst(this.body.position.x, this.body.position.y, nearestBodyNode.x, nearestBodyNode.y)) {
-				nearestBodyNode = node
-			}
-		}
-		
-		// A* to find the shortest path to the target node
-		var openList = new ArrayList<Vector2>();
-		var closedList = new ArrayList<Vector2>();
-		
-		openList.add(nearestBodyNode)
-		
-		while(!openList.isEmpty) {
-			var g = 0
-			// Node with the least f on the open list
-			var q = openList.get(0)
-			// Temp value to find q
-			var minF = Vector2.dst(q.x, q.y, nearestTargetNode.x, nearestTargetNode.y)
-			
-			// Find the node with the least f on the open list
-			for (node : openList) {
-				if(Vector2.dst(node.x, node.y, nearestTargetNode.x, nearestTargetNode.y) < minF) {
-					q = node
-					openList.remove(node)
+			// First, let's find the nearest node to the target
+			var nearestTargetNode = waypoints.nodes.get(0)
+			for (node : waypoints.nodes) {
+				if (Vector2.dst(this.body.target.x, this.body.target.y, node.x, node.y) <
+					Vector2.dst(this.body.target.x, this.body.target.y, nearestTargetNode.x, nearestTargetNode.y)) {
+					nearestTargetNode = node
 				}
 			}
-			
-			// For each successor of q
-			for(successor : waypoints.adjacentNodes(q)) {
-				var sucG = g + Vector2.dst(successor.x, successor.y, q.x, q.y)
-				var sucH = Vector2.dst(successor.x, successor.y, nearestTargetNode.x, nearestTargetNode.y)
-				var sucF = sucG + sucH
+
+			// Finds the nearest node to the current body position
+			var nearestBodyNode = waypoints.nodes.get(0)
+			for (node : waypoints.nodes) {
+				if (Vector2.dst(this.body.position.x, this.body.position.y, node.x, node.y) <
+					Vector2.dst(this.body.position.x, this.body.position.y, nearestBodyNode.x, nearestBodyNode.y)) {
+					nearestBodyNode = node
+				}
+			}
+
+			// ///////////////////////////////////////////////////
+			// A* to find the shortest path to the target node //
+			// ///////////////////////////////////////////////////
+			var shortestPath : Path
+
+			var openList = new ArrayList<AStarNode>();
+			var closedList = new ArrayList<AStarNode>();
+
+			// Adds the start node to the open list
+			openList.add(nearestBodyNode)
+
+			while (!openList.isEmpty) {
+				// Node with the least f on the open list
+				var currentNode = openList.get(0)
+
+				// Find the node with the least f on the open list
+				for (node : openList) {
+					if (node.f < currentNode.f) {
+						currentNode = node
+					}
+				}
+				// Pop q off the open list
+				openList.remove(currentNode)
+
+				// Adds q to the closed list
+				closedList.add(currentNode)
+
+				// Check if we reach the goal node
+				if (currentNode == nearestTargetNode) {
+					shortestPath = computePath(currentNode)
+					this.body.path = shortestPath
+					this.body.target = this.body.path.getNode(0)
+					break
+				}
+
+				// For each successor of q
+				for (successor : waypoints.adjacentNodes(currentNode)) {
+					// If the successor isn't in the closed list
+					if (!closedList.contains(successor)) {
+						// if the successor is in the open list
+						if (openList.contains(successor)) {
+							// Computes the G cost with the current node
+							var newG = currentNode.g +
+								Vector2.dst(successor.x, successor.y, currentNode.x, currentNode.y)
+							// If the cost is lower with the current node, it's a shorter path
+							// In this case, updates G, H, F costs and the successor parent (which becomes the current node)
+							if (successor.g > newG) {
+								successor.g = newG
+								successor.h = Vector2.dst(successor.x, successor.y, nearestTargetNode.x,
+									nearestTargetNode.y)
+								successor.f = successor.g + successor.h
+								successor.parent = currentNode
+							}
+						} else { // if the successor isn't in the open list yet
+						// Computes the G cost
+							successor.g = currentNode.g +
+								Vector2.dst(successor.x, successor.y, currentNode.x, currentNode.y)
+							// Computes the heuristic
+							successor.h = Vector2.dst(successor.x, successor.y, nearestTargetNode.x,
+								nearestTargetNode.y)
+							successor.f = successor.g + successor.h
+							// Set the successor parent to the current node
+							successor.parent = currentNode
+							// Adds the successor to the open list
+							openList.add(successor)
+						}
+					}
+				}
 			}
 		}
-		
-		if (this.body.path == null) {
-			//this.body.path = new Path(waypoints)
-			this.body.target = this.body.path.getNode(0)
-		}
-		
+
 		this.body.followPath
 		this.body.seek
 		this.body.avoidCollisionWithBodies
@@ -138,5 +177,15 @@ skill AdultSkill implements AdultCapacity {
 		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(movement.x, movement.y)
 		this.lastStepTime = System.currentTimeMillis
+	}
+
+	def computePath(goal : AStarNode) : Path {
+		var nodesList = new ArrayList<Vector2>()
+		var currentNode = goal
+		while (currentNode.parent != null) {
+			nodesList.add(currentNode)
+			currentNode = currentNode.parent
+		}
+		return new Path(nodesList.reverse)
 	}
 }

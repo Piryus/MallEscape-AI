@@ -1,8 +1,8 @@
 package re.legend.crowd_simulator.agents.events
 
-import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import re.legend.crowd_simulator.pathfinding.AStarNode
 
 // TODO Test purpose, game loop
 event GameLoopTest
@@ -13,9 +13,9 @@ event GameLoopTest
 event Perception {
 	val body : AgentBody
 	val currentTime : float
-	val waypoints : MutableGraph<Vector2>
+	val waypoints : MutableGraph<AStarNode>
 
-	new (b : AgentBody, time : float, waypoints : MutableGraph<Vector2>) {
+	new (b : AgentBody, time : float, waypoints : MutableGraph<AStarNode>) {
 		this.body = b
 		this.currentTime = time
 		this.waypoints = waypoints

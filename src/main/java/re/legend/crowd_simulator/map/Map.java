@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import com.badlogic.gdx.math.Vector2;
 import com.google.common.graph.MutableGraph;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
+import re.legend.crowd_simulator.pathfinding.AStarNode;
 
 public class Map {
 
@@ -27,7 +27,7 @@ public class Map {
 	private List<Wall> walls;
 
 	// List of waypoints on the map
-	private MutableGraph<Vector2> waypoints;
+	private MutableGraph<AStarNode> waypoints;
 
 	/**
 	 * Default constructor
@@ -97,11 +97,11 @@ public class Map {
 		return this.walls;
 	}
 
-	public void setWaypoints(MutableGraph<Vector2> waypoints) {
+	public void setWaypoints(MutableGraph<AStarNode> waypoints) {
 		this.waypoints = waypoints;
 	}
 	
-	public MutableGraph<Vector2> getWaypoints() {
+	public MutableGraph<AStarNode> getWaypoints() {
 		return this.waypoints;
 	}
 }
