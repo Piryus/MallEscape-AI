@@ -279,15 +279,15 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				 * body.getPosition().x + body.getDesiredVelocity().x, body.getPosition().y +
 				 * body.getDesiredVelocity().y);
 				 */
-				if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
-					this.shapeRenderer.setColor(1, 0, 0, 1);
-					for (Vector2 node : body.getPath().getNodes()) {
-						this.shapeRenderer.circle(node.x, node.y, 5);
-					}
-					for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
-						this.shapeRenderer.line(body.getPath().getNodes().get(i), body.getPath().getNodes().get(i + 1));
-					}
-				}
+				// Renders agents' paths
+				/*
+				 * if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
+				 * this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
+				 * body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
+				 * for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
+				 * this.shapeRenderer.line(body.getPath().getNodes().get(i),
+				 * body.getPath().getNodes().get(i + 1)); } }
+				 */
 
 			}
 		}
