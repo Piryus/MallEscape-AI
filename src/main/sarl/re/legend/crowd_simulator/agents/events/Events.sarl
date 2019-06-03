@@ -3,6 +3,7 @@ package re.legend.crowd_simulator.agents.events
 import java.util.List
 import re.legend.crowd_simulator.entities.SimulationEntity
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 // TODO Test purpose, game loop
 event GameLoopTest
@@ -15,12 +16,16 @@ event Perception {
 	val perceivedObjects : List<SimulationEntity>
 	val perceivedBodies : List<AgentBody>
 	val currentTime : float
+	val femaleShop : List<Shop>
+	val maleShop : List<Shop>
 
-	new (b : AgentBody, time : float) {
+	new (b : AgentBody, time : float, femaleShop : List<Shop>, maleShop : List<Shop>) {
 		this.body = b;
 		this.perceivedBodies = b.perceivedBodies;
 		this.perceivedObjects = b.perceivedObjects;
-		this.currentTime = time
+		this.currentTime = time;
+		this.femaleShop = femaleShop;
+		this.maleShop = maleShop;
 	}
 }
 

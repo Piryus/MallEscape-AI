@@ -13,8 +13,7 @@ import com.badlogic.gdx.math.Quaternion;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
-import re.legend.crowd_simulator.entities.gameobjects.FemaleShop;
-import re.legend.crowd_simulator.entities.gameobjects.MaleShop;
+import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 
 
@@ -27,8 +26,8 @@ public class Map {
 	private List<Wall> walls;
 	
 	//List of female and male shops on the map
-	private List<FemaleShop> femaleShop;
-	private List<MaleShop> maleShop;
+	private List<Shop> femaleShop;
+	private List<Shop> maleShop;
 	
 	
 	// Size of each cell of the map
@@ -82,22 +81,22 @@ public class Map {
 		this.walls = walls;
 	}
 	
-	public List<FemaleShop> getFemaleShop()
+	public List<Shop> getFemaleShop()
 	{
 		return this.femaleShop;
 	}
 	
-	public void setFemaleShop(List<FemaleShop> femaleShop)
+	public void setFemaleShop(List<Shop> femaleShop)
 	{
 		this.femaleShop = femaleShop;
 	}
 	
-	public List<MaleShop> getMaleShop()
+	public List<Shop> getMaleShop()
 	{
 		return this.maleShop;
 	}
 	
-	public void setMaleShop(List<MaleShop> maleShop)
+	public void setMaleShop(List<Shop> maleShop)
 	{
 		this.maleShop = maleShop;
 	}

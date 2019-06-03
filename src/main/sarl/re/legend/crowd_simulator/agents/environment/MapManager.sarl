@@ -16,8 +16,7 @@ import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
-import re.legend.crowd_simulator.entities.gameobjects.FemaleShop
-import re.legend.crowd_simulator.entities.gameobjects.MaleShop
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
  * Capacity to manage the map
@@ -52,12 +51,12 @@ capacity MapManager {
 	/** 
 	 * Set up female shops in the map object
 	 */
-	def setupFemaleShop(femaleShop : List<FemaleShop>)
+	def setupFemaleShop(femaleShop : List<Shop>)
 
 	/** 
 	 * Set up male shops in the map object
 	 */
-	def setupMaleShop(maleShop : List<MaleShop>)
+	def setupMaleShop(maleShop : List<Shop>)
 	/** 
 	 * Compute the perceptions of each body on the map
 	 */
@@ -136,11 +135,11 @@ skill DefaultMapManager implements MapManager {
 		this.map.setWalls(walls);
 	}
 	
-	def setupFemaleShop(femaleShop : List<FemaleShop>){
+	def setupFemaleShop(femaleShop : List<Shop>){
 		this.map.setFemaleShop(femaleShop);
 	}
 
-	def setupMaleShop(maleShop : List<MaleShop>) {
+	def setupMaleShop(maleShop : List<Shop>) {
 		this.map.setMaleShop(maleShop);
 	}
 
@@ -226,13 +225,11 @@ skill DefaultMapManager implements MapManager {
 			// Create and send the perception event to every bodies
 			for (body : this.map.bodies) {
 				// Create the perception
-				var perception = new Perception(
-					body,
-					getCurrentTime
+				var perception = new Perception(body,getCurrentTime, this.map.femaleShop, this.map.maleShop);
 
 				/* body.perceivedObjects, new Percept(body), timePercept
 				 */
-				)
+				
 				perception.source = defaultSpace.getAddress(ID)
 				// Emit the perception
 				emit(perception)[it.UUID == body.uuid]
