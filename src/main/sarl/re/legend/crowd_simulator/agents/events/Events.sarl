@@ -4,8 +4,7 @@ import com.google.common.graph.MutableGraph
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.pathfinding.AStarNode
 
-// TODO Test purpose, game loop
-event GameLoopTest
+event SimulationStep
 
 /** 
  * Perception sent to agents containing the perceiving body

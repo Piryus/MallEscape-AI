@@ -9,7 +9,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
-import re.legend.crowd_simulator.agents.events.GameLoopTest
+import re.legend.crowd_simulator.agents.events.SimulationStep
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
 import re.legend.crowd_simulator.graphics.SimulationApplication
 
@@ -22,6 +22,7 @@ agent Environment {
 	uses Logging, Lifecycle, DefaultContextInteractions, MapManager, Schedules
 
 	var application : SimulationApplication
+	
 
 	on Initialize {
 		loggingName = "Environment"
@@ -49,11 +50,11 @@ agent Environment {
 		// TODO Test spawner
 		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(270, 220), map)
 
-		// TODO Implement a real game loop
-		every(50)[emit(new GameLoopTest)]
+		// New simulation step every 50ms
+		every(50)[emit(new SimulationStep)]
 	}
 
-	on GameLoopTest {
+	on SimulationStep {
 		computePerceptions
 		notifyAgents
 		computeInfluences
