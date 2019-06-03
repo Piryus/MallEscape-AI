@@ -25,7 +25,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
@@ -173,9 +175,17 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Stage initialization
 		VisUI.load();
 		this.stage = new Stage(new ScreenViewport());
-//		this.startButton = new VisTextButton("Start");
-//		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth())/2, (Gdx.graphics.getHeight() - this.startButton.getHeight())/2);
-//		this.stage.addActor(this.startButton);
+		this.startButton = new VisTextButton("Start");
+		this.startButton.setSize(100, 50);
+		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth())/2, (Gdx.graphics.getHeight() - this.startButton.getHeight())/2);
+		this.startButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				notifyStartingSimulation();
+				startButton.remove();
+			}
+		});
+		this.stage.addActor(this.startButton);
 
 		// Adds input processors
 		this.inputMultiplexer = new InputMultiplexer();
@@ -391,5 +401,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	public MutableGraph<AStarNode> getWaypoints() {
 		return this.waypoints;
+	}
+	
+	/**
+	 * Wakes up the environment agent to start the simulation
+	 */
+	public void notifyStartingSimulation() {
+		synchronized(this) {
+			this.notify();
+		}
 	}
 }

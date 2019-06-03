@@ -33,9 +33,10 @@ agent Environment {
 		this.application = new SimulationApplication()
 		new LwjglApplication(this.application, config);
 
-		// Wait 7 secs to let the application load the graphics
-		// TODO Make a loading screen
-		Thread::sleep(7000);
+		// Wait for the application to notify the agent that the start button has been clicked
+		synchronized (this.application) {
+			this.application.wait();
+		}
 
 		setSkill(new DefaultMapManager)
 
