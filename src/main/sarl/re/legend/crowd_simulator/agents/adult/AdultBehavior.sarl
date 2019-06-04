@@ -11,19 +11,18 @@ import re.legend.crowd_simulator.entities.gameobjects.Shop
 behavior AdultBehavior {
 	uses AdultCapacity
 
+	var rand = new Random
 	var state = AdultState::FEMALE_SHOP
 	
 	on Perception [state == AdultState::FEMALE_SHOP] {
-	    // TODO Fix that
 		var shops = occurrence.shops
 		// Select a shop from the list randomly
-		var rand = new Random();
 		var randomFemaleShop : Shop
 		do {
 			randomFemaleShop = shops.get(rand.nextInt(shops.size))
-		} while (!randomFemaleShop.type.equals("F"))
+		} while (!randomFemaleShop.id.contains("F"))
 		
-		//moveAlongPath(occurrence.body, occurrence.waypoints, randomFemaleShop)
+		//moveToShop(occurrence.body, occurrence.waypoints, randomFemaleShop)
 	}
 
 	on Perception [state == AdultState::MALE_SHOP] {

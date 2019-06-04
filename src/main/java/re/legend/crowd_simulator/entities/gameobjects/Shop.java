@@ -1,38 +1,39 @@
 package re.legend.crowd_simulator.entities.gameobjects;
 
-public class Shop extends GameObject {
+import com.badlogic.gdx.math.Polygon;
+
+public class Shop {
 	
-	private float height;
+	// The shop's ID (starting with a M for a male shop and with a F for a female shop)
+	private String id;
 	
-	private float width;
+	// The area of the shop
+	private Polygon area;
 
-	// "F" for female shop and "M" for Male shop
-	private final String type;
-
-	public Shop(float x, float y, float height, float width, String type) {
-		super(x, y, 0);
-		this.height = height;
-		this.width = width;
-		this.type = type;
-	}
-
-	public float y() {
-		return this.position.x;
-	}
-
-	public float x() {
-		return this.position.y;
-	}
-
-	public float height() {
-		return this.height;
-	}
-
-	public float width() {
-		return this.width;
+	/**
+	 * Shop constructor
+	 * @param id the shop id
+	 * @param areaVertices the vertices of the polygon representing the shop's area
+	 */
+	public Shop(String id, float[] areaVertices) {
+		// Sets the ID
+		this.id = id;
+		
+		// Initializes the area with the vertices
+		this.area = new Polygon(areaVertices);
 	}
 	
-	public String getType() {
-		return this.type;
+	/**
+	 * @return the shop's ID
+	 */
+	public String getId() {
+		return this.id;
+	}
+	
+	/**
+	 * @return the shop's area
+	 */
+	public Polygon getArea() {
+		return this.area;
 	}
 }
