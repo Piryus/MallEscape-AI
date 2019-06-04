@@ -40,10 +40,10 @@ agent Environment {
 
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupWalls(this.application.getWalls);
-		setupFemaleShop(this.application.getFemaleShopList);
 		
-		//setupMaleShop(this.application.getMaleShop)
-
+		// Retrieves the walls from the tiled map and set them up into the map object
+		setupShops(this.application.getShops);
+		
 		// TODO Test spawner
 		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(50, 280), map) // West
 		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 500), map) // North

@@ -51,12 +51,8 @@ capacity MapManager {
 	/** 
 	 * Set up female shops in the map object
 	 */
-	def setupFemaleShop(femaleShop : List<Shop>)
+	def setupShops(shops : List<Shop>)
 
-	/** 
-	 * Set up male shops in the map object
-	 */
-	def setupMaleShop(maleShop : List<Shop>)
 	/** 
 	 * Compute the perceptions of each body on the map
 	 */
@@ -134,14 +130,6 @@ skill DefaultMapManager implements MapManager {
 	def setupWalls(walls : List<Wall>) {
 		this.map.setWalls(walls);
 	}
-	
-	def setupFemaleShop(femaleShop : List<Shop>){
-		this.map.setFemaleShop(femaleShop);
-	}
-
-	def setupMaleShop(maleShop : List<Shop>) {
-		this.map.setMaleShop(maleShop);
-	}
 
 	def computePerceptions {
 		synchronized (this.map.bodies) {
@@ -182,26 +170,6 @@ skill DefaultMapManager implements MapManager {
 					}
 				}
 
-				// Computes the female shops
-				for (f : map.getFemaleShop) {
-					if (f.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
-						f.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-						f.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
-						f.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
-						objects.add(f);
-					}
-				}
-
-				// Computes the male shops
-				for (m : map.getMaleShop) {
-					if (m.getPosition.x >= (body.getPosition.x - frustumSideLength) &&
-						m.getPosition.x <= (body.getPosition.x + frustumSideLength) &&
-						m.getPosition.y >= (body.getPosition.y - frustumSideLength) &&
-						m.getPosition.y <= (body.getPosition.y + frustumSideLength)) {
-						objects.add(m);
-					}
-				}
-
 				// Adds the computed perceptions to the body
 				body.setPerceptions(bodies, objects)
 			}
@@ -225,7 +193,7 @@ skill DefaultMapManager implements MapManager {
 			// Create and send the perception event to every bodies
 			for (body : this.map.bodies) {
 				// Create the perception
-				var perception = new Perception(body,getCurrentTime, this.map.femaleShop, this.map.maleShop);
+				var perception = new Perception(body,getCurrentTime, this.map.shops);
 
 				/* body.perceivedObjects, new Percept(body), timePercept
 				 */
@@ -276,4 +244,9 @@ skill DefaultMapManager implements MapManager {
 	def getMap : Map {
 		return this.map;
 	}
+	
+	def setupShops(shops : List<Shop>) {
+		this.map.setShops(shops)
+	}
+	
 }

@@ -20,14 +20,15 @@ import re.legend.crowd_simulator.entities.gameobjects.Wall;
 public class Map {
 	
 	private Random random;
+	
 	// TreeMap containing the bodies on the map
 	private TreeMap<UUID, AgentBody> bodies;
+	
 	// List of walls on the map
 	private List<Wall> walls;
 	
-	//List of female and male shops on the map
-	private List<Shop> femaleShop;
-	private List<Shop> maleShop;
+	// List of shops on the map
+	private List<Shop> shops;
 	
 	
 	// Size of each cell of the map
@@ -40,9 +41,7 @@ public class Map {
 		this.random = new Random();
 		this.bodies = new TreeMap<>();
 		this.walls = new ArrayList<>();
-		this.femaleShop = new ArrayList<>();
-		this.maleShop = new ArrayList<>();
-		
+		this.shops = new ArrayList<>();
 	}
 
 	/**
@@ -80,28 +79,10 @@ public class Map {
 	public void setWalls(List<Wall> walls) {
 		this.walls = walls;
 	}
-	
-	public List<Shop> getFemaleShop()
-	{
-		return this.femaleShop;
-	}
-	
-	public void setFemaleShop(List<Shop> femaleShop)
-	{
-		this.femaleShop = femaleShop;
-	}
-	
-	public List<Shop> getMaleShop()
-	{
-		return this.maleShop;
-	}
-	
-	public void setMaleShop(List<Shop> maleShop)
-	{
-		this.maleShop = maleShop;
-	}
-	
 
+	public void setShops(List<Shop> shops) {
+		this.shops = shops;
+	}
 	
 	public Collection<AgentBody> getBodies() {
 		return this.bodies.values();
@@ -122,6 +103,10 @@ public class Map {
 	
 	public List<Wall> getWalls() {
 		return this.walls;
+	}
+	
+	public List<Shop> getShops() {
+		return this.shops;
 	}
 	 
 }

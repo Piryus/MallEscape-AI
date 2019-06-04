@@ -1,55 +1,38 @@
 package re.legend.crowd_simulator.entities.gameobjects;
 
-import com.badlogic.gdx.math.Vector2;
-
-public class Shop extends GameObject{
-	//Vector2 origin;
-	private float x;
-	private float y;
+public class Shop extends GameObject {
+	
 	private float height;
+	
 	private float width;
-	
-	//"F" for female shop and "M" for Male shop
-	final private String type;
-	
-	
+
+	// "F" for female shop and "M" for Male shop
+	private final String type;
+
 	public Shop(float x, float y, float height, float width, String type) {
-		super(x,y,0);
+		super(x, y, 0);
 		this.height = height;
 		this.width = width;
 		this.type = type;
 	}
-	
-	
-	public float getXCoordonnee()
-	{
-		return this.x;
+
+	public float y() {
+		return this.position.x;
 	}
-	
-	public float getYCoordonnee()
-	{
-		return this.y;
+
+	public float x() {
+		return this.position.y;
 	}
-	
-	
-	public float getHeight()
-	{
+
+	public float height() {
 		return this.height;
 	}
-	
-	public void setHeight(float height)
-	{
-		this.height = height;
-	}
-	
-	public float getWidth(float width)
-	{
+
+	public float width() {
 		return this.width;
 	}
 	
-	public void setWidth(float width)
-	{
-		this.width = width;
+	public String getType() {
+		return this.type;
 	}
-	
 }
