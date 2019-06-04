@@ -105,6 +105,10 @@ public class Map {
 	public List<Wall> getWalls() {
 		return this.walls;
 	}
+	
+	public List<Shop> getShops() {
+		return this.shops;
+	}
 
 	public void setWaypoints(MutableGraph<AStarNode> waypoints) {
 		this.waypoints = waypoints;
