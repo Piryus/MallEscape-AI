@@ -11,12 +11,6 @@ import re.legend.crowd_simulator.pathfinding.AStarNode
 capacity AdultCapacity {
 	
 	/**
-	 * Go shopping
-	 * @param position, current position
-	 */
-	def shop(position: Vector2)
-	
-	/**
 	 * Generate a motion influence for the agent's body
 	 * This influence is then added to the body's influences list
 	 * It can be computed by the environment that will solve conflicts and move the body accordingly

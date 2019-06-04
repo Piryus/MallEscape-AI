@@ -1,5 +1,6 @@
 package re.legend.crowd_simulator.agents.adult
 
+import com.badlogic.gdx.math.Vector2
 import java.util.Random
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.behaviors.AdultState
@@ -12,32 +13,37 @@ behavior AdultBehavior {
 	uses AdultCapacity
 
 	var rand = new Random
-	var state = AdultState::FEMALE_SHOP
-	
-	on Perception [state == AdultState::FEMALE_SHOP] {
+	var state = AdultState::WAITING
+
+	on Perception [state == AdultState::WAITING] {
 		var shops = occurrence.shops
+		
 		// Select a shop from the list randomly
 		var randomFemaleShop : Shop
 		do {
 			randomFemaleShop = shops.get(rand.nextInt(shops.size))
 		} while (!randomFemaleShop.id.contains("F"))
+
+		// Selects an entrance randomly
+		var entrances = randomFemaleShop.getEntrances
+		var entranceTarget = entrances.get(rand.nextInt(entrances.size))
 		
-		//moveToShop(occurrence.body, occurrence.waypoints, randomFemaleShop)
+		// Sets the 
+		occurrence.body.target = entranceTarget
+		
+		moveAlongPath(occurrence.body, occurrence.waypoints)
+		
+		state = AdultState::WALKING_TO_SHOP;
 	}
 
-	on Perception [state == AdultState::MALE_SHOP] {
-
-
+	on Perception [state == AdultState::WALKING_TO_SHOP] {
+		moveAlongPath(occurrence.body, occurrence.waypoints)
 	}
 
 	on Perception [state == AdultState::PICK_UP_PRODUCT] {
-
-
 	}
 
-	on Perception [state == AdultState::EVACUATE] {
-
-
+	on Perception [state == AdultState::EVACUATING] {
 	}
 
 }

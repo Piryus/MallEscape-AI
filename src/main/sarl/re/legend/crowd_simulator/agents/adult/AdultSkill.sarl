@@ -31,10 +31,6 @@ skill AdultSkill implements AdultCapacity {
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
 	}
 
-	def shop(position : Vector2) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
 	def move(x : float, y : float) {
 		// Creates a vector with the linear motion
 		var linearMotion = new Vector2(x, y)
@@ -42,11 +38,6 @@ skill AdultSkill implements AdultCapacity {
 		var motionInfluence = new MotionInfluence(this.body, linearMotion)
 		// Adds the influence to the body
 		this.body.addInfluence(motionInfluence)
-	}
-
-	def shop(status : AdultState) {
-		if (status == AdultState::FEMALE_SHOP) {
-		}
 	}
 
 	def moveRandomly(body : AgentBody) {
@@ -79,11 +70,6 @@ skill AdultSkill implements AdultCapacity {
 		}
 
 		if (this.body.path == null) {
-			// TODO Remove this, test purpose only, target should be assigned via agent's state
-			var x = (Math.random * 560) as float
-			var y = (Math.random * 560) as float
-			this.body.target = new Vector2(x, y);
-
 			// First, let's find the nearest node to the target
 			var nearestTargetNode = waypoints.nodes.get(0)
 			for (node : waypoints.nodes) {

@@ -143,7 +143,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		}
 
 		// Parses the shops and adds them to the shops list
-		MapLayer shopsLayer = (MapLayer) this.map.getLayers().get("Shops");
+		MapLayer shopsLayer = this.map.getLayers().get("Shops");
 		for (MapObject shopObject : shopsLayer.getObjects()) {
 			if (shopObject instanceof PolygonMapObject) {
 				// Gets the shop ID
@@ -157,9 +157,20 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			}
 		}
 
+		// Parses the shops entrances
+		MapLayer shopsEntrancesLayer = this.map.getLayers().get("ShopsEntrances");
+		for (MapObject entrancePosition : shopsEntrancesLayer.getObjects()) {
+			for (Shop shop : this.shops) {
+				if (shop.getId().equals(entrancePosition.getName())) {
+					shop.addEntrance((float) entrancePosition.getProperties().get("x"),
+							(float) entrancePosition.getProperties().get("y"));
+				}
+			}
+		}
+
 		// Retrieves the waypoints from the path object layer of the map and build a
 		// graph
-		MapLayer pathLayer = (MapLayer) this.map.getLayers().get("Path");
+		MapLayer pathLayer = this.map.getLayers().get("Path");
 		for (MapObject waypoint : pathLayer.getObjects()) {
 			float xPos = (float) waypoint.getProperties().get("x");
 			float yPos = (float) waypoint.getProperties().get("y");

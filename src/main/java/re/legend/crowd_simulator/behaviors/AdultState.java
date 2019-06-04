@@ -2,14 +2,10 @@ package re.legend.crowd_simulator.behaviors;
 
 public enum AdultState {
 	/**
-	 * The adult is shopping to a female shop.
+	 * The agent is going to a shop
 	 */
-	FEMALE_SHOP,
+	WALKING_TO_SHOP,
 	
-	/**
-	 * The adult is shopping to a male shop.
-	 */
-	MALE_SHOP,
 	/**
 	 * The adult is getting some products.
 	 */
@@ -18,5 +14,10 @@ public enum AdultState {
 	/**
 	 * The adult is evacuating to the exit.
 	 */
-	EVACUATE;
+	EVACUATING,
+	
+	/**
+	 * The adult is waiting 
+	 */
+	WAITING;
 }
