@@ -40,8 +40,8 @@ agent Environment {
 
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupWalls(this.application.getWalls);
+		setupFemaleShop(this.application.getFemaleShopList);
 		
-		//setupFemaleShop(this.application.getFemaleShop);
 		//setupMaleShop(this.application.getMaleShop)
 
 		// TODO Test spawner

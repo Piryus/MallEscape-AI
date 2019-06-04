@@ -52,8 +52,13 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
 	
+	List<Shop> femaleShopList;
 	Shop femaleShop;
+	
+	List<Shop> maleShopList;
 	Shop maleShop;
+	
+	
 	
 	// Adult bodies textures sprite
 	private Texture adultTextures;
@@ -99,8 +104,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch = new SpriteBatch();
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
-		//this.maleShop = new ArrayList<>();
-		//this.femaleShop = new ArrayList<>();
+		this.femaleShopList = new ArrayList<>();
+		this.maleShopList = new ArrayList<>();
 		
 		this.shapeRenderer = new ShapeRenderer();
 
@@ -132,6 +137,28 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
+		
+		MapLayer femaleShopLayer = (MapLayer) this.map.getLayers().get("ShopFObject");
+		for (MapObject femaleShopObject : femaleShopLayer.getObjects()) {
+			float xPos = (float) femaleShopObject.getProperties().get("x");
+			float yPos = (float) femaleShopObject.getProperties().get("y");
+			float height = (float) femaleShopObject.getProperties().get("height");
+			float width = (float) femaleShopObject.getProperties().get("width");
+			Shop femaleShop = new Shop(xPos, yPos, height, width, "F");
+			femaleShopList.add(femaleShop);
+		}
+		
+		MapLayer maleShopLayer = (MapLayer) this.map.getLayers().get("ShopMObject");
+		List<Shop> maleShopList = new ArrayList<>();
+		for(MapObject maleShopObject : maleShopLayer.getObjects()) {	
+			float xPos = (float) maleShopObject.getProperties().get("x");
+			float yPos = (float) maleShopObject.getProperties().get("y");
+			float height = (float) maleShopObject.getProperties().get("height");
+			float width = (float) maleShopObject.getProperties().get("width");
+			Shop maleShop = new Shop(xPos, yPos, height, width, "M");
+			maleShopList.add(maleShop);
+		}
+		
 		/*
 		// Retrieves the female shops from shopFObject layer of the map
 		MapLayer femaleShopLayer = (MapLayer) this.map.getLayers().get("shopFObject");
@@ -395,18 +422,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	
 	
 	public List<Shop> getFemaleShopList() {
-		// Retrieves the female shops from shopFObject layer of the map
-		MapLayer femaleShopLayer = (MapLayer) this.map.getLayers().get("shopFObject");
-		List<Shop> femaleShopList = new ArrayList<>();
-		for(MapObject femaleShopObject : femaleShopLayer.getObjects()) {	
-			float xPos = (float) femaleShopObject.getProperties().get("x");
-			float yPos = (float) femaleShopObject.getProperties().get("y");
-			float height = (float) femaleShopObject.getProperties().get("height");
-			float width = (float) femaleShopObject.getProperties().get("width");
-			Shop femaleShop = new Shop(xPos, yPos, height, width, "F");
-			femaleShopList.add(femaleShop);
-		}
-		return femaleShopList;
+		return this.femaleShopList;
 	}
 	
 	public List<Shop> getMaleShopList() {

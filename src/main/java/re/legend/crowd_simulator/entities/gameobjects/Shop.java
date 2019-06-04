@@ -3,7 +3,7 @@ package re.legend.crowd_simulator.entities.gameobjects;
 import com.badlogic.gdx.math.Vector2;
 
 public class Shop extends GameObject{
-	Vector2 origin;
+	//Vector2 origin;
 	private float x;
 	private float y;
 	private float height;
@@ -21,15 +21,16 @@ public class Shop extends GameObject{
 	}
 	
 	
-	public Vector2 getOrigin()
+	public float getXCoordonnee()
 	{
-		return this.origin;
+		return this.x;
 	}
 	
-	public void setOrigin(Vector2 origin)
+	public float getYCoordonnee()
 	{
-		this.origin = origin;
+		return this.y;
 	}
+	
 	
 	public float getHeight()
 	{

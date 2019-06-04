@@ -6,6 +6,8 @@ import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
+import re.legend.crowd_simulator.entities.gameobjects.Shop
+import java.util.ArrayList
 
 skill AdultSkill implements AdultCapacity {
 
@@ -17,6 +19,8 @@ skill AdultSkill implements AdultCapacity {
 
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
+	
+	var femaleShopList : ArrayList<Shop>
 
 	def install() {
 		this.lastStepTime = System.currentTimeMillis
@@ -70,10 +74,10 @@ skill AdultSkill implements AdultCapacity {
 		//var femaleEntrance = <ObjectEntity>this.map.object["GameObjects"][0];
 		// Retrieves the agent's body
 		this.body = body as AdultBody
-
+		
 		// If the body don't have a target, give it a random one
 		if (this.body.target == null) {
-			this.body.target = new Vector2(new Random().nextInt(500), new Random().nextInt(500))
+			this.body.target = new Vector2();
 		}
 
 		// If the body has had its target for longer than 20 seconds, give it a new one
