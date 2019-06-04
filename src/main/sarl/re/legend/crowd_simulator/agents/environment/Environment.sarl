@@ -47,8 +47,14 @@ agent Environment {
 		// Gets the waypoints from the tiled map and set them up into the map object
 		setupWaypoints(this.application.getWaypoints)
 
+		// Retrieves the walls from the tiled map and set them up into the map object
+		setupShops(this.application.getShops);
+		
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(270, 220), map)
+		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(50, 280), map) // West
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 500), map) // North
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(500, 280), map) // Est
+		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 50), map) //South
 
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]
@@ -67,5 +73,5 @@ agent Environment {
 		// You should put all the resource releasing statements in this block of code.
 		info("The World was destroyed.")
 	}
-
+	
 }

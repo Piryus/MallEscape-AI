@@ -10,6 +10,8 @@ import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.pathfinding.AStarNode
 import re.legend.crowd_simulator.pathfinding.Path
+import re.legend.crowd_simulator.entities.gameobjects.Shop
+import java.util.ArrayList
 
 skill AdultSkill implements AdultCapacity {
 
@@ -21,6 +23,8 @@ skill AdultSkill implements AdultCapacity {
 
 	// Time at which the agent has acquired its target, used for random moves
 	var targetAcquiredTime : long
+	
+	var femaleShopList : ArrayList<Shop>
 
 	def install() {
 		this.lastStepTime = System.currentTimeMillis

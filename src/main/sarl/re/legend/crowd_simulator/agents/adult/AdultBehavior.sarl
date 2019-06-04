@@ -1,7 +1,9 @@
 package re.legend.crowd_simulator.agents.adult
 
+import java.util.Random
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.behaviors.AdultState
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
  * Defines an adult's behavior
@@ -10,11 +12,33 @@ behavior AdultBehavior {
 	uses AdultCapacity
 
 	var state = AdultState::FEMALE_SHOP
-	//Create pheromone
 	
 	on Perception [state == AdultState::FEMALE_SHOP] {
-		//moveRandomly(occurrence.body)
-		moveAlongPath(occurrence.body, occurrence.waypoints)
+	    // TODO Fix that
+		var shops = occurrence.shops
+		// Select a shop from the list randomly
+		var rand = new Random();
+		var randomFemaleShop : Shop
+		do {
+			randomFemaleShop = shops.get(rand.nextInt(shops.size))
+		} while (!randomFemaleShop.type.equals("F"))
+		
+		//moveAlongPath(occurrence.body, occurrence.waypoints, randomFemaleShop)
+	}
+
+	on Perception [state == AdultState::MALE_SHOP] {
+
+
+	}
+
+	on Perception [state == AdultState::PICK_UP_PRODUCT] {
+
+
+	}
+
+	on Perception [state == AdultState::EVACUATE] {
+
+
 	}
 
 }

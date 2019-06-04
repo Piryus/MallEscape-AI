@@ -3,6 +3,7 @@ package re.legend.crowd_simulator.agents.events
 import com.google.common.graph.MutableGraph
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.pathfinding.AStarNode
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 event SimulationStep
 
@@ -12,11 +13,13 @@ event SimulationStep
 event Perception {
 	val body : AgentBody
 	val currentTime : float
+	val shops : List<Shop>
 	val waypoints : MutableGraph<AStarNode>
 
-	new (b : AgentBody, time : float, waypoints : MutableGraph<AStarNode>) {
+	new (b : AgentBody, time : float, waypoints : MutableGraph<AStarNode>, shops : List<Shop>) {
 		this.body = b
 		this.currentTime = time
 		this.waypoints = waypoints
+		this.shops = shops;
 	}
 }

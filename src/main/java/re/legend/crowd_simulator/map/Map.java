@@ -12,6 +12,7 @@ import com.google.common.graph.MutableGraph;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 import re.legend.crowd_simulator.pathfinding.AStarNode;
 
@@ -29,12 +30,16 @@ public class Map {
 	// List of waypoints on the map
 	private MutableGraph<AStarNode> waypoints;
 
+	// List of shops on the map
+	private List<Shop> shops;
+	
 	/**
 	 * Default constructor
 	 */
 	public Map() {
 		this.bodies = new TreeMap<>();
 		this.walls = new ArrayList<>();
+		this.shops = new ArrayList<>();
 	}
 
 	/**
@@ -76,6 +81,10 @@ public class Map {
 		this.walls = walls;
 	}
 
+	public void setShops(List<Shop> shops) {
+		this.shops = shops;
+	}
+	
 	public Collection<AgentBody> getBodies() {
 		return this.bodies.values();
 	}

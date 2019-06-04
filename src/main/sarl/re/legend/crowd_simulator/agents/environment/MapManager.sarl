@@ -18,6 +18,7 @@ import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
 import re.legend.crowd_simulator.pathfinding.AStarNode
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
  * Capacity to manage the map
@@ -48,6 +49,11 @@ capacity MapManager {
 	 * Set up the walls in the map object
 	 */
 	def setupWalls(walls : List<Wall>)
+
+	/** 
+	 * Set up female shops in the map object
+	 */
+	def setupShops(shops : List<Shop>)
 
 	/** 
 	 * Compute the perceptions of each body on the map
@@ -192,7 +198,7 @@ skill DefaultMapManager implements MapManager {
 			// Create and send the perception event to every bodies
 			for (body : this.map.bodies) {
 				// Create the perception
-				var perception = new Perception(body, getCurrentTime, this.map.waypoints)
+				var perception = new Perception(body, getCurrentTime, this.map.waypoints, this.map.shops)
 				perception.source = defaultSpace.getAddress(ID)
 				// Emit the perception
 				emit(perception)[it.UUID == body.uuid]
@@ -244,4 +250,9 @@ skill DefaultMapManager implements MapManager {
 		this.map.setWaypoints(waypoints)
 	}
 
+	
+	def setupShops(shops : List<Shop>) {
+		this.map.setShops(shops)
+	}
+	
 }

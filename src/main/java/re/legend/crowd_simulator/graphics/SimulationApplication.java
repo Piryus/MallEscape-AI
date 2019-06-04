@@ -37,6 +37,7 @@ import com.kotcrab.vis.ui.widget.VisTextButton;
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 import re.legend.crowd_simulator.pathfinding.AStarNode;
 
@@ -55,7 +56,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
-
+	
+	// Shops list, given to the agents to 
+	private List<Shop> shops;
+	
 	// Adult bodies textures sprite
 	private Texture adultTextures;
 	private TextureRegion adultStillLeft;
@@ -103,6 +107,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch = new SpriteBatch();
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
+		this.shops = new ArrayList<>();
+		
 		this.shapeRenderer = new ShapeRenderer();
 		this.waypoints = GraphBuilder.undirected().build();
 
@@ -134,6 +140,28 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
+		
+		// Adds the female shops to the shops list
+		MapLayer femaleShopLayer = (MapLayer) this.map.getLayers().get("ShopFObject");
+		for (MapObject femaleShopObject : femaleShopLayer.getObjects()) {
+			float xPos = (float) femaleShopObject.getProperties().get("x");
+			float yPos = (float) femaleShopObject.getProperties().get("y");
+			float height = (float) femaleShopObject.getProperties().get("height");
+			float width = (float) femaleShopObject.getProperties().get("width");
+			Shop femaleShop = new Shop(xPos, yPos, height, width, "F");
+			this.shops.add(femaleShop);
+		}
+		
+		// Adds the male shops to the shops list
+		MapLayer maleShopLayer = (MapLayer) this.map.getLayers().get("ShopMObject");
+		for(MapObject maleShopObject : maleShopLayer.getObjects()) {	
+			float xPos = (float) maleShopObject.getProperties().get("x");
+			float yPos = (float) maleShopObject.getProperties().get("y");
+			float height = (float) maleShopObject.getProperties().get("height");
+			float width = (float) maleShopObject.getProperties().get("width");
+			Shop maleShop = new Shop(xPos, yPos, height, width, "M");
+			this.shops.add(maleShop);
+		}
 
 		// Retrieves the waypoints from the path object layer of the map and build a
 		// graph
@@ -149,19 +177,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
-
-		// Test Access to an object
-		MapLayer layer = map.getLayers().get(0);
-		MapObject way = layer.getObjects().get("Way");
-
-		// Get Access to female/male shop on map2
-		/*
-		 * MapLayer layer2 = map.getLayers().get("Walls");
-		 * 
-		 * MapObject femaleShop= layer2.getObjects().get("ShopFObject"); MapObject
-		 * maleShop= layer2.getObjects().get("ShopMObject"); MapObject road =
-		 * layer2.getObjects().get("Road");
-		 */
 
 		// Sets camera properties
 		this.camera = new OrthographicCamera(Gdx.graphics.getWidth() / 5, Gdx.graphics.getHeight() / 5);
@@ -411,4 +426,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			this.notify();
 		}
 	}
+	
+	public List<Shop> getShops() {
+		return this.shops;
+	}
+
 }
