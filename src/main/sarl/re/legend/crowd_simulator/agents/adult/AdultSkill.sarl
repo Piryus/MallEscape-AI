@@ -176,8 +176,8 @@ skill AdultSkill implements AdultCapacity {
 		var currentNode = goal
 		do {
 			nodesList.add(currentNode)
-		} while ((currentNode = currentNode.parent) !== null);
-		if (nodesList.isEmpty)
+		} while ((currentNode = currentNode.parent) !== null)
+		
 		return new Path(nodesList.reverse)
 	}
 
