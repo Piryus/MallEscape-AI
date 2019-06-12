@@ -150,8 +150,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				String shopId = shopObject.getName();
 				// Gets the polygon area vertices
 				float areaVertices[] = ((PolygonMapObject) shopObject).getPolygon().getVertices();
+				// Gets shop coordinates
+				float x = (float) shopObject.getProperties().get("x");
+				float y = (float) shopObject.getProperties().get("y");
 				// Creates the shop
-				Shop shop = new Shop(shopId, areaVertices);
+				Shop shop = new Shop(shopId, areaVertices, x, y);
 				// Adds the shop to the list
 				this.shops.add(shop);
 			}
@@ -311,14 +314,16 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				 * body.getDesiredVelocity().y);
 				 */
 				// Renders agents' paths
-				/*
-				 * if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
-				 * this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
-				 * body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
-				 * for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
-				 * this.shapeRenderer.line(body.getPath().getNodes().get(i),
-				 * body.getPath().getNodes().get(i + 1)); } }
-				 */
+				
+//				  if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
+//				  this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
+//				  body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
+//				  for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
+//				  this.shapeRenderer.line(body.getPath().getNodes().get(i),
+//				  body.getPath().getNodes().get(i + 1)); } }
+				 
+				//this.shapeRenderer.setColor(1, 0, 0, 1);
+				//this.shapeRenderer.circle(body.getTarget().x, body.getTarget().y, 10);
 
 			}
 		}

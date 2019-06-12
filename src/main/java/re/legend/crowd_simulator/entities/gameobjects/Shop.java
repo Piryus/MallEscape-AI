@@ -16,18 +16,24 @@ public class Shop {
 	
 	// Entrances positions
 	private List<Vector2> entrances;
+	
+	// Shop position
+	private Vector2 position;
 
 	/**
 	 * Shop constructor
 	 * @param id the shop id
 	 * @param areaVertices the vertices of the polygon representing the shop's area
 	 */
-	public Shop(String id, float[] areaVertices) {
+	public Shop(String id, float[] areaVertices, float x, float y) {
 		this.entrances = new ArrayList<>();
 		// Sets the ID
 		this.id = id;
 		// Initializes the area with the vertices
 		this.area = new Polygon(areaVertices);
+		this.area.setPosition(x, y);
+		// Initializes position
+		this.position = new Vector2(x, y);
 	}
 	
 	/**
@@ -55,5 +61,9 @@ public class Shop {
 	
 	public List<Vector2> getEntrances() {
 		return this.entrances;
+	}
+	
+	public Vector2 getPosition() {
+		return this.position;
 	}
 }

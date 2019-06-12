@@ -51,10 +51,10 @@ agent Environment {
 		setupShops(this.application.getShops);
 		
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(50, 280), map) // West
-		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 500), map) // North
-		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(500, 280), map) // Est
-		//spawn(SpawnerAgent, "Adult", 20, 3000, new Vector2(280, 50), map) //South
+		spawn(SpawnerAgent, "Adult", 30, 1000, new Vector2(50, 280), map) // West
+		//spawn(SpawnerAgent, "Adult", 30, 1000, new Vector2(280, 500), map) // North
+		//spawn(SpawnerAgent, "Adult", 20, 1000, new Vector2(500, 280), map) // East
+		//spawn(SpawnerAgent, "Adult", 20, 1000, new Vector2(280, 50), map) //South
 
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]

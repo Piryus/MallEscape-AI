@@ -21,6 +21,9 @@ public class Map {
 	// Size of each cell of the map
 	public static final int CELL_SIZE = 16;
 	
+	// Map size
+	public static final int MAP_SIZE = 560;
+	
 	// TreeMap containing the bodies on the map
 	private TreeMap<UUID, AgentBody> bodies;
 

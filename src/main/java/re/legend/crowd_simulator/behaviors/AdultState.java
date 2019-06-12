@@ -7,12 +7,12 @@ public enum AdultState {
 	WALKING_TO_SHOP,
 	
 	/**
-	 * The adult is getting some products.
+	 * The adult is shopping the store
 	 */
-	PICK_UP_PRODUCT,
+	SHOPPING,
 	
 	/**
-	 * The adult is evacuating to the exit.
+	 * The adult is evacuating to the exit
 	 */
 	EVACUATING,
 	
