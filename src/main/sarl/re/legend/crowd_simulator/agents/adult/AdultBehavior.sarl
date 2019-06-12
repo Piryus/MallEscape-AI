@@ -70,6 +70,10 @@ behavior AdultBehavior {
 		if (body.hasReachedShopEntrance) {
 			// Changes state to shopping
 			state = AdultState::SHOPPING;
+			
+			// Sets the time at which the agent started shopping
+			body.shoppingStartedTime = System.currentTimeMillis
+			
 			// Sets a random target in the shop
 			var randTargetInShop : Vector2
 			do {
@@ -97,9 +101,19 @@ behavior AdultBehavior {
 
 	on Perception [state == AdultState::SHOPPING] {
 		var body = occurrence.body
+
+		// If the agent has been shopping for longer than a minute, get it to the entrance of the shop
+		if (System.currentTimeMillis > body.shoppingStartedTime + 60000) {
+			// Sets the agent's target to the shop entrance
+			body.target = body.shopEntrance
+			// If the agent has reached the shop entrance, loop to the waiting state
+			if(body.hasReachedShopEntrance) {
+				state = AdultState::WAITING
+			}
+		}
 		
 		// If the body has had its target for longer than 10 seconds, give it a new one
-		if (System.currentTimeMillis > body.shopTargetAcquiredTime + 10000) {
+		else if (System.currentTimeMillis > body.shopTargetAcquiredTime + 10000) {
 			// Sets a random target in the shop
 			var randTargetInShop : Vector2
 			do {

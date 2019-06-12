@@ -70,6 +70,9 @@ public abstract class AgentBody extends SimulationEntity {
 	
 	// Time at which the agent has acquired its target while shopping, used for random moves in the shops
 	public long shopTargetAcquiredTime;
+	
+	// Time at which the agent has started shopping and has entered a shop
+	public long shoppingStartedTime;
 
 
 	/**
@@ -261,6 +264,14 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void setShopEntrance(Vector2 shopEntrance) {
 		this.shopEntrance = shopEntrance;
+	}
+
+	public long getShoppingStartedTime() {
+		return shoppingStartedTime;
+	}
+
+	public void setShoppingStartedTime(long shoppingStartedTime) {
+		this.shoppingStartedTime = shoppingStartedTime;
 	}
 
 	public void seek() {
