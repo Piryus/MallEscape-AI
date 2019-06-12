@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import java.util.Random
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.behaviors.AdultState
+import re.legend.crowd_simulator.entities.bodies.AdultBody
+import re.legend.crowd_simulator.entities.bodies.Sex
 import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
@@ -21,22 +23,43 @@ behavior AdultBehavior {
 	 */
 	on Perception [state == AdultState::WAITING] {
 		var shops = occurrence.shops
+		var body = occurrence.body
 		
 		// Select a shop from the list randomly
-		var randomFemaleShop : Shop
-		do {
-			randomFemaleShop = shops.get(rand.nextInt(shops.size))
-		} while (!randomFemaleShop.id.contains("F1"))
+		var randomShop : Shop
+		var randChance = rand.nextInt(10)
+		if ((body as AdultBody).sex  == Sex.male) { // Male agent
+			if (randChance > 7) { // 20% chance the agent will choose a female shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("F"))
+			} else { // 80% chance the agent will choose a male shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("M"))
+			}
+		} else if ((body as AdultBody).sex == Sex.female) { // Female agent
+			if (randChance > 7) { // 20% chance the agent will choose a male shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("M"))
+			} else { // 80% chance the agent will choose a female shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("F"))
+			}
+		}
+
 		
 		// Sets the shop targeted by the agent
-		occurrence.body.setVisitedShop(randomFemaleShop);
+		body.setVisitedShop(randomShop);
 
 		// Selects an entrance randomly
-		var entrances = randomFemaleShop.getEntrances
-		occurrence.body.shopEntrance = entrances.get(rand.nextInt(entrances.size))
-		occurrence.body.target = occurrence.body.shopEntrance
+		var entrances = randomShop.getEntrances
+		body.shopEntrance = entrances.get(rand.nextInt(entrances.size))
+		body.target = body.shopEntrance
 		
-		moveAlongPath(occurrence.body, occurrence.waypoints)
+		moveAlongPath(body, occurrence.waypoints)
 		
 		state = AdultState::WALKING_TO_SHOP;
 	}
