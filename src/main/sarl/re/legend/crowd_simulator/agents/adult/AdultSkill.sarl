@@ -4,17 +4,15 @@ import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
 import java.util.ArrayList
 import java.util.Random
-import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.pathfinding.AStarNode
 import re.legend.crowd_simulator.pathfinding.Path
-import re.legend.crowd_simulator.entities.gameobjects.Shop
-import java.util.ArrayList
 
 skill AdultSkill implements AdultCapacity {
-
+	
 	// Body on which the actions will be applied
 	var body : AdultBody
 
@@ -31,10 +29,6 @@ skill AdultSkill implements AdultCapacity {
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
 	}
 
-	def shop(position : Vector2) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
 	def move(x : float, y : float) {
 		// Creates a vector with the linear motion
 		var linearMotion = new Vector2(x, y)
@@ -42,11 +36,6 @@ skill AdultSkill implements AdultCapacity {
 		var motionInfluence = new MotionInfluence(this.body, linearMotion)
 		// Adds the influence to the body
 		this.body.addInfluence(motionInfluence)
-	}
-
-	def shop(status : AdultState) {
-		if (status == AdultState::FEMALE_SHOP) {
-		}
 	}
 
 	def moveRandomly(body : AgentBody) {
@@ -79,11 +68,6 @@ skill AdultSkill implements AdultCapacity {
 		}
 
 		if (this.body.path == null) {
-			// TODO Remove this, test purpose only, target should be assigned via agent's state
-			var x = (Math.random * 560) as float
-			var y = (Math.random * 560) as float
-			this.body.target = new Vector2(x, y);
-
 			// First, let's find the nearest node to the target
 			var nearestTargetNode = waypoints.nodes.get(0)
 			for (node : waypoints.nodes) {
@@ -190,10 +174,24 @@ skill AdultSkill implements AdultCapacity {
 	def computePath(goal : AStarNode) : Path {
 		var nodesList = new ArrayList<Vector2>()
 		var currentNode = goal
-		while (currentNode.parent != null) {
+		do {
 			nodesList.add(currentNode)
-			currentNode = currentNode.parent
-		}
+		} while ((currentNode = currentNode.parent) !== null)
+		
 		return new Path(nodesList.reverse)
+	}
+
+	def moveStraight(body : AgentBody) {
+		if (this.body == null) {
+			this.body = body as AdultBody
+		}
+
+		this.body.seek
+		this.body.avoidCollisionWithBodies
+		this.body.avoidCollisionWithWalls
+		this.body.computesVelocity
+		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
+		move(movement.x, movement.y)
+		this.lastStepTime = System.currentTimeMillis
 	}
 }

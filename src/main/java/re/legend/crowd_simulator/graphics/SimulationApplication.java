@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -56,10 +57,10 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
-	
-	// Shops list, given to the agents to 
+
+	// Shops list, given to the agents to
 	private List<Shop> shops;
-	
+
 	// Adult bodies textures sprite
 	private Texture adultTextures;
 	private TextureRegion adultStillLeft;
@@ -108,7 +109,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
 		this.shops = new ArrayList<>();
-		
+
 		this.shapeRenderer = new ShapeRenderer();
 		this.waypoints = GraphBuilder.undirected().build();
 
@@ -140,32 +141,39 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
-		
-		// Adds the female shops to the shops list
-		MapLayer femaleShopLayer = (MapLayer) this.map.getLayers().get("ShopFObject");
-		for (MapObject femaleShopObject : femaleShopLayer.getObjects()) {
-			float xPos = (float) femaleShopObject.getProperties().get("x");
-			float yPos = (float) femaleShopObject.getProperties().get("y");
-			float height = (float) femaleShopObject.getProperties().get("height");
-			float width = (float) femaleShopObject.getProperties().get("width");
-			Shop femaleShop = new Shop(xPos, yPos, height, width, "F");
-			this.shops.add(femaleShop);
+
+		// Parses the shops and adds them to the shops list
+		MapLayer shopsLayer = this.map.getLayers().get("Shops");
+		for (MapObject shopObject : shopsLayer.getObjects()) {
+			if (shopObject instanceof PolygonMapObject) {
+				// Gets the shop ID
+				String shopId = shopObject.getName();
+				// Gets the polygon area vertices
+				float areaVertices[] = ((PolygonMapObject) shopObject).getPolygon().getVertices();
+				// Gets shop coordinates
+				float x = (float) shopObject.getProperties().get("x");
+				float y = (float) shopObject.getProperties().get("y");
+				// Creates the shop
+				Shop shop = new Shop(shopId, areaVertices, x, y);
+				// Adds the shop to the list
+				this.shops.add(shop);
+			}
 		}
-		
-		// Adds the male shops to the shops list
-		MapLayer maleShopLayer = (MapLayer) this.map.getLayers().get("ShopMObject");
-		for(MapObject maleShopObject : maleShopLayer.getObjects()) {	
-			float xPos = (float) maleShopObject.getProperties().get("x");
-			float yPos = (float) maleShopObject.getProperties().get("y");
-			float height = (float) maleShopObject.getProperties().get("height");
-			float width = (float) maleShopObject.getProperties().get("width");
-			Shop maleShop = new Shop(xPos, yPos, height, width, "M");
-			this.shops.add(maleShop);
+
+		// Parses the shops entrances
+		MapLayer shopsEntrancesLayer = this.map.getLayers().get("ShopsEntrances");
+		for (MapObject entrancePosition : shopsEntrancesLayer.getObjects()) {
+			for (Shop shop : this.shops) {
+				if (shop.getId().equals(entrancePosition.getName())) {
+					shop.addEntrance((float) entrancePosition.getProperties().get("x"),
+							(float) entrancePosition.getProperties().get("y"));
+				}
+			}
 		}
 
 		// Retrieves the waypoints from the path object layer of the map and build a
 		// graph
-		MapLayer pathLayer = (MapLayer) this.map.getLayers().get("Path");
+		MapLayer pathLayer = this.map.getLayers().get("Path");
 		for (MapObject waypoint : pathLayer.getObjects()) {
 			float xPos = (float) waypoint.getProperties().get("x");
 			float yPos = (float) waypoint.getProperties().get("y");
@@ -192,7 +200,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.stage = new Stage(new ScreenViewport());
 		this.startButton = new VisTextButton("Start");
 		this.startButton.setSize(100, 50);
-		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth())/2, (Gdx.graphics.getHeight() - this.startButton.getHeight())/2);
+		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth()) / 2,
+				(Gdx.graphics.getHeight() - this.startButton.getHeight()) / 2);
 		this.startButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -305,14 +314,16 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				 * body.getDesiredVelocity().y);
 				 */
 				// Renders agents' paths
-				/*
-				 * if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
-				 * this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
-				 * body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
-				 * for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
-				 * this.shapeRenderer.line(body.getPath().getNodes().get(i),
-				 * body.getPath().getNodes().get(i + 1)); } }
-				 */
+				
+//				  if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
+//				  this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
+//				  body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
+//				  for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
+//				  this.shapeRenderer.line(body.getPath().getNodes().get(i),
+//				  body.getPath().getNodes().get(i + 1)); } }
+				 
+				//this.shapeRenderer.setColor(1, 0, 0, 1);
+				//this.shapeRenderer.circle(body.getTarget().x, body.getTarget().y, 10);
 
 			}
 		}
@@ -417,16 +428,16 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public MutableGraph<AStarNode> getWaypoints() {
 		return this.waypoints;
 	}
-	
+
 	/**
 	 * Wakes up the environment agent to start the simulation
 	 */
 	public void notifyStartingSimulation() {
-		synchronized(this) {
+		synchronized (this) {
 			this.notify();
 		}
 	}
-	
+
 	public List<Shop> getShops() {
 		return this.shops;
 	}

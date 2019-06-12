@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
+import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.influence.Influence;
 import re.legend.crowd_simulator.influence.MotionInfluence;
@@ -60,6 +61,18 @@ public abstract class AgentBody extends SimulationEntity {
 	
 	// The current node the agent is targeting
 	private int currentNode;
+	
+	// The shop the agent wants to visit
+	private Shop visitedShop;
+	
+	// The shop entrance that the agent is targetting
+	private Vector2 shopEntrance;
+	
+	// Time at which the agent has acquired its target while shopping, used for random moves in the shops
+	public long shopTargetAcquiredTime;
+	
+	// Time at which the agent has started shopping and has entered a shop
+	public long shoppingStartedTime;
 
 
 	/**
@@ -237,6 +250,30 @@ public abstract class AgentBody extends SimulationEntity {
 		this.target = target;
 	}
 
+	public Shop getVisitedShop() {
+		return visitedShop;
+	}
+
+	public void setVisitedShop(Shop visitedShop) {
+		this.visitedShop = visitedShop;
+	}
+
+	public Vector2 getShopEntrance() {
+		return shopEntrance;
+	}
+
+	public void setShopEntrance(Vector2 shopEntrance) {
+		this.shopEntrance = shopEntrance;
+	}
+
+	public long getShoppingStartedTime() {
+		return shoppingStartedTime;
+	}
+
+	public void setShoppingStartedTime(long shoppingStartedTime) {
+		this.shoppingStartedTime = shoppingStartedTime;
+	}
+
 	public void seek() {
 		// Distance from the target at which the agent should start slowing down
 		float slowDownDistance = 40f;
@@ -383,5 +420,14 @@ public abstract class AgentBody extends SimulationEntity {
 			this.currentNode++;
 			this.target = this.path.getNode(this.currentNode);
 		}
+	}
+
+	public boolean hasReachedShopEntrance() {
+		return Vector2.dst(this.position.x, this.position.y, this.shopEntrance.x, this.shopEntrance.y) < 20f;
+	}
+	
+	public boolean hasReachedPathLastNode() {
+		Vector2 lastNode = this.path.getNode(this.path.getNodes().size() - 1);
+		return Vector2.dst(this.position.x, this.position.y, lastNode.x, lastNode.y) < 40f;
 	}
 }

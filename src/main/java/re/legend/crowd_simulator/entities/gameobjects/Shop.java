@@ -1,38 +1,69 @@
 package re.legend.crowd_simulator.entities.gameobjects;
 
-public class Shop extends GameObject {
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
+
+public class Shop {
 	
-	private float height;
+	// The shop's ID (starting with a M for a male shop and with a F for a female shop)
+	private String id;
 	
-	private float width;
+	// The area of the shop
+	private Polygon area;
+	
+	// Entrances positions
+	private List<Vector2> entrances;
+	
+	// Shop position
+	private Vector2 position;
 
-	// "F" for female shop and "M" for Male shop
-	private final String type;
-
-	public Shop(float x, float y, float height, float width, String type) {
-		super(x, y, 0);
-		this.height = height;
-		this.width = width;
-		this.type = type;
-	}
-
-	public float y() {
-		return this.position.x;
-	}
-
-	public float x() {
-		return this.position.y;
-	}
-
-	public float height() {
-		return this.height;
-	}
-
-	public float width() {
-		return this.width;
+	/**
+	 * Shop constructor
+	 * @param id the shop id
+	 * @param areaVertices the vertices of the polygon representing the shop's area
+	 */
+	public Shop(String id, float[] areaVertices, float x, float y) {
+		this.entrances = new ArrayList<>();
+		// Sets the ID
+		this.id = id;
+		// Initializes the area with the vertices
+		this.area = new Polygon(areaVertices);
+		this.area.setPosition(x, y);
+		// Initializes position
+		this.position = new Vector2(x, y);
 	}
 	
-	public String getType() {
-		return this.type;
+	/**
+	 * @return the shop's ID
+	 */
+	public String getId() {
+		return this.id;
+	}
+	
+	/**
+	 * @return the shop's area
+	 */
+	public Polygon getArea() {
+		return this.area;
+	}
+	
+	/**
+	 * Add an entrance to the shop
+	 * @param x 
+	 * @param y
+	 */
+	public void addEntrance(float x, float y) {
+		this.entrances.add(new Vector2(x, y));
+	}
+	
+	public List<Vector2> getEntrances() {
+		return this.entrances;
+	}
+	
+	public Vector2 getPosition() {
+		return this.position;
 	}
 }

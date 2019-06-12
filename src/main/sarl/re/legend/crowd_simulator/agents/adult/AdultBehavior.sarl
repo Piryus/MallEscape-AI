@@ -1,8 +1,11 @@
 package re.legend.crowd_simulator.agents.adult
 
+import com.badlogic.gdx.math.Vector2
 import java.util.Random
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.behaviors.AdultState
+import re.legend.crowd_simulator.entities.bodies.AdultBody
+import re.legend.crowd_simulator.entities.bodies.Sex
 import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
@@ -11,34 +14,127 @@ import re.legend.crowd_simulator.entities.gameobjects.Shop
 behavior AdultBehavior {
 	uses AdultCapacity
 
-	var state = AdultState::FEMALE_SHOP
-	
-	on Perception [state == AdultState::FEMALE_SHOP] {
-	    // TODO Fix that
+	var rand = new Random
+	var state = AdultState::WAITING
+
+	/**
+	 * On reception of a Perception event and when the agent is in the WAITING state
+	 * The agent should select a shop to go
+	 */
+	on Perception [state == AdultState::WAITING] {
 		var shops = occurrence.shops
-		// Select a shop from the list randomly
-		var rand = new Random();
-		var randomFemaleShop : Shop
-		do {
-			randomFemaleShop = shops.get(rand.nextInt(shops.size))
-		} while (!randomFemaleShop.type.equals("F"))
+		var body = occurrence.body
 		
-		//moveAlongPath(occurrence.body, occurrence.waypoints, randomFemaleShop)
+		// Select a shop from the list randomly
+		var randomShop : Shop
+		var randChance = rand.nextInt(10)
+		if ((body as AdultBody).sex  == Sex.male) { // Male agent
+			if (randChance > 7) { // 20% chance the agent will choose a female shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("F"))
+			} else { // 80% chance the agent will choose a male shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("M"))
+			}
+		} else if ((body as AdultBody).sex == Sex.female) { // Female agent
+			if (randChance > 7) { // 20% chance the agent will choose a male shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("M"))
+			} else { // 80% chance the agent will choose a female shop
+				do {
+					randomShop = shops.get(rand.nextInt(shops.size))
+				} while (!randomShop.id.contains("F"))
+			}
+		}
+
+		
+		// Sets the shop targeted by the agent
+		body.setVisitedShop(randomShop);
+
+		// Selects an entrance randomly
+		var entrances = randomShop.getEntrances
+		body.shopEntrance = entrances.get(rand.nextInt(entrances.size))
+		body.target = body.shopEntrance
+		
+		moveAlongPath(body, occurrence.waypoints)
+		
+		state = AdultState::WALKING_TO_SHOP;
 	}
 
-	on Perception [state == AdultState::MALE_SHOP] {
-
-
+	on Perception [state == AdultState::WALKING_TO_SHOP] {
+		var body = occurrence.body
+		
+		if (body.hasReachedShopEntrance) {
+			// Changes state to shopping
+			state = AdultState::SHOPPING;
+			
+			// Sets the time at which the agent started shopping
+			body.shoppingStartedTime = System.currentTimeMillis
+			
+			// Sets a random target in the shop
+			var randTargetInShop : Vector2
+			do {
+				// Gets random X and Y within a rectangle representing the area of the shop
+				var randTargetX = rand.nextInt(body.visitedShop.area.boundingRectangle.width as int)
+				var randTargetY = rand.nextInt(body.visitedShop.area.boundingRectangle.height as int)
+				randTargetInShop = new Vector2(randTargetX, randTargetY)
+				randTargetInShop.add(body.visitedShop.area.boundingRectangle.x,
+					body.visitedShop.area.boundingRectangle.y)
+			} while (!body.visitedShop.area.contains(randTargetInShop))
+			// Updates time at which the target was acquired
+			body.shopTargetAcquiredTime = System.currentTimeMillis
+			// Sets the body target
+			body.target = randTargetInShop
+			
+		} else if (body.path.nodes.size > 0 && body.hasReachedPathLastNode) {
+			// Move to the entrance of the shop
+			body.target = body.shopEntrance
+			moveStraight(body)
+		} else {
+			// Move along the path created to go to the shop
+			moveAlongPath(body, occurrence.waypoints)
+		}
 	}
 
-	on Perception [state == AdultState::PICK_UP_PRODUCT] {
+	on Perception [state == AdultState::SHOPPING] {
+		var body = occurrence.body
 
-
+		// If the agent has been shopping for longer than a minute, get it to the entrance of the shop
+		if (System.currentTimeMillis > body.shoppingStartedTime + 60000) {
+			// Sets the agent's target to the shop entrance
+			body.target = body.shopEntrance
+			// If the agent has reached the shop entrance, loop to the waiting state
+			if(body.hasReachedShopEntrance) {
+				state = AdultState::WAITING
+			}
+		}
+		
+		// If the body has had its target for longer than 10 seconds, give it a new one
+		else if (System.currentTimeMillis > body.shopTargetAcquiredTime + 10000) {
+			// Sets a random target in the shop
+			var randTargetInShop : Vector2
+			do {
+				// Gets random X and Y within a rectangle representing the area of the shop
+				var randTargetX = rand.nextInt(body.visitedShop.area.boundingRectangle.width as int)
+				var randTargetY = rand.nextInt(body.visitedShop.area.boundingRectangle.height as int)
+				randTargetInShop = new Vector2(randTargetX, randTargetY)
+				randTargetInShop.add(body.visitedShop.area.boundingRectangle.x,
+					body.visitedShop.area.boundingRectangle.y)
+			} while (!body.visitedShop.area.contains(randTargetInShop))
+			// Updates time at which the target was acquired
+			body.shopTargetAcquiredTime = System.currentTimeMillis
+			// Sets the body target
+			body.target = randTargetInShop
+		}
+		
+		// Moves straight to the target
+		moveStraight(occurrence.body)
 	}
 
-	on Perception [state == AdultState::EVACUATE] {
-
-
+	on Perception [state == AdultState::EVACUATING] {
 	}
 
 }
