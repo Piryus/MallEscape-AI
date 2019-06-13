@@ -26,14 +26,24 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.Menu;
+import com.kotcrab.vis.ui.widget.MenuBar;
+import com.kotcrab.vis.ui.widget.MenuItem;
+import com.kotcrab.vis.ui.widget.VisCheckBox;
+import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.kotcrab.vis.ui.widget.VisWindow;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
@@ -100,6 +110,20 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	// Waypoints of the map
 	private MutableGraph<AStarNode> waypoints;
 
+	// Booleans to manage the display options
+	boolean renderWallsHitboxes;
+	boolean renderAgentCircle;
+	boolean renderAheadVector;
+	boolean renderAhead2Vector;
+	boolean renderVelocityVector;
+	boolean renderAvoidanceVector;
+	boolean renderDesiredVelocityVector;
+	boolean renderPaths;
+	boolean renderTarget;
+	
+	// True if the bomb button has been clicked
+	private boolean bombTriggered;
+
 	@Override
 	public void create() {
 		// Attributes instantiation
@@ -124,6 +148,17 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.strTimer = "Time: 0";
 		this.fontTimer = new BitmapFont();
 		this.timerLayout = new GlyphLayout();
+
+		// Display manager
+		this.renderWallsHitboxes = false;
+		this.renderAgentCircle = false;
+		this.renderAheadVector = false;
+		this.renderAhead2Vector = false;
+		this.renderVelocityVector = false;
+		this.renderAvoidanceVector = false;
+		this.renderDesiredVelocityVector = false;
+		this.renderPaths = false;
+		this.renderTarget = false;
 
 		// Loads map
 		this.loader = new TmxMapLoader();
@@ -211,10 +246,135 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		});
 		this.stage.addActor(this.startButton);
 
+		// Menu bar initialization
+		Table root = new Table();
+		root.setFillParent(true);
+		this.stage.addActor(root);
+		MenuBar menuBar = new MenuBar();
+		root.add(menuBar.getTable()).expandX().fillX().row();
+		root.add().expand().fill();
+
+		// Display option window
+		VisWindow displayOptionsWindow = new VisWindow("Display options");
+		displayOptionsWindow.addCloseButton();
+		displayOptionsWindow.fadeIn();
+		VisTable optionsTable = new VisTable();
+		
+		displayOptionsWindow.add(optionsTable).row();
+		// Walls hitboxes
+		VisCheckBox renderWallHitboxBox = new VisCheckBox("Render the walls hitboxes");
+		renderWallHitboxBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderWallsHitboxes = !renderWallsHitboxes;
+			}
+		});
+		optionsTable.add(renderWallHitboxBox).left().row();
+		// Agents's private circles
+		VisCheckBox renderAgentCircleBox = new VisCheckBox("Render the agents private circles");
+		renderAgentCircleBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderAgentCircle = !renderAgentCircle;
+			}
+		});
+		optionsTable.add(renderAgentCircleBox).left().row();
+		// Agents's ahead vector
+		VisCheckBox renderAheadVectorBox = new VisCheckBox("Render the agents ahead vector");
+		renderAheadVectorBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderAheadVector = !renderAheadVector;
+			}
+		});
+		optionsTable.add(renderAheadVectorBox).left().row();
+		// Agents's ahead2 vector
+		VisCheckBox renderAhead2VectorBox = new VisCheckBox("Render the agents ahead2 vector");
+		renderAhead2VectorBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderAhead2Vector = !renderAhead2Vector;
+			}
+		});
+		optionsTable.add(renderAhead2VectorBox).left().row();
+		// Agents's velocity
+		VisCheckBox renderVelocityBox = new VisCheckBox("Render the agents velocity vector");
+		renderVelocityBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderVelocityVector = !renderVelocityVector;
+			}
+		});
+		optionsTable.add(renderVelocityBox).left().row();
+		// Agents's avoidance vector
+		VisCheckBox renderAvoidanceBox = new VisCheckBox("Render the agents avoidance vector");
+		renderAvoidanceBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderAvoidanceVector = !renderAvoidanceVector;
+			}
+		});
+		optionsTable.add(renderAvoidanceBox).left().row();
+		// Agents's desired velocity
+		VisCheckBox renderDesiredVelocityBox = new VisCheckBox("Render the agents desired velocity vector");
+		renderDesiredVelocityBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderDesiredVelocityVector = !renderDesiredVelocityVector;
+			}
+		});
+		optionsTable.add(renderDesiredVelocityBox).left().row();
+		// Agents's path
+		VisCheckBox renderPathBox = new VisCheckBox("Render the agents paths");
+		renderPathBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderPaths = !renderPaths;
+			}
+		});
+		optionsTable.add(renderPathBox).left().row();
+		// Agents's target
+		VisCheckBox renderTargetBox = new VisCheckBox("Render the agents targets");
+		renderTargetBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				renderTarget = !renderTarget;
+			}
+		});
+		optionsTable.add(renderTargetBox).left().row();
+		displayOptionsWindow.pack();
+		
+		// Options menu
+		Menu optionsMenu = new Menu("Options");
+		menuBar.addMenu(optionsMenu);
+		// "Display options"
+		MenuItem wallsHitBoxItem = new MenuItem("Display options", new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				stage.addActor(displayOptionsWindow);
+			}
+		});
+		optionsMenu.addItem(wallsHitBoxItem);
+		// "Trigger a bomb"
+		MenuItem triggerBombItem = new MenuItem("Trigger bomb");
+		triggerBombItem.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				triggerBombItem.setDisabled(true);
+				bombTriggered = true;
+			}
+		});
+		optionsMenu.addItem(triggerBombItem);
+
+		// Help menu
+		Menu helpMenu = new Menu("Help");
+		menuBar.addMenu(helpMenu);
+		
+
 		// Adds input processors
 		this.inputMultiplexer = new InputMultiplexer();
-		this.inputMultiplexer.addProcessor(this);
 		this.inputMultiplexer.addProcessor(this.stage);
+		this.inputMultiplexer.addProcessor(this);
 		Gdx.input.setInputProcessor(this.inputMultiplexer);
 	}
 
@@ -263,68 +423,86 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Renders the forces applied on the agents
 		this.shapeRenderer.setProjectionMatrix(this.camera.combined);
 		this.shapeRenderer.begin(ShapeType.Line);
-		for (SimulationEntity wall : this.walls) {
-			if (wall instanceof SimulationEntity) {
-				this.shapeRenderer.setColor(1, 1, 1, 1); // White
-				// this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+8,
-				// 12);//Global
-				// Bottom
-				/*
-				 * this.shapeRenderer.circle(wall.getPosition().x+4, wall.getPosition().y+5, 6);
-				 * this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+5, 6);
-				 * this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+5,
-				 * 6);
-				 * 
-				 * //Middle this.shapeRenderer.circle(wall.getPosition().x+4,
-				 * wall.getPosition().y+8, 6); this.shapeRenderer.circle(wall.getPosition().x+8,
-				 * wall.getPosition().y+8, 6);
-				 * this.shapeRenderer.circle(wall.getPosition().x+12, wall.getPosition().y+8,
-				 * 6);
-				 * 
-				 * //Top this.shapeRenderer.circle(wall.getPosition().x+4,
-				 * wall.getPosition().y+11, 6);
-				 * this.shapeRenderer.circle(wall.getPosition().x+8, wall.getPosition().y+11,
-				 * 6); this.shapeRenderer.circle(wall.getPosition().x+12,
-				 * wall.getPosition().y+11, 6);
-				 */
+		if (this.renderWallsHitboxes) {
+			for (SimulationEntity wall : this.walls) {
+				if (wall instanceof SimulationEntity) {
+					this.shapeRenderer.setColor(1, 1, 1, 1); // White
+					// Global
+					this.shapeRenderer.circle(wall.getPosition().x + 8, wall.getPosition().y + 8, 12);
+					// Bottom
+					this.shapeRenderer.circle(wall.getPosition().x + 4, wall.getPosition().y + 5, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 8, wall.getPosition().y + 5, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 12, wall.getPosition().y + 5, 6);
+					// Middle
+					this.shapeRenderer.circle(wall.getPosition().x + 4, wall.getPosition().y + 8, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 8, wall.getPosition().y + 8, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 12, wall.getPosition().y + 8, 6);
+					// Top
+					this.shapeRenderer.circle(wall.getPosition().x + 4, wall.getPosition().y + 11, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 8, wall.getPosition().y + 11, 6);
+					this.shapeRenderer.circle(wall.getPosition().x + 12, wall.getPosition().y + 11, 6);
+
+				}
 			}
 		}
+
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				/*
-				 * // Agent's private circle this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
-				 * this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 10); //
-				 * Agent's ahead vector this.shapeRenderer.setColor(1, 1, 1, 1); // White
-				 * this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
-				 * body.getAhead().x, body.getAhead().y); // Agent's ahead2 vector //
-				 * this.shapeRenderer.setColor(1, 0, 0, 1); //
-				 * this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, //
-				 * body.getAhead2().x, body.getAhead2().y); // Agent's velocity vector
-				 * this.shapeRenderer.setColor(0, 1, 0, 1); // Green
-				 * this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
-				 * body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y +
-				 * body.getLinearVelocity().y); // Agent's avoidance vector
-				 * this.shapeRenderer.setColor(0.5f, 0, 0.5f, 1); // Purple
-				 * this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
-				 * body.getPosition().x + body.getAvoidance().x, body.getPosition().y +
-				 * body.getAvoidance().y); // Agent's desired velocity vector
-				 * this.shapeRenderer.setColor(1, 0, 0, 1); // Red
-				 * this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
-				 * body.getPosition().x + body.getDesiredVelocity().x, body.getPosition().y +
-				 * body.getDesiredVelocity().y);
-				 */
-				// Renders agents' paths
-				
-//				  if (body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
-//				  this.shapeRenderer.setColor(1, 0, 0, 1); for (Vector2 node :
-//				  body.getPath().getNodes()) { this.shapeRenderer.circle(node.x, node.y, 5); }
-//				  for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
-//				  this.shapeRenderer.line(body.getPath().getNodes().get(i),
-//				  body.getPath().getNodes().get(i + 1)); } }
-				 
-				//this.shapeRenderer.setColor(1, 0, 0, 1);
-				//this.shapeRenderer.circle(body.getTarget().x, body.getTarget().y, 10);
+				// Agent's private circle
+				if (renderAgentCircle) {
+					this.shapeRenderer.setColor(0, 0, 1, 1); // Blue
+					this.shapeRenderer.circle(body.getPosition().x, body.getPosition().y, 10);
+				}
+				// Agent's ahead vector
+				if (renderAheadVector) {
+					this.shapeRenderer.setColor(1, 1, 1, 1); // White
+					this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead().x,
+							body.getAhead().y);
+				}
+				// Agent's ahead2 vector
+				if (renderAhead2Vector) {
+					this.shapeRenderer.setColor(1, 0, 0, 1); // Red
+					this.shapeRenderer.line(body.getPosition().x, body.getPosition().y, body.getAhead2().x,
+							body.getAhead2().y);
+				}
+				// Agent's velocity vector
+				if (renderVelocityVector) {
+					this.shapeRenderer.setColor(0, 1, 0, 1); // Green
+					this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+							body.getPosition().x + body.getLinearVelocity().x,
+							body.getPosition().y + body.getLinearVelocity().y);
+				}
+				// Agent's avoidance vector
+				if (renderAvoidanceVector) {
+					this.shapeRenderer.setColor(0.5f, 0, 0.5f, 1); // Purple
+					this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+							body.getPosition().x + body.getAvoidance().x, body.getPosition().y + body.getAvoidance().y);
+				}
 
+				// Agent's desired velocity vector
+				if (renderDesiredVelocityVector) {
+					this.shapeRenderer.setColor(1, 0, 0, 1); // Red
+					this.shapeRenderer.line(body.getPosition().x, body.getPosition().y,
+							body.getPosition().x + body.getDesiredVelocity().x,
+							body.getPosition().y + body.getDesiredVelocity().y);
+				}
+
+				// Renders agents' paths
+				if (renderPaths && body.getPath() != null && !body.getPath().getNodes().isEmpty()) {
+					this.shapeRenderer.setColor(1, 0, 0, 1);
+					for (Vector2 node : body.getPath().getNodes()) {
+						this.shapeRenderer.circle(node.x, node.y, 5);
+					}
+					for (int i = 0; i < body.getPath().getNodes().size() - 1; i++) {
+						this.shapeRenderer.line(body.getPath().getNodes().get(i), body.getPath().getNodes().get(i + 1));
+					}
+				}
+
+				// Renders agents' target
+				if (renderTarget) {
+					this.shapeRenderer.setColor(1, 0, 0, 1);
+					this.shapeRenderer.circle(body.getTarget().x, body.getTarget().y, 5);
+				}
 			}
 		}
 		this.shapeRenderer.end();
@@ -442,4 +620,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		return this.shops;
 	}
 
+	public boolean isBombTriggered() {
+		return this.bombTriggered;
+	}
 }
