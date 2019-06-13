@@ -120,6 +120,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	boolean renderDesiredVelocityVector;
 	boolean renderPaths;
 	boolean renderTarget;
+	
+	// True if the bomb button has been clicked
+	private boolean bombTriggered;
 
 	@Override
 	public void create() {
@@ -339,9 +342,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			}
 		});
 		optionsTable.add(renderTargetBox).left().row();
-
+		displayOptionsWindow.pack();
+		
 		// Options menu
 		Menu optionsMenu = new Menu("Options");
+		menuBar.addMenu(optionsMenu);
+		// "Display options"
 		MenuItem wallsHitBoxItem = new MenuItem("Display options", new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -349,12 +355,21 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			}
 		});
 		optionsMenu.addItem(wallsHitBoxItem);
-		menuBar.addMenu(optionsMenu);
-		displayOptionsWindow.pack();
+		// "Trigger a bomb"
+		MenuItem triggerBombItem = new MenuItem("Trigger bomb");
+		triggerBombItem.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				triggerBombItem.setDisabled(true);
+				bombTriggered = true;
+			}
+		});
+		optionsMenu.addItem(triggerBombItem);
 
 		// Help menu
 		Menu helpMenu = new Menu("Help");
 		menuBar.addMenu(helpMenu);
+		
 
 		// Adds input processors
 		this.inputMultiplexer = new InputMultiplexer();
@@ -605,4 +620,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		return this.shops;
 	}
 
+	public boolean isBombTriggered() {
+		return this.bombTriggered;
+	}
 }
