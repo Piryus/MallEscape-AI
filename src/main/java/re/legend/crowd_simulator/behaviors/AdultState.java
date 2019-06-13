@@ -17,6 +17,11 @@ public enum AdultState {
 	EVACUATING,
 	
 	/**
+	 * The adult is evacuating the shop
+	 */
+	EVACUATING_SHOP,
+	
+	/**
 	 * The adult is waiting 
 	 */
 	WAITING;
