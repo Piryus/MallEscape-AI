@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import com.badlogic.gdx.math.Vector2;
 import com.google.common.graph.MutableGraph;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.gameobjects.Bomb;
 import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 import re.legend.crowd_simulator.pathfinding.AStarNode;
@@ -35,6 +37,12 @@ public class Map {
 
 	// List of shops on the map
 	private List<Shop> shops;
+	
+	// The bomb
+	private Bomb bomb;
+	
+	// List of exits on the map
+	private List<Vector2> exits;
 	
 	/**
 	 * Default constructor
@@ -119,5 +127,27 @@ public class Map {
 	
 	public MutableGraph<AStarNode> getWaypoints() {
 		return this.waypoints;
+	}
+
+	/**
+	 * @return the bomb
+	 */
+	public Bomb getBomb() {
+		return this.bomb;
+	}
+
+	/**
+	 * @param bomb the bomb to set
+	 */
+	public void setBomb(Bomb bomb) {
+		this.bomb = bomb;
+	}
+	
+	public void setExits(List<Vector2> exits) {
+		this.exits = exits;
+	}
+	
+	public List<Vector2> getExits() {
+		return this.exits;
 	}
 }

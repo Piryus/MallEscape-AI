@@ -31,9 +31,11 @@ event Perception {
  * It triggers the evacuation of the agents in the mall
  */
 event Alarm {
-	val position : Vector2
+	//val position : Vector2
+	val exits : List<Vector2>
 	
-	new (position : Vector2) {
-		this.position = position
+	new (exits : List<Vector2>) {
+		//this.position = position
+		this.exits = exits;
 	}
 }

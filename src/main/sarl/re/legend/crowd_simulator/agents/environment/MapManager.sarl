@@ -1,16 +1,22 @@
 package re.legend.crowd_simulator.agents.environment
 
+import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
 import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Lifecycle
 import java.util.ArrayList
 import java.util.List
+import java.util.Random
 import java.util.UUID
+import re.legend.crowd_simulator.agents.events.Alarm
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.entities.SimulationEntity
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.entities.bodies.DogBody
 import re.legend.crowd_simulator.entities.bodies.KidBody
+import re.legend.crowd_simulator.entities.gameobjects.Bomb
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
 import re.legend.crowd_simulator.frustum.EntityFrustum
@@ -18,7 +24,6 @@ import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
 import re.legend.crowd_simulator.pathfinding.AStarNode
-import re.legend.crowd_simulator.entities.gameobjects.Shop
 
 /** 
  * Capacity to manage the map
@@ -94,10 +99,20 @@ capacity MapManager {
 	 * Set up the waypoints for pathfinding
 	 */
 	def setupWaypoints(waypoints : MutableGraph<AStarNode>)
+	
+	/**
+	 * Spawns a bomb agent
+	 */
+	def spawnBomb()
+	
+	/**
+	 * Set up exits in the map object
+	 */
+	def setupExits(exits : List<Vector2>)
 }
 
 skill DefaultMapManager implements MapManager {
-	uses DefaultContextInteractions
+	uses DefaultContextInteractions, Lifecycle
 
 	// The map of the simulation
 	var map : Map
@@ -201,7 +216,9 @@ skill DefaultMapManager implements MapManager {
 				var perception = new Perception(body, getCurrentTime, this.map.waypoints, this.map.shops)
 				perception.source = defaultSpace.getAddress(ID)
 				// Emit the perception
-				emit(perception)[it.UUID == body.uuid]
+				synchronized (body) {
+					emit(perception)[it.UUID == body.uuid]
+				}
 			}
 		}
 	}
@@ -255,4 +272,20 @@ skill DefaultMapManager implements MapManager {
 		this.map.setShops(shops)
 	}
 	
+	def spawnBomb() {
+		var rand = new Random
+		var bombBody = new Bomb(rand.nextInt(Map.MAP_SIZE), rand.nextInt(Map.MAP_SIZE))
+		this.map.setBomb(bombBody)
+		synchronized (this.map.bodies) {
+			for (body : this.map.bodies) {
+				synchronized (body) {
+					emit(new Alarm(this.map.exits))[it.UUID == body.uuid]
+				}
+			}
+		}	
+	}
+	
+	def setupExits(exits : List<Vector2>) {
+		this.map.setExits(exits)
+	}
 }
