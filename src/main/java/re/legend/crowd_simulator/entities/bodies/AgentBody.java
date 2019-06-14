@@ -73,6 +73,9 @@ public abstract class AgentBody extends SimulationEntity {
 	
 	// Time at which the agent has started shopping and has entered a shop
 	public long shoppingStartedTime;
+	
+	// Nearest exit to the agent
+	public Vector2 nearestExit;
 
 
 	/**
@@ -429,5 +432,13 @@ public abstract class AgentBody extends SimulationEntity {
 	public boolean hasReachedPathLastNode() {
 		Vector2 lastNode = this.path.getNode(this.path.getNodes().size() - 1);
 		return Vector2.dst(this.position.x, this.position.y, lastNode.x, lastNode.y) < 40f;
+	}
+	
+	public boolean hasReachedNearestExit() {
+		return Vector2.dst(this.position.x, this.position.y, this.nearestExit.x, this.nearestExit.y) < 20f;
+	}
+	
+	public void resetCurrentNode() {
+		this.currentNode = 0;
 	}
 }

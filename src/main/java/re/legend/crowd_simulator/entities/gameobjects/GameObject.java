@@ -5,8 +5,8 @@ import re.legend.crowd_simulator.entities.SimulationEntity;
 
 public class GameObject extends SimulationEntity {
 	
-	public GameObject(float x, float orientation, float y) {
-		super(x, orientation, y);
+	public GameObject(float x, float y, float orientation) {
+		super(x, y, orientation);
 	}
 	
 	public GameObject(Vector2 position, float orientation) {

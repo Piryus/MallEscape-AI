@@ -68,8 +68,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	// Walls list, not used in this class but retrieved
 	private List<Wall> walls;
 
-	// Shops list, given to the agents to
+	// Shops list, given to the agents
 	private List<Shop> shops;
+	
+	// Exits list
+	private List<Vector2> exits;
 
 	// Adult bodies textures sprite
 	private Texture adultTextures;
@@ -92,7 +95,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private String strTimer;
 	private BitmapFont fontTimer;
 	private GlyphLayout timerLayout;
-
+	
+	// Number of agents counter
+	private String strCounter;
+	private BitmapFont fontCounter;
+	private GlyphLayout counterLayout;
+	
 	// Font generator and parameter
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
@@ -133,6 +141,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.fixedSpriteBatch = new SpriteBatch();
 		this.walls = new ArrayList<>();
 		this.shops = new ArrayList<>();
+		this.exits = new ArrayList<>();
 
 		this.shapeRenderer = new ShapeRenderer();
 		this.waypoints = GraphBuilder.undirected().build();
@@ -148,6 +157,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.strTimer = "Time: 0";
 		this.fontTimer = new BitmapFont();
 		this.timerLayout = new GlyphLayout();
+		
+		// Timer creation and stamp the startTimer
+		this.strCounter = "Shoppers: 0";
+		this.fontCounter = new BitmapFont();
+		this.counterLayout = new GlyphLayout();
 
 		// Display manager
 		this.renderWallsHitboxes = false;
@@ -205,7 +219,15 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
-
+		
+		// Parses the mall exits
+		MapLayer exitsLayer = this.map.getLayers().get("Exits");
+		for (MapObject exitObject : exitsLayer.getObjects()) {
+			float x = (float) exitObject.getProperties().get("x");
+			float y = (float) exitObject.getProperties().get("y");
+			this.exits.add(new Vector2(x, y));
+		}
+		
 		// Retrieves the waypoints from the path object layer of the map and build a
 		// graph
 		MapLayer pathLayer = this.map.getLayers().get("Path");
@@ -507,6 +529,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		}
 		this.shapeRenderer.end();
 
+		// Timer rendering
 		// Changes the parameter text to the current time
 		this.parameter.characters = this.strTimer;
 		// Generates the timer bitmap
@@ -519,6 +542,21 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		float posX = (Gdx.graphics.getWidth() - this.timerLayout.width) / 2;
 		float posY = this.timerLayout.height + 10;
 		this.fontTimer.draw(this.fixedSpriteBatch, this.strTimer, posX, posY);
+		this.fixedSpriteBatch.end();
+		
+		// Counter rendering
+		// Changes the parameter text to the current time
+		this.parameter.characters = this.strCounter;
+		// Generates the timer bitmap
+		this.fontCounter = this.generator.generateFont(this.parameter);
+		// Sets layout (to get width then)
+		this.counterLayout.setText(this.fontCounter, this.strCounter);
+		// Renders counter
+		this.fixedSpriteBatch.begin();
+		this.fontCounter.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		posX = (Gdx.graphics.getWidth() - this.counterLayout.width) / 2;
+		posY = Gdx.graphics.getHeight() - 10 - this.counterLayout.height;
+		this.fontCounter.draw(this.fixedSpriteBatch, this.strCounter, posX, posY);
 		this.fixedSpriteBatch.end();
 
 		// Stage rendering
@@ -596,7 +634,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void update(List<AgentBody> bodies, float time) {
 		this.bodies = bodies;
-		this.strTimer = "Time: " + time;
+		this.strTimer = "Time: " + String.format("%.2f", time) + "s";
+		this.strCounter = "Shoppers: " + bodies.size();
 	}
 
 	public List<Wall> getWalls() {
@@ -622,5 +661,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	public boolean isBombTriggered() {
 		return this.bombTriggered;
+	}
+	
+	public List<Vector2> getExits() {
+		return this.exits;
 	}
 }

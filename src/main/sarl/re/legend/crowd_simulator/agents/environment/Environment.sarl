@@ -9,6 +9,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
+import re.legend.crowd_simulator.agents.events.AgentLeftMall
 import re.legend.crowd_simulator.agents.events.SimulationStep
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
 import re.legend.crowd_simulator.graphics.SimulationApplication
@@ -23,6 +24,8 @@ agent Environment {
 
 	var application : SimulationApplication
 	
+	// Indicates that we are waiting for the user to click the bomb button
+	var waitingBomb : boolean
 
 	on Initialize {
 		loggingName = "Environment"
@@ -32,29 +35,34 @@ agent Environment {
 		// Instantiates application
 		var config = occurrence.parameters.get(0) as LwjglApplicationConfiguration
 		this.application = new SimulationApplication()
-		new LwjglApplication(this.application, config);
+		new LwjglApplication(this.application, config)
 
+		this.waitingBomb = true;
+		
 		// Wait for the application to notify the agent that the start button has been clicked
 		synchronized (this.application) {
-			this.application.wait();
+			this.application.wait()
 		}
 
 		setSkill(new DefaultMapManager)
 
 		// Retrieves the walls from the tiled map and set them up into the map object
-		setupWalls(this.application.getWalls);
+		setupWalls(this.application.getWalls)
 
 		// Gets the waypoints from the tiled map and set them up into the map object
 		setupWaypoints(this.application.getWaypoints)
 
 		// Retrieves the walls from the tiled map and set them up into the map object
-		setupShops(this.application.getShops);
+		setupShops(this.application.getShops)
+		
+		// Retrieves the exit from the tiled map and set themp up into the map object
+		setupExits(this.application.getExits)
 		
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 30, 1000, new Vector2(50, 280), map) // West
-		//spawn(SpawnerAgent, "Adult", 30, 1000, new Vector2(280, 500), map) // North
-		//spawn(SpawnerAgent, "Adult", 20, 1000, new Vector2(500, 280), map) // East
-		//spawn(SpawnerAgent, "Adult", 20, 1000, new Vector2(280, 50), map) //South
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(50, 280), map) // West
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 500), map) // North
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(500, 280), map) // East
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 50), map) //South
 
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]
@@ -65,7 +73,16 @@ agent Environment {
 		notifyAgents
 		computeInfluences
 		applyInfluences
-		this.application.update(getBodies, getCurrentTime);
+		this.application.update(getBodies, getCurrentTime)
+		if (this.application.bombTriggered && this.waitingBomb) {
+			this.waitingBomb = false
+			spawnBomb
+		}
+	}
+	
+	on AgentLeftMall {
+		var agentId = occurrence.agentId
+		removeBody(agentId)
 	}
 
 	on Destroy {
