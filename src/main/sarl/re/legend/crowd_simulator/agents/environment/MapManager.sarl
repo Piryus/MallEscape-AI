@@ -109,6 +109,11 @@ capacity MapManager {
 	 * Set up exits in the map object
 	 */
 	def setupExits(exits : List<Vector2>)
+	
+	/**
+	 * Removes the body with the given ID from the map
+	 */
+	def removeBody(id: UUID)
 }
 
 skill DefaultMapManager implements MapManager {
@@ -288,4 +293,9 @@ skill DefaultMapManager implements MapManager {
 	def setupExits(exits : List<Vector2>) {
 		this.map.setExits(exits)
 	}
+	
+	def removeBody(id : UUID) {
+		this.map.removeBody(id)
+	}
+	
 }

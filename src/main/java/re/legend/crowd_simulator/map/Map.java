@@ -150,4 +150,8 @@ public class Map {
 	public List<Vector2> getExits() {
 		return this.exits;
 	}
+	
+	public void removeBody(UUID id) {
+		this.bodies.remove(id);
+	}
 }

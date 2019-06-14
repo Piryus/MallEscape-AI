@@ -9,6 +9,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
+import re.legend.crowd_simulator.agents.events.AgentLeftMall
 import re.legend.crowd_simulator.agents.events.SimulationStep
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
 import re.legend.crowd_simulator.graphics.SimulationApplication
@@ -58,10 +59,10 @@ agent Environment {
 		setupExits(this.application.getExits)
 		
 		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(50, 280), map) // West
-		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(280, 500), map) // North
-		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(500, 280), map) // East
-		spawn(SpawnerAgent, "Adult", 10, 1000, new Vector2(280, 50), map) //South
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(50, 280), map) // West
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 500), map) // North
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(500, 280), map) // East
+		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 50), map) //South
 
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]
@@ -77,6 +78,11 @@ agent Environment {
 			this.waitingBomb = false
 			spawnBomb
 		}
+	}
+	
+	on AgentLeftMall {
+		var agentId = occurrence.agentId
+		removeBody(agentId)
 	}
 
 	on Destroy {

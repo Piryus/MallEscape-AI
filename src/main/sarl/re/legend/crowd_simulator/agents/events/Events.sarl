@@ -3,6 +3,7 @@ package re.legend.crowd_simulator.agents.events
 import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
 import java.util.List
+import java.util.UUID
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.entities.gameobjects.Shop
 import re.legend.crowd_simulator.pathfinding.AStarNode
@@ -36,6 +37,18 @@ event Alarm {
 	
 	new (exits : List<Vector2>) {
 		//this.position = position
-		this.exits = exits;
+		this.exits = exits
+	}
+}
+
+/**
+ * Event sent by an agent when it's leaving the mall
+ * Used to notify the environment in order to delete the agent body
+ */
+event AgentLeftMall {
+	val agentId : UUID
+	
+	new  (id : UUID) {
+		this.agentId = id
 	}
 }

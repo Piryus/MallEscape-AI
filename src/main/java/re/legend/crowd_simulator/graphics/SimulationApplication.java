@@ -95,7 +95,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private String strTimer;
 	private BitmapFont fontTimer;
 	private GlyphLayout timerLayout;
-
+	
+	// Number of agents counter
+	private String strCounter;
+	private BitmapFont fontCounter;
+	private GlyphLayout counterLayout;
+	
 	// Font generator and parameter
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
@@ -152,6 +157,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.strTimer = "Time: 0";
 		this.fontTimer = new BitmapFont();
 		this.timerLayout = new GlyphLayout();
+		
+		// Timer creation and stamp the startTimer
+		this.strCounter = "Shoppers: 0";
+		this.fontCounter = new BitmapFont();
+		this.counterLayout = new GlyphLayout();
 
 		// Display manager
 		this.renderWallsHitboxes = false;
@@ -519,6 +529,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		}
 		this.shapeRenderer.end();
 
+		// Timer rendering
 		// Changes the parameter text to the current time
 		this.parameter.characters = this.strTimer;
 		// Generates the timer bitmap
@@ -531,6 +542,21 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		float posX = (Gdx.graphics.getWidth() - this.timerLayout.width) / 2;
 		float posY = this.timerLayout.height + 10;
 		this.fontTimer.draw(this.fixedSpriteBatch, this.strTimer, posX, posY);
+		this.fixedSpriteBatch.end();
+		
+		// Counter rendering
+		// Changes the parameter text to the current time
+		this.parameter.characters = this.strCounter;
+		// Generates the timer bitmap
+		this.fontCounter = this.generator.generateFont(this.parameter);
+		// Sets layout (to get width then)
+		this.counterLayout.setText(this.fontCounter, this.strCounter);
+		// Renders counter
+		this.fixedSpriteBatch.begin();
+		this.fontCounter.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		posX = (Gdx.graphics.getWidth() - this.counterLayout.width) / 2;
+		posY = Gdx.graphics.getHeight() - 10 - this.counterLayout.height;
+		this.fontCounter.draw(this.fixedSpriteBatch, this.strCounter, posX, posY);
 		this.fixedSpriteBatch.end();
 
 		// Stage rendering
@@ -608,7 +634,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void update(List<AgentBody> bodies, float time) {
 		this.bodies = bodies;
-		this.strTimer = "Time: " + time;
+		this.strTimer = "Time: " + String.format("%.2f", time) + "s";
+		this.strCounter = "Shoppers: " + bodies.size();
 	}
 
 	public List<Wall> getWalls() {

@@ -2,9 +2,11 @@ package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
 import com.google.common.graph.MutableGraph
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Lifecycle
 import java.util.List
 import java.util.Random
+import re.legend.crowd_simulator.agents.events.AgentLeftMall
 import re.legend.crowd_simulator.agents.events.Alarm
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.behaviors.AdultState
@@ -12,13 +14,12 @@ import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.Sex
 import re.legend.crowd_simulator.entities.gameobjects.Shop
 import re.legend.crowd_simulator.pathfinding.AStarNode
-import io.sarl.core.Logging
 
 /** 
  * Defines an adult's behavior
  */
 behavior AdultBehavior {
-	uses AdultCapacity, Lifecycle, Logging
+	uses AdultCapacity, Lifecycle, DefaultContextInteractions
 
 	var body : AdultBody
 	var rand = new Random
@@ -185,6 +186,9 @@ behavior AdultBehavior {
 
 	on Perception [state == AdultState::EVACUATING] {
 		if (body.hasReachedNearestExit) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
 			killMe
 		} else if (body.path != null && body.path.nodes.size > 0 && body.hasReachedPathLastNode) {
 			// Move to the nearest exit
