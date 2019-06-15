@@ -105,6 +105,13 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private String strCounter;
 	private BitmapFont fontCounter;
 	private GlyphLayout counterLayout;
+	
+	// Time since the beginning of the evacuation
+	private String strCounterEvacuation;
+	private BitmapFont fontCounterEvacuation;
+	private GlyphLayout counterEvacuationLayout;
+	private long evacuationStartTime;
+	private float elapsedTime;
 
 	// Font generator and parameter
 	private FreeTypeFontGenerator generator;
@@ -176,6 +183,11 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.strCounter = "Shoppers: 0";
 		this.fontCounter = new BitmapFont();
 		this.counterLayout = new GlyphLayout();
+		
+		// Number of agents counter
+		this.strCounterEvacuation = "Evacuation: ";
+		this.fontCounterEvacuation = new BitmapFont();
+		this.counterEvacuationLayout = new GlyphLayout();
 
 		// Display manager
 		this.renderWallsHitboxes = false;
@@ -453,6 +465,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				Sound alarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.wav"));
 				long id = alarm.play(1.0f);
 				alarm.setLooping(id, true);
+				evacuationStartTime = System.currentTimeMillis();
 			}
 		});
 		optionsMenu.addItem(triggerBombItem);
@@ -642,6 +655,23 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		posY = Gdx.graphics.getHeight() - 10 - this.counterLayout.height;
 		this.fontCounter.draw(this.fixedSpriteBatch, this.strCounter, posX, posY);
 		this.fixedSpriteBatch.end();
+		
+		// Evacuation counter rendering
+		if (bombTriggered) {
+			// Changes the parameter text to the current time
+			this.parameter.characters = this.strCounterEvacuation;
+			// Generates the timer bitmap
+			this.fontCounterEvacuation = this.generator.generateFont(this.parameter);
+			// Sets layout (to get width then)
+			this.counterEvacuationLayout.setText(this.fontCounterEvacuation, this.strCounterEvacuation);
+			// Renders counter
+			this.fixedSpriteBatch.begin();
+			this.fontCounterEvacuation.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+			posX = (Gdx.graphics.getWidth() - this.counterEvacuationLayout.width) / 2;
+			posY = this.timerLayout.height + counterEvacuationLayout.height + 20;
+			this.fontCounterEvacuation.draw(this.fixedSpriteBatch, this.strCounterEvacuation, posX, posY);
+			this.fixedSpriteBatch.end();
+		}
 
 		// Stage rendering
 		float delta = Gdx.graphics.getDeltaTime();
@@ -722,6 +752,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.bodies = bodies;
 		this.strTimer = "Time: " + String.format("%.2f", time) + "s";
 		this.strCounter = "Shoppers: " + bodies.size();
+		if (bombTriggered) {
+			if (bodies.size() > 0) {
+				this.elapsedTime = (System.currentTimeMillis() - evacuationStartTime) / 1000f;
+			}
+			this.strCounterEvacuation = "Evacuation: " + String.format("%.2f", elapsedTime) + "s";	
+		}
 	}
 
 	public List<Wall> getWalls() {
