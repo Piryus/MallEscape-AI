@@ -119,7 +119,8 @@ behavior AdultBehavior {
 			// Sets the agent's target to the shop entrance
 			body.target = body.shopEntrance
 			// If the agent has reached the shop entrance, loop to the waiting state
-			if(body.hasReachedShopEntrance) {
+			if (body.hasReachedShopEntrance) {
+				this.body.path = null
 				state = AdultState::WAITING
 			}
 		}
