@@ -23,7 +23,7 @@ agent Environment {
 	uses Logging, Lifecycle, DefaultContextInteractions, MapManager, Schedules
 
 	var application : SimulationApplication
-	
+
 	// Indicates that we are waiting for the user to click the bomb button
 	var waitingBomb : boolean
 
@@ -38,7 +38,7 @@ agent Environment {
 		new LwjglApplication(this.application, config)
 
 		this.waitingBomb = true;
-		
+
 		// Wait for the application to notify the agent that the start button has been clicked
 		synchronized (this.application) {
 			this.application.wait()
@@ -54,16 +54,19 @@ agent Environment {
 
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupShops(this.application.getShops)
-		
+
 		// Retrieves the exit from the tiled map and set them up into the map object
 		setupExits(this.application.getExits)
-		
-		// TODO Test spawner
-		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(50, 280), map) // West
-		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 500), map) // North
-		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(500, 280), map) // East
-		spawn(SpawnerAgent, "Adult", 40, 1000, new Vector2(280, 50), map) //South
 
+		// TODO Test spawner
+		// West
+		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(50, 280), map)
+		// North
+		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(280, 500), map)
+		// East
+		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(500, 280), map)
+		// South
+		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(280, 50), map)
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]
 	}
@@ -79,7 +82,7 @@ agent Environment {
 			spawnBomb
 		}
 	}
-	
+
 	on AgentLeftMall {
 		var agentId = occurrence.agentId
 		removeBody(agentId)
@@ -90,5 +93,5 @@ agent Environment {
 		// You should put all the resource releasing statements in this block of code.
 		info("The World was destroyed.")
 	}
-	
+
 }

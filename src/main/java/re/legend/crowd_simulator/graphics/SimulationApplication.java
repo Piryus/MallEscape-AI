@@ -39,12 +39,15 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.util.form.SimpleFormValidator;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
 import com.kotcrab.vis.ui.widget.MenuItem;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
+import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import com.kotcrab.vis.ui.widget.VisValidatableTextField;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
 import re.legend.crowd_simulator.entities.SimulationEntity;
@@ -72,7 +75,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Shops list, given to the agents
 	private List<Shop> shops;
-	
+
 	// Exits list
 	private List<Vector2> exits;
 
@@ -97,12 +100,12 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	private String strTimer;
 	private BitmapFont fontTimer;
 	private GlyphLayout timerLayout;
-	
+
 	// Number of agents counter
 	private String strCounter;
 	private BitmapFont fontCounter;
 	private GlyphLayout counterLayout;
-	
+
 	// Font generator and parameter
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
@@ -130,10 +133,19 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	boolean renderDesiredVelocityVector;
 	boolean renderPaths;
 	boolean renderTarget;
-	
+
 	// True if the bomb button has been clicked
 	private boolean bombTriggered;
+	
+	// Spawner parameters
+	int spawnerFrequency = 1000;
+	int nbAgents = 150;
 
+	// Menu items
+	private MenuItem displayOptionsItem;
+	private MenuItem spawnerItem;
+	private MenuItem triggerBombItem;
+	
 	@Override
 	public void create() {
 		// Attributes instantiation
@@ -159,7 +171,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.strTimer = "Time: 0";
 		this.fontTimer = new BitmapFont();
 		this.timerLayout = new GlyphLayout();
-		
+
 		// Timer creation and stamp the startTimer
 		this.strCounter = "Shoppers: 0";
 		this.fontCounter = new BitmapFont();
@@ -221,7 +233,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 				}
 			}
 		}
-		
+
 		// Parses the mall exits
 		MapLayer exitsLayer = this.map.getLayers().get("Exits");
 		for (MapObject exitObject : exitsLayer.getObjects()) {
@@ -229,7 +241,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			float y = (float) exitObject.getProperties().get("y");
 			this.exits.add(new Vector2(x, y));
 		}
-		
+
 		// Retrieves the waypoints from the path object layer of the map and build a
 		// graph
 		MapLayer pathLayer = this.map.getLayers().get("Path");
@@ -257,14 +269,17 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Stage initialization
 		VisUI.load();
 		this.stage = new Stage(new ScreenViewport());
-		this.startButton = new VisTextButton("Start");
-		this.startButton.setSize(100, 50);
+		this.startButton = new VisTextButton("Start the simulation");
+		this.startButton.setSize(200, 100);
 		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth()) / 2,
 				(Gdx.graphics.getHeight() - this.startButton.getHeight()) / 2);
 		this.startButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				notifyStartingSimulation();
+				displayOptionsItem.setDisabled(false);
+				spawnerItem.setDisabled(true);
+				triggerBombItem.setDisabled(false);
 				startButton.remove();
 			}
 		});
@@ -283,7 +298,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		displayOptionsWindow.addCloseButton();
 		displayOptionsWindow.fadeIn();
 		VisTable optionsTable = new VisTable();
-		
 		displayOptionsWindow.add(optionsTable).row();
 		// Walls hitboxes
 		VisCheckBox renderWallHitboxBox = new VisCheckBox("Render the walls hitboxes");
@@ -367,20 +381,69 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		});
 		optionsTable.add(renderTargetBox).left().row();
 		displayOptionsWindow.pack();
+
+		// Display option window
+		VisWindow spawnerParametersWindow = new VisWindow("Spawner parameters");
+		spawnerParametersWindow.addCloseButton();
+		spawnerParametersWindow.fadeIn();
+		VisTable parametersTable = new VisTable();
+		spawnerParametersWindow.add(parametersTable).row();
+		// Number of agents to spawn
+		VisLabel nbAgentLabel = new VisLabel("Number of agents to spawn per spawner : ");
+		parametersTable.add(nbAgentLabel).left().row();
+		VisValidatableTextField nbAgentTextField = new VisValidatableTextField();
+		nbAgentTextField.setText("150");
+		parametersTable.add(nbAgentTextField).left().row();
+		// Spawn frequency
+		VisLabel frequencyLabel = new VisLabel("Spawn frequency (in ms) : ");
+		parametersTable.add(frequencyLabel).left().row();
+		VisValidatableTextField frequencyTextField = new VisValidatableTextField();
+		frequencyTextField.setText("1000");
+		parametersTable.add(frequencyTextField).left().row();
+		VisLabel errorLabel = new VisLabel();
+		errorLabel.setColor(Color.RED);
+		parametersTable.add(errorLabel).left().row();
+		VisTextButton acceptButton = new VisTextButton("Accept");
+		parametersTable.add(acceptButton).expand().fill().row();
+		SimpleFormValidator validator = new SimpleFormValidator(acceptButton, errorLabel, "smooth");
+		validator.setSuccessMessage("OK!");
+		validator.integerNumber(nbAgentTextField, "Incorrect number of agents.");
+		validator.valueGreaterThan(nbAgentTextField, "Incorrect number of agents.", 0, false);
+		validator.integerNumber(frequencyTextField, "Incorrect frequency.");
+		validator.valueGreaterThan(frequencyTextField, "Frequency should be at least 150ms.", 150, true);
+		acceptButton.addListener(new ChangeListener() {
+		  @Override 
+		  public void changed(ChangeEvent event, Actor actor) {
+				nbAgents = Integer.parseInt(nbAgentTextField.getText());
+				spawnerFrequency = Integer.parseInt(frequencyTextField.getText());
+				spawnerParametersWindow.remove();
+		  }});
+		spawnerParametersWindow.pack();
+
 		
 		// Options menu
 		Menu optionsMenu = new Menu("Options");
 		menuBar.addMenu(optionsMenu);
+		// "Spawner options"
+		spawnerItem = new MenuItem("Spawner parameters", new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				stage.addActor(spawnerParametersWindow);
+			}
+		});
+		optionsMenu.addItem(spawnerItem);
 		// "Display options"
-		MenuItem wallsHitBoxItem = new MenuItem("Display options", new ChangeListener() {
+		displayOptionsItem = new MenuItem("Display options", new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				stage.addActor(displayOptionsWindow);
 			}
 		});
-		optionsMenu.addItem(wallsHitBoxItem);
+		displayOptionsItem.setDisabled(true);
+		optionsMenu.addItem(displayOptionsItem);
 		// "Trigger a bomb"
-		MenuItem triggerBombItem = new MenuItem("Trigger bomb");
+		triggerBombItem = new MenuItem("Trigger bomb");
+		triggerBombItem.setDisabled(true);
 		triggerBombItem.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -397,7 +460,6 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Help menu
 		Menu helpMenu = new Menu("Help");
 		menuBar.addMenu(helpMenu);
-		
 
 		// Adds input processors
 		this.inputMultiplexer = new InputMultiplexer();
@@ -534,16 +596,18 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			}
 		}
 		this.shapeRenderer.end();
-		
+
 		// Renders the red overlay when the bomb has been planted
 		if (bombTriggered) {
 			Gdx.graphics.getGL20().glEnable(GL20.GL_BLEND);
-		    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			this.shapeRenderer.begin(ShapeType.Filled);
-			this.shapeRenderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-			this.shapeRenderer.setColor(new Color(1, 0, 0, (float) Math.cos(Math.PI/2 * System.currentTimeMillis()/1000) * 0.5f));
+			this.shapeRenderer.setProjectionMatrix(
+					new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+			this.shapeRenderer.setColor(
+					new Color(1, 0, 0, (float) Math.cos(Math.PI / 2 * System.currentTimeMillis() / 1000) * 0.5f));
 			this.shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-			this.shapeRenderer.end();	
+			this.shapeRenderer.end();
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
 
@@ -556,13 +620,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.timerLayout.setText(this.fontTimer, this.strTimer);
 		// Renders timer
 		this.fixedSpriteBatch.begin();
-		this.fixedSpriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+		this.fixedSpriteBatch.setProjectionMatrix(
+				new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		this.fontTimer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		float posX = (Gdx.graphics.getWidth() - this.timerLayout.width) / 2;
 		float posY = this.timerLayout.height + 10;
 		this.fontTimer.draw(this.fixedSpriteBatch, this.strTimer, posX, posY);
 		this.fixedSpriteBatch.end();
-		
+
 		// Counter rendering
 		// Changes the parameter text to the current time
 		this.parameter.characters = this.strCounter;
@@ -588,6 +653,8 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	@Override
 	public void resize(int width, int height) {
 		this.stage.getViewport().update(width, height, true);
+		this.startButton.setPosition((Gdx.graphics.getWidth() - this.startButton.getWidth()) / 2,
+				(Gdx.graphics.getHeight() - this.startButton.getHeight()) / 2);
 	}
 
 	@Override
@@ -681,8 +748,22 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 	public boolean isBombTriggered() {
 		return this.bombTriggered;
 	}
-	
+
 	public List<Vector2> getExits() {
 		return this.exits;
+	}
+
+	/**
+	 * @return the spawnerFrequency
+	 */
+	public int getSpawnerFrequency() {
+		return spawnerFrequency;
+	}
+
+	/**
+	 * @return the nbAgents
+	 */
+	public int getNbAgents() {
+		return nbAgents;
 	}
 }
