@@ -294,7 +294,9 @@ skill DefaultMapManager implements MapManager {
 	}
 
 	def removeBody(id : UUID) {
-		this.map.removeBody(id)
+		synchronized (this.map.bodies) {
+			this.map.removeBody(id)
+		}
 	}
 
 }
