@@ -47,7 +47,7 @@ public abstract class AgentBody extends SimulationEntity {
 	public static final float REACHED_TARGET_DISTANCE = 20f;
 	
 	// Distance at which we consider the agent has reached the shop entrance
-	public static final float REACHED_SHOP_ENTRANCE_DISTANCE = 5f;
+	public static final float REACHED_SHOP_ENTRANCE_DISTANCE = 10f;
 	
 	// Distance at which we consider the agent has reached the mall exit
 	public static final float REACHED_EXIT_DISTANCE = 30f;
