@@ -27,20 +27,22 @@ behavior AdultBehavior {
 	var waypoints : MutableGraph<AStarNode>
 	var exits : List<Vector2>
 
-	/**
+	/** 
 	 * On reception of a Perception event and when the agent is in the WAITING state
 	 * The agent should select a shop to go
 	 */
 	on Perception [state == AdultState::WAITING] {
+		if (body == null) {
+			body = occurrence.body as AdultBody
+		}
+
 		var shops = occurrence.shops
-		body = occurrence.body as AdultBody
-		waypoints = occurrence.waypoints 
-		
-		
+		waypoints = occurrence.waypoints
+
 		// Select a shop from the list randomly
 		var randomShop : Shop
 		var randChance = rand.nextInt(10)
-		if ((body as AdultBody).sex  == Sex.male) { // Male agent
+		if ((body as AdultBody).sex == Sex.male) { // Male agent
 			if (randChance > 7) { // 20% chance the agent will choose a female shop
 				do {
 					randomShop = shops.get(rand.nextInt(shops.size))
@@ -62,7 +64,6 @@ behavior AdultBehavior {
 			}
 		}
 
-		
 		// Sets the shop targeted by the agent
 		body.setVisitedShop(randomShop);
 
@@ -70,22 +71,22 @@ behavior AdultBehavior {
 		var entrances = randomShop.getEntrances
 		body.shopEntrance = entrances.get(rand.nextInt(entrances.size))
 		body.target = body.shopEntrance
-		
+		body.path = null
+
 		moveAlongPath(body, occurrence.waypoints)
-		
+
 		state = AdultState::WALKING_TO_SHOP;
+
 	}
 
 	on Perception [state == AdultState::WALKING_TO_SHOP] {
-		var body = occurrence.body
-		
 		if (body.hasReachedShopEntrance) {
 			// Changes state to shopping
 			state = AdultState::SHOPPING;
-			
+
 			// Sets the time at which the agent started shopping
 			body.shoppingStartedTime = System.currentTimeMillis
-			
+
 			// Sets a random target in the shop
 			var randTargetInShop : Vector2
 			do {
@@ -100,7 +101,7 @@ behavior AdultBehavior {
 			body.shopTargetAcquiredTime = System.currentTimeMillis
 			// Sets the body target
 			body.target = randTargetInShop
-			
+
 		} else if (body.path != null && body.path.nodes.size > 0 && body.hasReachedPathLastNode) {
 			// Move to the entrance of the shop
 			body.target = body.shopEntrance
@@ -109,23 +110,19 @@ behavior AdultBehavior {
 			// Move along the path created to go to the shop
 			moveAlongPath(body, occurrence.waypoints)
 		}
+
 	}
 
 	on Perception [state == AdultState::SHOPPING] {
-		var body = occurrence.body
-
 		// If the agent has been shopping for longer than a minute, get it to the entrance of the shop
 		if (System.currentTimeMillis > body.shoppingStartedTime + 60000) {
 			// Sets the agent's target to the shop entrance
 			body.target = body.shopEntrance
 			// If the agent has reached the shop entrance, loop to the waiting state
 			if (body.hasReachedShopEntrance) {
-				this.body.path = null
 				state = AdultState::WAITING
 			}
-		}
-		
-		// If the body has had its target for longer than 10 seconds, give it a new one
+		} // If the body has had its target for longer than 10 seconds, give it a new one
 		else if (System.currentTimeMillis > body.shopTargetAcquiredTime + 10000) {
 			// Sets a random target in the shop
 			var randTargetInShop : Vector2
@@ -142,18 +139,19 @@ behavior AdultBehavior {
 			// Sets the body target
 			body.target = randTargetInShop
 		}
-		
+
 		// Moves straight to the target
 		moveStraight(occurrence.body)
+
 	}
-	
-	/**
+
+	/** 
 	 * Received when the bomb has been planted
 	 */
 	on Alarm {
 		// Retrieves the exits list
 		exits = occurrence.exits
-		
+
 		// If the agent is not in a shop yet, make him head to the nearest exit using path finding
 		if (state == AdultState::WALKING_TO_SHOP || state == AdultState::WAITING) {
 			// Finds nearest exit
@@ -166,13 +164,11 @@ behavior AdultBehavior {
 					distNearestExit = Vector2::dst(nearestExit.x, nearestExit.y, body.position.x, body.position.y)
 				}
 			}
-			
+
 			// Sets the agent's target to the nearest exit
 			body.target = nearestExit
 			body.nearestExit = nearestExit
-			// Move along the path created to go to the shop
 			body.path = null
-			//moveAlongPath(body, waypoints)
 			// Changes the agent state to evacuating
 			state = AdultState::EVACUATING
 		} else if (state == AdultState::SHOPPING) {
@@ -181,8 +177,9 @@ behavior AdultBehavior {
 			// Changes the agent state to evacuating
 			state = AdultState::EVACUATING_SHOP
 			// Move straight to the entrance of the shop
-			//moveStraight(body)
+			// moveStraight(body)
 		}
+
 	}
 
 	on Perception [state == AdultState::EVACUATING] {
@@ -217,9 +214,7 @@ behavior AdultBehavior {
 			// Sets the agent's target to the nearest exit
 			body.target = nearestExit
 			body.nearestExit = nearestExit
-			// Move along the path created to go to the shop
 			body.path = null
-			moveAlongPath(body, waypoints)
 			// Changes the agent state to evacuating
 			state = AdultState::EVACUATING
 		} else {
