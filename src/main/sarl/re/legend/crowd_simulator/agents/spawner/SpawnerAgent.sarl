@@ -6,6 +6,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 import re.legend.crowd_simulator.agents.adult.AdultAgent
+import re.legend.crowd_simulator.agents.events.ForbidEntrance
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.map.Map
 
@@ -41,6 +42,10 @@ agent SpawnerAgent {
 
 		// Spawn the given number of agents at the given frequency
 		every(this.frequency)[spawn]
+	}
+	
+	on ForbidEntrance {
+		this.numberOfAgentsSpawned = this.numberOfAgents
 	}
 
 	/** 

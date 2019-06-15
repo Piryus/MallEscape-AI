@@ -52,3 +52,9 @@ event AgentLeftMall {
 		this.agentId = id
 	}
 }
+
+/**
+ * Event triggered by the environment when a bomb has been planted
+ * Stops the agent spawning to simulate the mall closing down
+ */
+event ForbidEntrance {}

@@ -10,6 +10,7 @@ import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
 import re.legend.crowd_simulator.agents.events.AgentLeftMall
+import re.legend.crowd_simulator.agents.events.ForbidEntrance
 import re.legend.crowd_simulator.agents.events.SimulationStep
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
 import re.legend.crowd_simulator.graphics.SimulationApplication
@@ -80,6 +81,7 @@ agent Environment {
 		if (this.application.bombTriggered && this.waitingBomb) {
 			this.waitingBomb = false
 			spawnBomb
+			emit(new ForbidEntrance)
 		}
 	}
 

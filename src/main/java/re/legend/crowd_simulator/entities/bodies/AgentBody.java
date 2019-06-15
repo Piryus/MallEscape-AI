@@ -48,6 +48,9 @@ public abstract class AgentBody extends SimulationEntity {
 	
 	// Distance at which we consider the agent has reached the shop entrance
 	public static final float REACHED_SHOP_ENTRANCE_DISTANCE = 5f;
+	
+	// Distance at which we consider the agent has reached the mall exit
+	public static final float REACHED_EXIT_DISTANCE = 30f;
 
 	// Coordinates of the target to reach
 	private Vector2 target;
@@ -447,7 +450,7 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 	
 	public boolean hasReachedNearestExit() {
-		return Vector2.dst(this.position.x, this.position.y, this.nearestExit.x, this.nearestExit.y) < REACHED_SHOP_ENTRANCE_DISTANCE;
+		return Vector2.dst(this.position.x, this.position.y, this.nearestExit.x, this.nearestExit.y) < REACHED_EXIT_DISTANCE;
 	}
 	
 	public void resetCurrentNode() {
