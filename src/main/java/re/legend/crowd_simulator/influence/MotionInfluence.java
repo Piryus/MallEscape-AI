@@ -1,7 +1,5 @@
 package re.legend.crowd_simulator.influence;
 
-import org.lwjgl.util.vector.Vector2f;
-
 import com.badlogic.gdx.math.Vector2;
 
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
@@ -16,9 +14,10 @@ public class MotionInfluence extends Influence {
 
 	/**
 	 * Constructor with linear and angular motion
-	 * @param emitter the emitter of the influence
+	 * 
+	 * @param emitter      the emitter of the influence
 	 * @param linearMotion the vector of the motion
-	 * @param angle the angle of the motion
+	 * @param angle        the angle of the motion
 	 */
 	public MotionInfluence(AgentBody emitter, Vector2 linearMotion, float angle) {
 		super(emitter);
@@ -27,11 +26,11 @@ public class MotionInfluence extends Influence {
 		this.angularMotion = angle;
 	}
 
-
 	/**
 	 * Constructor for an angular motion
+	 * 
 	 * @param emitter the emitter of the influence
-	 * @param angle the angle of the motion
+	 * @param angle   the angle of the motion
 	 */
 	public MotionInfluence(AgentBody emitter, float angle) {
 		super(emitter);
@@ -42,7 +41,8 @@ public class MotionInfluence extends Influence {
 
 	/**
 	 * Constructor for a linear motion
-	 * @param emitter the emitter of the influence
+	 * 
+	 * @param emitter      the emitter of the influence
 	 * @param linearMotion the vector of the motion
 	 */
 	public MotionInfluence(AgentBody emitter, Vector2 linearMotion) {
@@ -52,9 +52,9 @@ public class MotionInfluence extends Influence {
 		this.angularMotion = 0f;
 	}
 
-
 	/**
 	 * Constructor for a still 'motion'
+	 * 
 	 * @param emitter the emitter of the influence
 	 */
 	public MotionInfluence(AgentBody emitter) {

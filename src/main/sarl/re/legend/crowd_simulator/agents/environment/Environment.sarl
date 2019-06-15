@@ -55,7 +55,7 @@ agent Environment {
 		// Retrieves the walls from the tiled map and set them up into the map object
 		setupShops(this.application.getShops)
 		
-		// Retrieves the exit from the tiled map and set themp up into the map object
+		// Retrieves the exit from the tiled map and set them up into the map object
 		setupExits(this.application.getExits)
 		
 		// TODO Test spawner

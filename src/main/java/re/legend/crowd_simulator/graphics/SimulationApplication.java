@@ -386,6 +386,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			public void changed(ChangeEvent event, Actor actor) {
 				triggerBombItem.setDisabled(true);
 				bombTriggered = true;
+				// Triggers an alarm sound
 				Sound alarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.wav"));
 				long id = alarm.play(1.0f);
 				alarm.setLooping(id, true);

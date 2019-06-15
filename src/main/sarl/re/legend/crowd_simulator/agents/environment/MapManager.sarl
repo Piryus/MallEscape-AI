@@ -99,21 +99,21 @@ capacity MapManager {
 	 * Set up the waypoints for pathfinding
 	 */
 	def setupWaypoints(waypoints : MutableGraph<AStarNode>)
-	
-	/**
+
+	/** 
 	 * Spawns a bomb agent
 	 */
 	def spawnBomb()
-	
-	/**
+
+	/** 
 	 * Set up exits in the map object
 	 */
 	def setupExits(exits : List<Vector2>)
-	
-	/**
+
+	/** 
 	 * Removes the body with the given ID from the map
 	 */
-	def removeBody(id: UUID)
+	def removeBody(id : UUID)
 }
 
 skill DefaultMapManager implements MapManager {
@@ -238,7 +238,7 @@ skill DefaultMapManager implements MapManager {
 				for (motionInfluence : body.motionInfluences) {
 					// TODO Solve conflicts
 					// Adds the influence to the list of definitive influences that will be applied
-					influences.add(motionInfluence);
+					influences.add(motionInfluence)
 				}
 				// TODO Compute other influences of the body as well
 				// Clear the body's influences in order to prepare next step
@@ -272,11 +272,10 @@ skill DefaultMapManager implements MapManager {
 		this.map.setWaypoints(waypoints)
 	}
 
-	
 	def setupShops(shops : List<Shop>) {
 		this.map.setShops(shops)
 	}
-	
+
 	def spawnBomb() {
 		var rand = new Random
 		var bombBody = new Bomb(rand.nextInt(Map.MAP_SIZE), rand.nextInt(Map.MAP_SIZE))
@@ -287,15 +286,15 @@ skill DefaultMapManager implements MapManager {
 					emit(new Alarm(this.map.exits))[it.UUID == body.uuid]
 				}
 			}
-		}	
+		}
 	}
-	
+
 	def setupExits(exits : List<Vector2>) {
 		this.map.setExits(exits)
 	}
-	
+
 	def removeBody(id : UUID) {
 		this.map.removeBody(id)
 	}
-	
+
 }
