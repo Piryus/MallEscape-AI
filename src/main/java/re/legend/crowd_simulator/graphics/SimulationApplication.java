@@ -7,6 +7,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,6 +27,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -32,7 +35,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
@@ -384,6 +386,9 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			public void changed(ChangeEvent event, Actor actor) {
 				triggerBombItem.setDisabled(true);
 				bombTriggered = true;
+				Sound alarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.wav"));
+				long id = alarm.play(1.0f);
+				alarm.setLooping(id, true);
 			}
 		});
 		optionsMenu.addItem(triggerBombItem);
@@ -528,6 +533,18 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 			}
 		}
 		this.shapeRenderer.end();
+		
+		// Renders the red overlay when the bomb has been planted
+		if (bombTriggered) {
+			Gdx.graphics.getGL20().glEnable(GL20.GL_BLEND);
+		    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			this.shapeRenderer.begin(ShapeType.Filled);
+			this.shapeRenderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+			this.shapeRenderer.setColor(new Color(1, 0, 0, (float) Math.cos(Math.PI/2 * System.currentTimeMillis()/1000) * 0.5f));
+			this.shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			this.shapeRenderer.end();	
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+		}
 
 		// Timer rendering
 		// Changes the parameter text to the current time
@@ -538,6 +555,7 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.timerLayout.setText(this.fontTimer, this.strTimer);
 		// Renders timer
 		this.fixedSpriteBatch.begin();
+		this.fixedSpriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		this.fontTimer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		float posX = (Gdx.graphics.getWidth() - this.timerLayout.width) / 2;
 		float posY = this.timerLayout.height + 10;
