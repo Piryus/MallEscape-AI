@@ -11,6 +11,7 @@ public abstract class SimulationEntity implements Perceivable {
 	// Entity's orientation
 	private float orientation;
 	
+	
 	/**
 	 * Constructor with position using a vector and orientation
 	 * @param position the entity's position

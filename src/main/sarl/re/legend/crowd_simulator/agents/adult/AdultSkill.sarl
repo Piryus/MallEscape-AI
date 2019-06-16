@@ -1,14 +1,16 @@
 package re.legend.crowd_simulator.agents.adult
 
 import com.badlogic.gdx.math.Vector2
+import com.google.common.graph.MutableGraph
+import java.util.ArrayList
 import java.util.Random
-import re.legend.crowd_simulator.behaviors.AdultState
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
+import re.legend.crowd_simulator.pathfinding.AStarNode
+import re.legend.crowd_simulator.pathfinding.Path
 
 skill AdultSkill implements AdultCapacity {
-
 	// Body on which the actions will be applied
 	var body : AdultBody
 
@@ -23,10 +25,6 @@ skill AdultSkill implements AdultCapacity {
 		this.targetAcquiredTime = System.currentTimeMillis - 20000
 	}
 
-	def shop(position : Vector2) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
 	def move(x : float, y : float) {
 		// Creates a vector with the linear motion
 		var linearMotion = new Vector2(x, y)
@@ -36,60 +34,7 @@ skill AdultSkill implements AdultCapacity {
 		this.body.addInfluence(motionInfluence)
 	}
 
-	def shop(status : AdultState) {
-		if (status == AdultState::SHOP) {
-			// Write moveForward skill first
-		}
-	}
-
 	def moveRandomly(body : AgentBody) {
-		// Retrieves the given body as an Adult Body
-		this.body = body as AdultBody
-
-		// Just a simple random number getter
-		var rand = new Random
-		// Delta movement on X axis
-		var dirX : int
-		// Delta movement on Y axis
-		var dirY : int
-		// Boolean used to check if the body isn't going through a wall
-		var authorizedMove = true
-
-		do {
-			authorizedMove = true
-
-			// Random direction on X axis
-			if (rand.nextBoolean)
-				dirX = 1
-			else
-				dirX = -1
-
-			// Random direction on Y axis
-			if (rand.nextBoolean)
-				dirY = 1
-			else
-				dirY = -1
-
-			// Checks for each body's perceived objects if the move doesn't put the body in a wall
-			for (object : this.body.perceivedObjects) {
-				if (// Move on X axis wrong
-				(this.body.position.x >= object.position.x && this.body.position.x <= object.position.x + 16 &&
-					560 - this.body.position.y + dirY >= object.position.y &&
-					560 - this.body.position.y + dirY <= object.position.y + 16) || // Move on Y axis wrong
-				(this.body.position.x + dirX >= object.position.x &&
-					this.body.position.x + dirX <= object.position.x + 16 &&
-					560 - this.body.position.y >= object.position.y &&
-					560 - this.body.position.y <= object.position.y + 16)) {
-					authorizedMove = false;
-				}
-			}
-
-		} while (!authorizedMove);
-
-		move(dirX, dirY)
-	}
-
-	def moveRandom2(body : AgentBody) {
 		// Retrieves the agent's body
 		this.body = body as AdultBody
 
@@ -111,5 +56,146 @@ skill AdultSkill implements AdultCapacity {
 		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
 		move(movement.x, movement.y)
 		this.lastStepTime = System.currentTimeMillis
+	}
+
+	def moveAlongPath(body : AgentBody, waypoints : MutableGraph<AStarNode>) {
+		if (this.body == null) {
+			this.body = body as AdultBody
+		}
+		
+		if (this.body.path == null) {
+			clearWaypointsLinks(waypoints)
+			this.body.resetCurrentNode
+			// First, let's find the nearest node to the target
+			var nearestTargetNode = waypoints.nodes.get(0)
+			for (node : waypoints.nodes) {
+				if (Vector2.dst(this.body.target.x, this.body.target.y, node.x, node.y) <
+					Vector2.dst(this.body.target.x, this.body.target.y, nearestTargetNode.x, nearestTargetNode.y)) {
+					nearestTargetNode = node
+				}
+			}
+			
+			// Finds the nearest node to the current body position
+			var nearestBodyNode = waypoints.nodes.get(0)
+			for (node : waypoints.nodes) {
+				if (Vector2.dst(this.body.position.x, this.body.position.y, node.x, node.y) <
+					Vector2.dst(this.body.position.x, this.body.position.y, nearestBodyNode.x, nearestBodyNode.y)) {
+					nearestBodyNode = node
+				}
+			}
+			
+			// ///////////////////////////////////////////////////
+			// A* to find the shortest path to the target node //
+			// ///////////////////////////////////////////////////
+			var shortestPath : Path
+
+			var openList = new ArrayList<AStarNode>();
+			var closedList = new ArrayList<AStarNode>();
+
+			// Adds the start node to the open list
+			openList.add(nearestBodyNode)
+			
+			while (!openList.isEmpty) {
+				// Node with the least f on the open list
+				var currentNode = openList.get(0)
+
+				// Find the node with the least f on the open list
+				for (node : openList) {
+					if (node.f < currentNode.f) {
+						currentNode = node
+					}
+				}
+				// Pop q off the open list
+				openList.remove(currentNode)
+
+				// Adds q to the closed list
+				closedList.add(currentNode)
+
+				// Check if we reach the goal node
+				if (currentNode == nearestTargetNode) {
+					shortestPath = computePath(currentNode)
+					this.body.path = shortestPath
+					this.body.target = this.body.path.getNode(0)
+					break
+				}
+
+				// For each successor of q
+				for (successor : waypoints.adjacentNodes(currentNode)) {
+					// If the successor isn't in the closed list
+					if (!closedList.contains(successor)) {
+						// if the successor is in the open list
+						if (openList.contains(successor)) {
+							// Computes the G cost with the current node
+							var newG = currentNode.g +
+								Vector2.dst(successor.x, successor.y, currentNode.x, currentNode.y)
+							// If the cost is lower with the current node, it's a shorter path
+							// In this case, updates G, H, F costs and the successor parent (which becomes the current node)
+							if (successor.g > newG) {
+								successor.g = newG
+								successor.h = Vector2.dst(successor.x, successor.y, nearestTargetNode.x,
+									nearestTargetNode.y)
+								successor.f = successor.g + successor.h
+								successor.parent = currentNode
+							}
+						} else { // if the successor isn't in the open list yet
+						// Computes the G cost
+							successor.g = currentNode.g +
+								Vector2.dst(successor.x, successor.y, currentNode.x, currentNode.y)
+							// Computes the heuristic
+							successor.h = Vector2.dst(successor.x, successor.y, nearestTargetNode.x,
+								nearestTargetNode.y)
+							successor.f = successor.g + successor.h
+							// Set the successor parent to the current node
+							successor.parent = currentNode
+							// Adds the successor to the open list
+							openList.add(successor)
+						}
+					}
+				}
+			}
+		}
+
+		this.body.followPath
+		this.body.seek
+		this.body.avoidCollisionWithBodies
+		this.body.avoidCollisionWithWalls
+		this.body.computesVelocity
+		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
+		move(movement.x, movement.y)
+		this.lastStepTime = System.currentTimeMillis
+	}
+
+	/** 
+	 * Backtrack a path from the given node
+	 * @return a path from the start node to the end node (= given node) 
+	 */
+	def computePath(goal : AStarNode) : Path {
+		var nodesList = new ArrayList<Vector2>()
+		var currentNode = goal
+		do {
+			nodesList.add(currentNode)
+		} while ((currentNode = currentNode.parent) !== null)
+		
+		return new Path(nodesList.reverse)
+	}
+
+	def moveStraight(body : AgentBody) {
+		if (this.body == null) {
+			this.body = body as AdultBody
+		}
+
+		this.body.seek
+		this.body.avoidCollisionWithBodies
+		this.body.avoidCollisionWithWalls
+		this.body.computesVelocity
+		var movement = this.body.linearVelocity.cpy.scl((System.currentTimeMillis - this.lastStepTime) / 1000f)
+		move(movement.x, movement.y)
+		this.lastStepTime = System.currentTimeMillis
+	}
+	
+	def clearWaypointsLinks(waypoints : MutableGraph<AStarNode>) {
+		for (node : waypoints.nodes) {
+			node.parent = null
+		}
 	}
 }

@@ -1,18 +1,13 @@
 package re.legend.crowd_simulator.agents.adult
 
-import com.badlogic.gdx.math.Vector2
+import com.google.common.graph.MutableGraph
 import re.legend.crowd_simulator.entities.bodies.AgentBody
+import re.legend.crowd_simulator.pathfinding.AStarNode
 
 /**
  * Select a shop and go
  */
 capacity AdultCapacity {
-	
-	/**
-	 * Go shopping
-	 * @param position, current position
-	 */
-	def shop(position: Vector2)
 	
 	/**
 	 * Generate a motion influence for the agent's body
@@ -21,15 +16,20 @@ capacity AdultCapacity {
 	 */
 	def move(x : float, y : float)
 	
-	/** 
-	 * Moves the agent randomly
+	/**
+	 * Moves the agent randomly, giving him a new random target every 20 seconds
 	 */
 	def moveRandomly(body : AgentBody)
 	
 	/**
-	 * Moves the agent along a path
+	 * Moves the agent along a defined path
 	 */
-	def moveRandom2(body : AgentBody)
+	 def moveAlongPath(body : AgentBody, waypoints : MutableGraph<AStarNode>)
+
+	/**
+	 * Moves the agent straight forward to its target
+	 */
+	def moveStraight(body : AgentBody)
 }
 
 

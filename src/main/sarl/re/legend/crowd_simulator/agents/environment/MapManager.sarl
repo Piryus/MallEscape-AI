@@ -1,21 +1,29 @@
 package re.legend.crowd_simulator.agents.environment
 
+import com.badlogic.gdx.math.Vector2
+import com.google.common.graph.MutableGraph
 import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Lifecycle
 import java.util.ArrayList
 import java.util.List
+import java.util.Random
 import java.util.UUID
+import re.legend.crowd_simulator.agents.events.Alarm
 import re.legend.crowd_simulator.agents.events.Perception
 import re.legend.crowd_simulator.entities.SimulationEntity
 import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.entities.bodies.DogBody
 import re.legend.crowd_simulator.entities.bodies.KidBody
+import re.legend.crowd_simulator.entities.gameobjects.Bomb
+import re.legend.crowd_simulator.entities.gameobjects.Shop
 import re.legend.crowd_simulator.entities.gameobjects.Wall
 import re.legend.crowd_simulator.frustum.AdultFrustum
 import re.legend.crowd_simulator.frustum.EntityFrustum
 import re.legend.crowd_simulator.influence.Influence
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.map.Map
+import re.legend.crowd_simulator.pathfinding.AStarNode
 
 /** 
  * Capacity to manage the map
@@ -46,6 +54,11 @@ capacity MapManager {
 	 * Set up the walls in the map object
 	 */
 	def setupWalls(walls : List<Wall>)
+
+	/** 
+	 * Set up female shops in the map object
+	 */
+	def setupShops(shops : List<Shop>)
 
 	/** 
 	 * Compute the perceptions of each body on the map
@@ -81,10 +94,30 @@ capacity MapManager {
 	 * Get the map
 	 */
 	def getMap : Map
+
+	/** 
+	 * Set up the waypoints for pathfinding
+	 */
+	def setupWaypoints(waypoints : MutableGraph<AStarNode>)
+
+	/** 
+	 * Spawns a bomb agent
+	 */
+	def spawnBomb()
+
+	/** 
+	 * Set up exits in the map object
+	 */
+	def setupExits(exits : List<Vector2>)
+
+	/** 
+	 * Removes the body with the given ID from the map
+	 */
+	def removeBody(id : UUID)
 }
 
 skill DefaultMapManager implements MapManager {
-	uses DefaultContextInteractions
+	uses DefaultContextInteractions, Lifecycle
 
 	// The map of the simulation
 	var map : Map
@@ -182,21 +215,15 @@ skill DefaultMapManager implements MapManager {
 
 	def notifyAgents {
 		synchronized (this.map.bodies) {
-			// Manage time first, we could create a structure here or something like this holding the time infos
-			// val timePercept = new TimePercept(this.environment.timeManager.currentTime, this.environment.timeManager.lastStepDuration)
 			// Create and send the perception event to every bodies
 			for (body : this.map.bodies) {
 				// Create the perception
-				var perception = new Perception(
-					body,
-					getCurrentTime
-
-				/* body.perceivedObjects, new Percept(body), timePercept
-				 */
-				)
+				var perception = new Perception(body, getCurrentTime, this.map.waypoints, this.map.shops)
 				perception.source = defaultSpace.getAddress(ID)
 				// Emit the perception
-				emit(perception)[it.UUID == body.uuid]
+				synchronized (body) {
+					emit(perception)[it.UUID == body.uuid]
+				}
 			}
 		}
 	}
@@ -211,7 +238,7 @@ skill DefaultMapManager implements MapManager {
 				for (motionInfluence : body.motionInfluences) {
 					// TODO Solve conflicts
 					// Adds the influence to the list of definitive influences that will be applied
-					influences.add(motionInfluence);
+					influences.add(motionInfluence)
 				}
 				// TODO Compute other influences of the body as well
 				// Clear the body's influences in order to prepare next step
@@ -240,4 +267,36 @@ skill DefaultMapManager implements MapManager {
 	def getMap : Map {
 		return this.map;
 	}
+
+	def setupWaypoints(waypoints : MutableGraph<AStarNode>) {
+		this.map.setWaypoints(waypoints)
+	}
+
+	def setupShops(shops : List<Shop>) {
+		this.map.setShops(shops)
+	}
+
+	def spawnBomb() {
+		var rand = new Random
+		var bombBody = new Bomb(rand.nextInt(Map.MAP_SIZE), rand.nextInt(Map.MAP_SIZE))
+		this.map.setBomb(bombBody)
+		synchronized (this.map.bodies) {
+			for (body : this.map.bodies) {
+				synchronized (body) {
+					emit(new Alarm(this.map.exits))[it.UUID == body.uuid]
+				}
+			}
+		}
+	}
+
+	def setupExits(exits : List<Vector2>) {
+		this.map.setExits(exits)
+	}
+
+	def removeBody(id : UUID) {
+		synchronized (this.map.bodies) {
+			this.map.removeBody(id)
+		}
+	}
+
 }
