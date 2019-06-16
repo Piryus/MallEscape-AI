@@ -53,6 +53,7 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 import re.legend.crowd_simulator.entities.SimulationEntity;
 import re.legend.crowd_simulator.entities.bodies.AdultBody;
 import re.legend.crowd_simulator.entities.bodies.AgentBody;
+import re.legend.crowd_simulator.entities.bodies.Sex;
 import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.entities.gameobjects.Wall;
 import re.legend.crowd_simulator.pathfinding.AStarNode;
@@ -81,10 +82,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 	// Adult bodies textures sprite
 	private Texture adultTextures;
-	private TextureRegion adultStillLeft;
-	private TextureRegion adultStillRight;
-	private TextureRegion adultStillFace;
-	private TextureRegion adultStillBack;
+	private TextureRegion adultMaleStillLeft;
+	private TextureRegion adultMaleStillRight;
+	private TextureRegion adultMaleStillFace;
+	private TextureRegion adultMaleStillBack;
+	private TextureRegion adultFemaleStillLeft;
+	private TextureRegion adultFemaleStillRight;
+	private TextureRegion adultFemaleStillFace;
+	private TextureRegion adultFemaleStillBack;
 
 	// SpriteBatche for the map
 	private SpriteBatch spriteBatch;
@@ -169,10 +174,14 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 
 		// Loads bodies textures
 		this.adultTextures = new Texture("adult_bodies.png");
-		this.adultStillLeft = new TextureRegion(this.adultTextures, 0, 0, 16, 16);
-		this.adultStillFace = new TextureRegion(this.adultTextures, 16, 0, 16, 16);
-		this.adultStillBack = new TextureRegion(this.adultTextures, 32, 0, 16, 16);
-		this.adultStillRight = new TextureRegion(this.adultTextures, 48, 0, 16, 16);
+		this.adultMaleStillLeft = new TextureRegion(this.adultTextures, 0, 0, 16, 16);
+		this.adultMaleStillFace = new TextureRegion(this.adultTextures, 16, 0, 16, 16);
+		this.adultMaleStillBack = new TextureRegion(this.adultTextures, 32, 0, 16, 16);
+		this.adultMaleStillRight = new TextureRegion(this.adultTextures, 48, 0, 16, 16);
+		this.adultFemaleStillLeft = new TextureRegion(this.adultTextures, 0, 240, 16, 16);
+		this.adultFemaleStillFace = new TextureRegion(this.adultTextures, 16, 240, 16, 16);
+		this.adultFemaleStillBack = new TextureRegion(this.adultTextures, 32, 240, 16, 16);
+		this.adultFemaleStillRight = new TextureRegion(this.adultTextures, 48, 240, 16, 16);
 
 		// Timer creation and stamp the startTimer
 		this.strTimer = "Time: 0";
@@ -510,15 +519,28 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		this.spriteBatch.begin();
 		for (AgentBody body : this.bodies) {
 			if (body instanceof AdultBody) {
-				if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
-					this.spriteBatch.draw(this.adultStillRight, body.getPosition().x - 8, body.getPosition().y);
-				} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
-					this.spriteBatch.draw(this.adultStillBack, body.getPosition().x - 8, body.getPosition().y);
-				} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
-					this.spriteBatch.draw(this.adultStillLeft, body.getPosition().x - 8, body.getPosition().y);
-				} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
-					this.spriteBatch.draw(this.adultStillFace, body.getPosition().x - 8, body.getPosition().y);
+				if (((AdultBody) body).getSex() == Sex.male) {
+					if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
+						this.spriteBatch.draw(this.adultMaleStillRight, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
+						this.spriteBatch.draw(this.adultMaleStillBack, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
+						this.spriteBatch.draw(this.adultMaleStillLeft, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
+						this.spriteBatch.draw(this.adultMaleStillFace, body.getPosition().x - 8, body.getPosition().y);
+					}
+				} else {
+					if (body.getLinearVelocity().angle() > 315f || body.getLinearVelocity().angle() <= 45f) {
+						this.spriteBatch.draw(this.adultFemaleStillRight, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 45f && body.getLinearVelocity().angle() <= 135f) {
+						this.spriteBatch.draw(this.adultFemaleStillBack, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 135f && body.getLinearVelocity().angle() <= 225f) {
+						this.spriteBatch.draw(this.adultFemaleStillLeft, body.getPosition().x - 8, body.getPosition().y);
+					} else if (body.getLinearVelocity().angle() > 225f && body.getLinearVelocity().angle() <= 315f) {
+						this.spriteBatch.draw(this.adultFemaleStillFace, body.getPosition().x - 8, body.getPosition().y);
+					}
 				}
+
 			}
 		}
 		this.spriteBatch.end();
