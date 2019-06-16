@@ -40,6 +40,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.form.SimpleFormValidator;
+import com.kotcrab.vis.ui.widget.LinkLabel;
 import com.kotcrab.vis.ui.widget.Menu;
 import com.kotcrab.vis.ui.widget.MenuBar;
 import com.kotcrab.vis.ui.widget.MenuItem;
@@ -482,6 +483,27 @@ public class SimulationApplication extends ApplicationAdapter implements InputPr
 		// Help menu
 		Menu helpMenu = new Menu("Help");
 		menuBar.addMenu(helpMenu);
+		// About window
+		VisWindow aboutWindow = new VisWindow("About the authors...");
+		aboutWindow.addCloseButton();
+		aboutWindow.fadeIn();
+		VisTable aboutTable = new VisTable();
+		aboutWindow.add(aboutTable).row();
+		VisLabel namesLabel = new VisLabel("AING André & LEGENDRE Emile");
+		aboutTable.add(namesLabel).left().row();
+		VisLabel githubLinkLabel = new LinkLabel("Go to the GitHub repository.", "https://github.com/Piryus/MallEscape-AI");
+		aboutTable.add(githubLinkLabel).left().row();
+		// "About"
+		MenuItem aboutItem = new MenuItem("About...");
+		aboutItem.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				stage.addActor(aboutWindow);
+			}
+		});
+		helpMenu.addItem(aboutItem);
+		aboutWindow.pack();
+
 
 		// Adds input processors
 		this.inputMultiplexer = new InputMultiplexer();
