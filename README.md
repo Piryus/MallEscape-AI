@@ -6,6 +6,12 @@ How would a crowd behave when an emergency occurs in a mall ? Find out thanks to
 
 Soon ! :)
 
+## Usage
+
+Soon ! :)
+
+(Javadoc available [here](https://legend.re/MallAI/).)
+
 ## Built With
 
 * [SARL](http://www.sarl.io/) - General-purpose Agent-Oriented Programming Language
