@@ -9,7 +9,7 @@ public class Launcher {
 	public static void main(String[] args) throws Exception {
 	LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 	config.samples = 16;
-	config.title = "CrowdSimulator";
+	config.title = "MallEscape-AI";
 	config.width = 1366;
 	config.height = 768;
 	
