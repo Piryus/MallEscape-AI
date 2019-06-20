@@ -11,6 +11,7 @@ import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.influence.Influence;
 import re.legend.crowd_simulator.influence.MotionInfluence;
+import re.legend.crowd_simulator.pathfinding.AStarNode;
 import re.legend.crowd_simulator.pathfinding.Path;
 
 public abstract class AgentBody extends SimulationEntity {
@@ -433,7 +434,28 @@ public abstract class AgentBody extends SimulationEntity {
 		return Vector2.dst(this.position.x, this.position.y, this.target.x, this.target.y) < REACHED_TARGET_DISTANCE;
 	}
 	
+	//TODO Make this cleaner, find the heart problem
 	public void followPath() {
+		//System.out.println(this.path.length());
+		List<Vector2> tempNodes = new ArrayList<>();
+		for (Vector2 node : this.path.getNodes())
+		{
+			boolean inList = false;
+			for (Vector2 nodeTemp : tempNodes)
+			{
+				if (nodeTemp.x >= node.x-1 && nodeTemp.y >= node.y-1 && nodeTemp.x <= node.x+1 && nodeTemp.y <= node.y+1 )
+				{
+					inList = true;
+					break;
+				}
+			}
+			if (!inList)
+			{
+				tempNodes.add(node);
+			}
+		}
+		this.path = new Path(tempNodes);
+		
 		if (hasReachedTarget() && this.path.length() > this.currentNode + 1) {
 			this.currentNode++;
 			this.target = this.path.getNode(this.currentNode);
