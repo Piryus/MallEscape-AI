@@ -9,8 +9,10 @@ import re.legend.crowd_simulator.entities.bodies.AgentBody
 import re.legend.crowd_simulator.influence.MotionInfluence
 import re.legend.crowd_simulator.pathfinding.AStarNode
 import re.legend.crowd_simulator.pathfinding.Path
+import io.sarl.core.Logging
 
 skill AdultSkill implements AdultCapacity {
+	uses Logging
 	// Body on which the actions will be applied
 	var body : AdultBody
 

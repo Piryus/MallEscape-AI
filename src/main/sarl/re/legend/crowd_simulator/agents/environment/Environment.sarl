@@ -13,6 +13,7 @@ import re.legend.crowd_simulator.agents.events.AgentLeftMall
 import re.legend.crowd_simulator.agents.events.ForbidEntrance
 import re.legend.crowd_simulator.agents.events.SimulationStep
 import re.legend.crowd_simulator.agents.spawner.SpawnerAgent
+import re.legend.crowd_simulator.entities.bodies.AdultBody
 import re.legend.crowd_simulator.graphics.SimulationApplication
 
 /** 
@@ -59,15 +60,19 @@ agent Environment {
 		// Retrieves the exit from the tiled map and set them up into the map object
 		setupExits(this.application.getExits)
 
-		// TODO Test spawner
 		// West
-		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(50, 280), map)
+		spawn(SpawnerAgent, AdultBody, this.application.nbAgents, this.application.spawnerFrequency,
+			new Vector2(50, 280), map)
 		// North
-		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(280, 500), map)
+		spawn(SpawnerAgent, AdultBody, this.application.nbAgents, this.application.spawnerFrequency,
+			new Vector2(280, 500), map)
 		// East
-		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(500, 280), map)
+		spawn(SpawnerAgent, AdultBody, this.application.nbAgents, this.application.spawnerFrequency,
+			new Vector2(500, 280), map)
 		// South
-		spawn(SpawnerAgent, "Adult", this.application.nbAgents, this.application.spawnerFrequency, new Vector2(280, 50), map)
+		spawn(SpawnerAgent, AdultBody, this.application.nbAgents, this.application.spawnerFrequency,
+			new Vector2(280, 50), map)
+		
 		// New simulation step every 50ms
 		every(50)[emit(new SimulationStep)]
 	}
