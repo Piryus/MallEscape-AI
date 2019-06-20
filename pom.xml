@@ -5,7 +5,7 @@
 
 	<groupId>re.legend</groupId>
 	<artifactId>Crowd-Simulator</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<properties>
 		<sarl.version>0.8.6</sarl.version>
