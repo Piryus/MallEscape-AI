@@ -36,6 +36,13 @@ behavior AdultBehavior {
 			body = occurrence.body as AdultBody
 		}
 
+		if (body.position.x > 560 || body.position.y > 560) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
+			killMe
+		}
+
 		var shops = occurrence.shops
 		waypoints = occurrence.waypoints
 
@@ -76,11 +83,22 @@ behavior AdultBehavior {
 		moveAlongPath(body, occurrence.waypoints)
 
 		state = AdultState::WALKING_TO_SHOP;
-
 	}
 
 	on Perception [state == AdultState::WALKING_TO_SHOP] {
-		if (body.hasReachedShopEntrance) {
+		if (body !== null && (body.position.x > 560 || body.position.y > 560)) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
+			killMe
+		}
+		
+		if (body.isInAShop(occurrence.shops)) {
+			body.shopEntrance = body.computeShop(occurrence.shops).entrances.get(0)
+			body.shoppingStartedTime = System.currentTimeMillis
+			body.visitedShop = body.computeShop(occurrence.shops)
+			state = AdultState::SHOPPING
+		} else if (body.hasReachedShopEntrance) {
 			// Changes state to shopping
 			state = AdultState::SHOPPING;
 
@@ -102,7 +120,7 @@ behavior AdultBehavior {
 			// Sets the body target
 			body.target = randTargetInShop
 
-		} else if (body.path != null && body.path.nodes.size > 0 && body.hasReachedPathLastNode) {
+		} else if (body.path !== null && body.path.nodes.size > 0 && body.hasReachedPathLastNode) {
 			// Move to the entrance of the shop
 			body.target = body.shopEntrance
 			moveStraight(body)
@@ -114,6 +132,18 @@ behavior AdultBehavior {
 	}
 
 	on Perception [state == AdultState::SHOPPING] {
+		if (body !== null && (body.position.x > 560 || body.position.y > 560)) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
+			killMe
+		}
+		
+		if (body.isInAShop(occurrence.shops) && body.computeShop(occurrence.shops) !== body.visitedShop) {
+			body.visitedShop = body.computeShop(occurrence.shops)
+			body.shopEntrance = body.computeShop(occurrence.shops).entrances.get(0)
+			body.shopTargetAcquiredTime =- 10
+		}
 		// If the agent has been shopping for longer than a minute, get it to the entrance of the shop
 		if (System.currentTimeMillis > body.shoppingStartedTime + 60000) {
 			// Sets the agent's target to the shop entrance
@@ -139,10 +169,8 @@ behavior AdultBehavior {
 			// Sets the body target
 			body.target = randTargetInShop
 		}
-
 		// Moves straight to the target
 		moveStraight(occurrence.body)
-
 	}
 
 	/** 
@@ -183,6 +211,13 @@ behavior AdultBehavior {
 	}
 
 	on Perception [state == AdultState::EVACUATING] {
+		if (body !== null && (body.position.x > 560 || body.position.y > 560)) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
+			killMe
+		}
+		
 		if (body.hasReachedNearestExit) {
 			// Warns the environment that an agent has left the mall in order to delete its body
 			emit(new AgentLeftMall(ID))
@@ -199,6 +234,13 @@ behavior AdultBehavior {
 	}
 
 	on Perception [state == AdultState::EVACUATING_SHOP] {
+		if (body !== null && (body.position.x > 560 || body.position.y > 560)) {
+			// Warns the environment that an agent has left the mall in order to delete its body
+			emit(new AgentLeftMall(ID))
+			// Kills the agent's mind
+			killMe
+		}
+		
 		if (body.hasReachedShopEntrance) {
 			// Finds nearest exit
 			var nearestExit = exits.get(0)
@@ -222,5 +264,4 @@ behavior AdultBehavior {
 			moveStraight(body)
 		}
 	}
-
 }

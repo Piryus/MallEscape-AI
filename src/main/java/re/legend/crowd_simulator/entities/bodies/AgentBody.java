@@ -457,7 +457,8 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	public void followPath() {
-		// Below is the fix to the path bug (agents having thousands of nodes in their path)
+		// Below is the fix to the path bug (agents having thousands of nodes in their
+		// path)
 		// It removes the duplicated nodes
 		// TODO Fix the source of the problem (in the A* algorithm)
 		// BEGINNING OF THE FIX
@@ -478,7 +479,7 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		this.path = new Path(tempNodes);
 		// END OF THE FIX
-		
+
 		if (hasReachedTarget() && this.path.length() > this.currentNode + 1) {
 			this.currentNode++;
 			this.target = this.path.getNode(this.currentNode);
@@ -502,5 +503,23 @@ public abstract class AgentBody extends SimulationEntity {
 
 	public void resetCurrentNode() {
 		this.currentNode = 0;
+	}
+
+	public boolean isInAShop(List<Shop> shops) {
+		for (Shop shop : shops) {
+			if (shop.getArea().contains(position)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Shop computeShop(List<Shop> shops) {
+		for (Shop shop : shops) {
+			if (shop.getArea().contains(position)) {
+				return shop;
+			}
+		}
+		return null;
 	}
 }
