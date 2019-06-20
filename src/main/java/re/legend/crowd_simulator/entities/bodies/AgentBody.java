@@ -11,7 +11,6 @@ import re.legend.crowd_simulator.entities.gameobjects.Shop;
 import re.legend.crowd_simulator.frustum.EntityFrustum;
 import re.legend.crowd_simulator.influence.Influence;
 import re.legend.crowd_simulator.influence.MotionInfluence;
-import re.legend.crowd_simulator.pathfinding.AStarNode;
 import re.legend.crowd_simulator.pathfinding.Path;
 
 public abstract class AgentBody extends SimulationEntity {
@@ -31,25 +30,27 @@ public abstract class AgentBody extends SimulationEntity {
 
 	// Max distance at which the agent can perceive other bodies
 	public static final float PERCEPTION_DISTANCE = 10;
-	
+
 	// Distance from the target at which the agent should start slowing down
 	public static final float SLOW_DOWN_DISTANCE = 15f;
-	
+
 	// Distance at which it should stop
 	public static final float STOP_DISTANCE = 5f;
-	
-	// Distance between the ahead vector and another agent at which there should be avoidance forces computed
+
+	// Distance between the ahead vector and another agent at which there should be
+	// avoidance forces computed
 	public static final float BODY_AHEAD_INTERSECTION_DISTANCE = 10f;
-	
-	// Distance between the ahead vector and a wall at which there should be avoidance forces computed
+
+	// Distance between the ahead vector and a wall at which there should be
+	// avoidance forces computed
 	public static final float WALL_AHEAD_INTERSECTION_DISTANCE = 7f;
-	
+
 	// Distance at which we consider the agent has reached its target
 	public static final float REACHED_TARGET_DISTANCE = 20f;
-	
+
 	// Distance at which we consider the agent has reached the shop entrance
 	public static final float REACHED_SHOP_ENTRANCE_DISTANCE = 10f;
-	
+
 	// Distance at which we consider the agent has reached the mall exit
 	public static final float REACHED_EXIT_DISTANCE = 30f;
 
@@ -77,28 +78,28 @@ public abstract class AgentBody extends SimulationEntity {
 	private Vector2 ahead;
 	private Vector2 ahead2;
 	private Vector2 avoidance;
-	
+
 	// Current path followed by the agent
 	private Path path;
-	
+
 	// The current node the agent is targeting
 	private int currentNode;
-	
+
 	// The shop the agent wants to visit
 	private Shop visitedShop;
-	
+
 	// The shop entrance that the agent is targetting
 	private Vector2 shopEntrance;
-	
-	// Time at which the agent has acquired its target while shopping, used for random moves in the shops
+
+	// Time at which the agent has acquired its target while shopping, used for
+	// random moves in the shops
 	public long shopTargetAcquiredTime;
-	
+
 	// Time at which the agent has started shopping and has entered a shop
 	public long shoppingStartedTime;
-	
+
 	// Nearest exit to the agent
 	public Vector2 nearestExit;
-
 
 	/**
 	 * Constructor with body's position (two floats) and UUID
@@ -225,7 +226,7 @@ public abstract class AgentBody extends SimulationEntity {
 	public Vector2 getTarget() {
 		return this.target;
 	}
-	
+
 	/**
 	 * @return the ahead vector
 	 */
@@ -302,18 +303,17 @@ public abstract class AgentBody extends SimulationEntity {
 	public void seek() {
 		// Computes the desired velocity towards the target
 		this.desiredVelocity = this.target.cpy().sub(this.position);
-		
+
 		// Gets the distance to the target
 		float distance = this.desiredVelocity.len();
-		
-		// Normalizes and scale to the desired velocity the maximum velocity 
+
+		// Normalizes and scale to the desired velocity the maximum velocity
 		this.desiredVelocity.nor().scl(MAX_VELOCITY);
 
 		// On arrival, slows down the agent
 		if (distance <= SLOW_DOWN_DISTANCE) {
 			this.desiredVelocity.scl(distance / SLOW_DOWN_DISTANCE);
-		}
-		else if (distance <= STOP_DISTANCE) {
+		} else if (distance <= STOP_DISTANCE) {
 			this.desiredVelocity.scl(0);
 		}
 
@@ -330,20 +330,20 @@ public abstract class AgentBody extends SimulationEntity {
 		// Find the most threatening body's position
 		Vector2 bodyToAvoidPosition = findMostThreateningBodyPosition();
 
-		// Computes the avoidance force depending on the position of the most threatening body found
+		// Computes the avoidance force depending on the position of the most
+		// threatening body found
 		// If no body was found, the avoidance force is null
 		if (bodyToAvoidPosition != null) {
 			this.avoidance = this.ahead.cpy().sub(bodyToAvoidPosition).nor().scl(MAX_FORCE);
-		}
-		else {
+		} else {
 			this.avoidance.scl(0);
 		}
 
 		// Adds the avoidance force to the steering
 		this.steering.add(this.avoidance);
 	}
-	
-	//Avoid collision with Walls
+
+	// Avoid collision with Walls
 	public void avoidCollisionWithWalls() {
 		// The ahead vector is the velocity vector with the PERCEPTION_DISTANCE length
 		this.ahead = this.position.cpy().add(this.linearVelocity.cpy().nor().scl(PERCEPTION_DISTANCE));
@@ -351,14 +351,15 @@ public abstract class AgentBody extends SimulationEntity {
 
 		// Find the most threatening wall position
 		Vector2 wallToAvoidPosition = findMostThreateningWall();
-		
-		// Computes the avoidance force depending on the position of the closest wall found
+
+		// Computes the avoidance force depending on the position of the closest wall
+		// found
 		// If no wall was found, the avoidance force is null
 		if (wallToAvoidPosition != null) {
-			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE*3);//More force so the ahead vector is not stuck in the wall
-		}
-		else
-		{
+			this.avoidance = this.ahead.cpy().sub(wallToAvoidPosition).nor().scl(MAX_FORCE * 3);// More force so the
+																								// ahead vector is not
+																								// stuck in the wall
+		} else {
 			this.avoidance.scl(0);
 		}
 
@@ -372,22 +373,41 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	private boolean lineIntersectsBodyCircle(Vector2 bodyPosition) {
-		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= BODY_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x, this.ahead2.y) <= BODY_AHEAD_INTERSECTION_DISTANCE
-				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x, this.position.y) <= BODY_AHEAD_INTERSECTION_DISTANCE) {
+		if (Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead.x, this.ahead.y) <= BODY_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.ahead2.x,
+						this.ahead2.y) <= BODY_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(bodyPosition.x, bodyPosition.y, this.position.x,
+						this.position.y) <= BODY_AHEAD_INTERSECTION_DISTANCE) {
 			return true;
 		}
 		return false;
 	}
-	
-	
+
 	private boolean lineIntersectsWallCircle(Vector2 wall) {
-		if (Vector2.dst(wall.x+4, wall.y+4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
-				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
-				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
-				
-				|| Vector2.dst(wall.x+4, wall.y+4, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+4, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+4, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
-				|| Vector2.dst(wall.x+4, wall.y+8, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+8, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+8, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
-				|| Vector2.dst(wall.x+4, wall.y+11, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+8, wall.y+11, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE || Vector2.dst(wall.x+12, wall.y+11, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE)
+		if (Vector2.dst(wall.x + 4, wall.y + 4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 4, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 4, wall.y + 8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 8, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 4, wall.y + 11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 11, this.ahead.x, this.ahead.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+
+				|| Vector2.dst(wall.x + 4, wall.y + 4, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 4, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 4, this.ahead2.x,
+						this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 4, wall.y + 8, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 8, this.ahead2.x, this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 8, this.ahead2.x,
+						this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 4, wall.y + 11, this.ahead2.x,
+						this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 8, wall.y + 11, this.ahead2.x,
+						this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE
+				|| Vector2.dst(wall.x + 12, wall.y + 11, this.ahead2.x,
+						this.ahead2.y) <= WALL_AHEAD_INTERSECTION_DISTANCE)
 
 		{
 			return true;
@@ -403,8 +423,9 @@ public abstract class AgentBody extends SimulationEntity {
 				for (AgentBody body : this.perceivedBodies) {
 					// Checks if the agent's ahead vectors collide with the perceived body
 					boolean collisionWithBody = lineIntersectsBodyCircle(body.position);
-					if (collisionWithBody && (mostThreateningBodyPos == null || Vector2.dst(this.position.x, this.position.y, 
-							body.position.x, body.position.y) < Vector2.dst(this.position.x, this.position.y, mostThreateningBodyPos.x, mostThreateningBodyPos.y))) {
+					if (collisionWithBody && (mostThreateningBodyPos == null || Vector2.dst(this.position.x,
+							this.position.y, body.position.x, body.position.y) < Vector2.dst(this.position.x,
+									this.position.y, mostThreateningBodyPos.x, mostThreateningBodyPos.y))) {
 						mostThreateningBodyPos = body.position;
 					}
 				}
@@ -412,7 +433,7 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningBodyPos;
 	}
-	
+
 	private Vector2 findMostThreateningWall() {
 		Vector2 mostThreateningWallPos = null;
 		synchronized (this.perceivedObjects) {
@@ -420,8 +441,9 @@ public abstract class AgentBody extends SimulationEntity {
 				for (SimulationEntity wall : this.perceivedObjects) {
 					// Checks if the agent's ahead vectors collide with the perceived body
 					boolean collisionWithWall = lineIntersectsWallCircle(wall.getPosition());
-					if (collisionWithWall && (mostThreateningWallPos == null || Vector2.dst(this.position.x, this.position.y, 
-							wall.getPosition().x, wall.getPosition().y) < Vector2.dst(this.position.x, this.position.y, mostThreateningWallPos.x, mostThreateningWallPos.y))) {
+					if (collisionWithWall && (mostThreateningWallPos == null || Vector2.dst(this.position.x,
+							this.position.y, wall.getPosition().x, wall.getPosition().y) < Vector2.dst(this.position.x,
+									this.position.y, mostThreateningWallPos.x, mostThreateningWallPos.y))) {
 						mostThreateningWallPos = wall.getPosition();
 					}
 				}
@@ -429,32 +451,33 @@ public abstract class AgentBody extends SimulationEntity {
 		}
 		return mostThreateningWallPos;
 	}
-	
+
 	public boolean hasReachedTarget() {
 		return Vector2.dst(this.position.x, this.position.y, this.target.x, this.target.y) < REACHED_TARGET_DISTANCE;
 	}
-	
-	//TODO Make this cleaner, find the heart problem
+
 	public void followPath() {
-		//System.out.println(this.path.length());
+		// Below is the fix to the path bug (agents having thousands of nodes in their path)
+		// It removes the duplicated nodes
+		// TODO Fix the source of the problem (in the A* algorithm)
+		// BEGINNING OF THE FIX
+		// System.out.println(this.path.length());
 		List<Vector2> tempNodes = new ArrayList<>();
-		for (Vector2 node : this.path.getNodes())
-		{
+		for (Vector2 node : this.path.getNodes()) {
 			boolean inList = false;
-			for (Vector2 nodeTemp : tempNodes)
-			{
-				if (nodeTemp.x >= node.x-1 && nodeTemp.y >= node.y-1 && nodeTemp.x <= node.x+1 && nodeTemp.y <= node.y+1 )
-				{
+			for (Vector2 nodeTemp : tempNodes) {
+				if (nodeTemp.x >= node.x - 1 && nodeTemp.y >= node.y - 1 && nodeTemp.x <= node.x + 1
+						&& nodeTemp.y <= node.y + 1) {
 					inList = true;
 					break;
 				}
 			}
-			if (!inList)
-			{
+			if (!inList) {
 				tempNodes.add(node);
 			}
 		}
 		this.path = new Path(tempNodes);
+		// END OF THE FIX
 		
 		if (hasReachedTarget() && this.path.length() > this.currentNode + 1) {
 			this.currentNode++;
@@ -463,18 +486,20 @@ public abstract class AgentBody extends SimulationEntity {
 	}
 
 	public boolean hasReachedShopEntrance() {
-		return Vector2.dst(this.position.x, this.position.y, this.shopEntrance.x, this.shopEntrance.y) < REACHED_SHOP_ENTRANCE_DISTANCE;
+		return Vector2.dst(this.position.x, this.position.y, this.shopEntrance.x,
+				this.shopEntrance.y) < REACHED_SHOP_ENTRANCE_DISTANCE;
 	}
-	
+
 	public boolean hasReachedPathLastNode() {
 		Vector2 lastNode = this.path.getNode(this.path.getNodes().size() - 1);
 		return Vector2.dst(this.position.x, this.position.y, lastNode.x, lastNode.y) < REACHED_TARGET_DISTANCE;
 	}
-	
+
 	public boolean hasReachedNearestExit() {
-		return Vector2.dst(this.position.x, this.position.y, this.nearestExit.x, this.nearestExit.y) < REACHED_EXIT_DISTANCE;
+		return Vector2.dst(this.position.x, this.position.y, this.nearestExit.x,
+				this.nearestExit.y) < REACHED_EXIT_DISTANCE;
 	}
-	
+
 	public void resetCurrentNode() {
 		this.currentNode = 0;
 	}
