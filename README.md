@@ -2,7 +2,7 @@
 
 How would a crowd behave when an emergency occurs in a mall ? Find out thanks to MallEscape-AI, a multi-agent simulation built in SARL. 🚀
 
-![](https://legend.re/github/mallescapeai/demo.gif)
+![](demo.gif)
 
 ## Getting Started
 
